@@ -931,6 +931,13 @@ three seeds with the spread, and it is accounted for.
   a single frame, before activations. Laptop smoke tests: `eval.num_eval=4
   solver.num_samples=50 solver.n_steps=10`. Those prove the pipeline; they are
   not numbers anyone may report.
+- **16 GB of RAM is tight, and WSL makes it tighter.** Two things got
+  OOM-killed on a 15.8 GB laptop during this work: loading the Lance dataset
+  through the repo's reader (§5.2), and a `uv sync` running alongside a large
+  download inside WSL. If you use WSL, check `~/.wslconfig` before you start:
+  a `memory=12GB` line on a 16 GB host leaves Windows under 4 GB, and whichever
+  side loses the race gets killed. Lower it to 8 GB, or run one heavy job at a
+  time. The eval itself is fine; it is the concurrency that is not.
 - **Spaces in the project path.** Most things cope, but Hydra config overrides and
   shell scripts sometimes do not. First suspect for any strange parse error.
 - **Session-only env vars on Windows.** See section 3. Use the persistent form.
