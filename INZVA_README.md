@@ -909,6 +909,87 @@ run-to-run jitter.
 Two points of rerun noise is simply part of the measurement. Report means over
 three seeds with the spread, and it is accounted for.
 
+## 6.5 Model decisions, and what they cost us
+
+### Shared encoder: decided, share it and freeze it
+
+**One encoder, trained with the fine model, then frozen. The coarse model
+trains only a dynamics head on top of it.**
+
+The reason is experimental rather than computational. Experiment A claims to
+isolate the planner. If training the coarse model also updates the encoder, then
+the fine model inside our method is no longer the fine model the baseline uses,
+and A stops isolating anything. Freezing keeps row 2 and row 3 sharing a
+bit-identical world model, so the only thing differing between them is the
+solver, which is the entire claim.
+
+It also makes waypoints mean something. Coarse and fine share one latent space,
+so a coarse waypoint is directly a target the fine model can plan toward. With
+separate encoders you would need a learned mapping between two latent spaces, or
+the waypoint is gibberish to the fine model.
+
+**The consequence, recorded now so nobody rediscovers it in week 3:** the
+encoder is optimised for short-horizon prediction, because that is what the fine
+model trains it for. Features that predict one step well are not necessarily the
+features that predict eight steps well. **A frozen encoder may therefore cap how
+good the coarse model can get**, and the cap is invisible: the coarse model will
+simply be mediocre without telling you why.
+
+Symptoms to watch for once the coarse model exists:
+
+- Coarse validation loss plateaus early and well above the fine model's, after
+  scaling for stride.
+- Waypoints are reachable but not useful: the fine model hits them and the task
+  still fails.
+- Experiment A shows no benefit at any budget while `k = 1` passes Experiment C.
+  That combination points at the representation, not the solver.
+
+**If you unfreeze, you must retrain the baseline too.** Joint fine-tuning gives
+the coarse model a representation suited to its own stride and may well be the
+right call. But the moment the shared encoder changes, row 2's world model is no
+longer row 3's, so the baseline has to be retrained and re-evaluated on the same
+model or Experiment A stops being a planner-only comparison. That is roughly
+double the training budget. Decide it deliberately, not by accident.
+
+### Horizon, action block and k: proposed, not yet locked
+
+The three are bound together by an assertion in `scripts/plan/eval_wm.py:69`:
+
+```text
+horizon * action_block <= eval_budget        # eval_budget is 50
+```
+
+The current values (`horizon: 5`, `action_block: 5`) leave no room for a
+hierarchy at all: a coarse stride of 4 over a 5-step horizon gives one waypoint.
+
+`action_block: 5` is **not** binding on us. It is forced by the published
+checkpoint's action encoder, which takes 10 inputs as 2 action dims times
+frameskip 5 (§7). Our GRU is ours and can use a block of 1.
+
+Proposal, which reproduces the spec's own framing of "40 steps becomes 5
+decisions":
+
+| Key | Value | Why |
+|-----|-------|-----|
+| `action_block` | 1 | ours to choose; the constraint came from someone else's checkpoint |
+| `horizon` | 40 | 40 x 1 = 40 <= 50, satisfies the assertion |
+| `k` | 8 | 40 / 8 = 5 coarse waypoints |
+
+Two things to understand before adopting it:
+
+- **This deliberately makes flat CEM expensive.** At `action_block: 1` and
+  `horizon: 40` the model rolls 40 steps per candidate against 5 in the current
+  config. That 8x is not waste, it is the gap the hierarchy exists to close:
+  coarse plans 5 strided steps, fine fills 8 between waypoints, so roughly 13
+  model steps instead of 40. If flat CEM stays cheap, there is nothing to win.
+- **Long rollouts compound model error.** A GRU rolled 40 steps drifts more than
+  one rolled 5 blocks, so both our planners may land below the LeWM reference.
+  Expected and harmless: Experiment A compares our two planners on our own
+  stack, so a shared handicap cancels.
+
+`k` is the natural thing to sweep. Try at least `{4, 8}`, and remember `k = 1` is
+Experiment C and must score like the flat baseline.
+
 ---
 
 ## 7. Known gotchas
@@ -1029,6 +1110,8 @@ Done:
 - [x] Shared eval config written: `scripts/plan/config/inzva_pusht.yaml` (§6.1)
 - [x] Train/val split defined and deterministic (§6.2)
 - [x] **Image resolution decided: 224 everywhere** (§6.1)
+- [x] **Shared encoder decided: share and freeze**, with the cap it implies
+      and the cost of reversing it written down (§6.5)
 - [x] Eval results saved to a tracked location, with versions (§6.3)
 - [x] `uv.lock` tracked, so dependencies are pinned as well as the commit (§0)
 - [x] `15a8bb4` tested as the cause of the gap and ruled out (§6.1)
@@ -1059,8 +1142,8 @@ Open, in the order they block things:
 - [ ] **Six files assigned to five people** (`models/gru_wm.py`,
       `models/gru_coarse.py`, `solver/hierarchical.py`, `scripts/train_gru.py`,
       `scripts/sweep.py`, `README.md`)
-- [ ] **`k` chosen** (start at 4), whether coarse and fine share an encoder
-      (probably yes), and how many seeds the compute allows (3 is the floor)
+- [ ] **`k`, horizon and action block locked** (§6.5 proposes 8 / 40 / 1), and
+      how many seeds the compute allows (3 is the floor)
 - [ ] Experiment C (`k = 1`) scores like the GRU + CEM baseline — run this
       before A and B
 - [ ] DINO-WM trained (`scripts/train/prejepa.py`) and its number recorded
