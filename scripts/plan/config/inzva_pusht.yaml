@@ -39,7 +39,21 @@ eval:
   eval_budget: 50
   num_eval: 50
   goal_offset_steps: 25
+
+  # DECIDED: 224, everywhere, for the GRU models too. It is what the dataset
+  # already stores, so there is no preprocessing step, and it is what DINO-WM
+  # is locked to because DINOv2 requires it.
+  #
+  # Experiment A does not care: it compares two planners on the same world
+  # model, so resolution cancels. Experiment B does care, because it compares
+  # our GRU against DINO-WM, and training ours at 64 would make that a
+  # comparison across two resolutions rather than two representations.
+  #
+  # The only cost is training throughput, roughly 12x. Revisit only if GRU
+  # training proves too slow on TRUBA, and if you drop to 64 then say plainly
+  # that Experiment B is confounded, or drop B.
   img_size: 224
+
   dataset_name: pusht_expert_train.h5
 
 # Overridden per run via `-m seed=0,1,2`. Report mean and spread, never one seed.

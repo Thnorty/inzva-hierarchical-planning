@@ -556,9 +556,25 @@ this file exists to prevent.
 | `plan_config.receding_horizon` | 5 | replan every 5 blocks |
 | `plan_config.action_block` | 5 | fixed by the checkpoints' `in_chans: 10` |
 | `plan_config.history_len` | 3 | matches the LeWM predictor's `num_frames: 3` |
+| `eval.img_size` | 224 | decided; see below |
 | `eval.eval_budget` | 50 | the budget the published table uses |
 | `eval.num_eval` | 50 | episodes per run |
 | `seed` | 42 | swept to `0,1,2` for anything reportable |
+
+**Resolution is 224, everywhere, including the GRU models.** It is what the
+dataset already stores, so there is no preprocessing step, and it is what
+DINO-WM is locked to because DINOv2 requires that input size.
+
+The reason it is not a free choice: Experiment A compares two planners on the
+same world model, so resolution cancels out and 64 would be free speed. But
+Experiment B compares our GRU against DINO-WM, and training ours at 64 turns
+that into a comparison across two resolutions rather than two representations,
+confounding the one thing B exists to measure. So the decision is made by what B
+needs, not by what A needs.
+
+The only cost is training throughput, roughly 12x against 64x64. Revisit it only
+if GRU training proves too slow on TRUBA. If you do drop to 64, say plainly in
+the report that Experiment B is confounded, or drop B.
 
 Run it:
 
@@ -1012,6 +1028,7 @@ Done:
 - [x] Dataset confirmed as upstream's own source of record (§5.1)
 - [x] Shared eval config written: `scripts/plan/config/inzva_pusht.yaml` (§6.1)
 - [x] Train/val split defined and deterministic (§6.2)
+- [x] **Image resolution decided: 224 everywhere** (§6.1)
 - [x] Eval results saved to a tracked location, with versions (§6.3)
 - [x] `uv.lock` tracked, so dependencies are pinned as well as the commit (§0)
 - [x] `15a8bb4` tested as the cause of the gap and ruled out (§6.1)
@@ -1039,11 +1056,6 @@ Open, in the order they block things:
       a fresh Windows clone and cold on Ubuntu under WSL2, catching five
       documentation bugs between them (§9). What neither could change is macOS,
       a different GPU, and a reader who did not write the document.
-- [ ] **Image resolution decided.** Pixels are stored at 224×224 because that is
-      DINO's input size. The GRU almost certainly does not need it, and 64×64 is
-      roughly 12× the throughput. It affects both the coarse and the fine model,
-      so it goes in the shared config and is decided once. Nobody has measured
-      the accuracy cost yet — that measurement is the decision.
 - [ ] **Six files assigned to five people** (`models/gru_wm.py`,
       `models/gru_coarse.py`, `solver/hierarchical.py`, `scripts/train_gru.py`,
       `scripts/sweep.py`, `README.md`)
