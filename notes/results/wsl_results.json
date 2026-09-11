@@ -1,8 +1,8 @@
 {
-  "generated": "2026-09-11T10:15:13.871775+00:00",
+  "generated": "2026-09-11T11:44:43.307393+00:00",
   "source": "$STABLEWM_HOME/checkpoints/quentinll/wsl_results.txt",
   "environment": {
-    "commit": "2602140",
+    "commit": "0751317",
     "torch": "2.11.0+cu128",
     "transformers": "5.16.1",
     "stable_pretraining": "0.1.8",

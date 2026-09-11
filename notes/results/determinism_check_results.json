@@ -1,8 +1,8 @@
 {
-  "generated": "2026-09-11T09:14:27.711059+00:00",
+  "generated": "2026-09-11T11:44:37.393450+00:00",
   "source": "$STABLEWM_HOME/checkpoints/quentinll/determinism_check_results.txt",
   "environment": {
-    "commit": "90de485",
+    "commit": "0751317",
     "torch": "2.11.0+cu128",
     "transformers": "5.16.1",
     "stable_pretraining": "0.1.8",

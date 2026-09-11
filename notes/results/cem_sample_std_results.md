@@ -1,6 +1,6 @@
 # Eval results
 
-Generated 2026-09-11 09:14 UTC by `scripts/collect_results.py`.
+Generated 2026-09-11 11:44 UTC by `scripts/collect_results.py`.
 Do not edit by hand; rerun the script instead.
 
 Source: `$STABLEWM_HOME/checkpoints/quentinll/cem_sample_std_results.txt`
@@ -9,7 +9,7 @@ Source: `$STABLEWM_HOME/checkpoints/quentinll/cem_sample_std_results.txt`
 
 | | |
 |---|---|
-| commit (at collection) | `90de485` |
+| commit (at collection) | `0751317` |
 | torch | `2.11.0+cu128` |
 | cuda | `12.8` |
 | gpu | `NVIDIA GeForce RTX 3060 Laptop GPU` |

@@ -263,7 +263,10 @@ def main():
                 'runs': runs,
             },
             indent=2,
-        ),
+        )
+        # json.dumps omits the trailing newline, which trips the repo's
+        # end-of-file-fixer pre-commit hook and fails CI.
+        + '\n',
         encoding='utf-8',
         newline='\n',
     )
