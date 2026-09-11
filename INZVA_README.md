@@ -394,8 +394,18 @@ So the decision splits by use:
 | **Training a world model** | **HDF5.** Pixels are the model input, and training a visual encoder on JPEG artifacts to evaluate on cleanly rendered frames introduces a train/test mismatch for no scientific reason |
 
 Since our GRU trains on pixels, the 33 GB saving is not available to us where it
-would have counted. Keep the HDF5 as the working copy. The Lance copy is still
-the cheaper thing to hand someone who only needs to run evaluations.
+would have counted. **Decision: we use the HDF5 and do not keep a Lance copy.**
+The one we downloaded for the comparison above has been deleted; it is
+re-fetchable in one command if anyone later needs an eval-only copy.
+
+```bash
+python -c "import stable_worldmodel as swm; swm.data.load_dataset('galilai-group/lewm-pusht')"
+```
+
+Note that loading it through the repo reader needed more memory than this laptop
+had spare, and was killed. The comparison in this section was done by reading the
+Lance fragments directly with `lance.dataset(...)` and pulling single columns,
+which is cheap. Worth knowing before someone points `eval.dataset_name` at it.
 
 If you do adopt it for something, `eval.dataset_name` has to change to match, and
 that is a shared-config edit rather than a unilateral one.
