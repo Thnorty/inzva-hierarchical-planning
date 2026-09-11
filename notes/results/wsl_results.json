@@ -1,0 +1,59 @@
+{
+  "generated": "2026-09-11T10:15:13.871775+00:00",
+  "source": "$STABLEWM_HOME/checkpoints/quentinll/wsl_results.txt",
+  "environment": {
+    "commit": "2602140",
+    "torch": "2.11.0+cu128",
+    "transformers": "5.16.1",
+    "stable_pretraining": "0.1.8",
+    "cuda": "12.8",
+    "gpu": "NVIDIA GeForce RTX 3060 Laptop GPU"
+  },
+  "runs": [
+    {
+      "seed": 0,
+      "policy": "quentinll/lewm-pusht",
+      "num_eval": 50,
+      "eval_budget": 50,
+      "history_len": 3,
+      "horizon": 5,
+      "action_block": 5,
+      "num_samples": 300,
+      "n_steps": 30,
+      "success_rate": 84.0,
+      "successes": 42,
+      "episodes": 50,
+      "seconds": 128.75278043746948
+    },
+    {
+      "seed": 1,
+      "policy": "quentinll/lewm-pusht",
+      "num_eval": 50,
+      "eval_budget": 50,
+      "history_len": 3,
+      "horizon": 5,
+      "action_block": 5,
+      "num_samples": 300,
+      "n_steps": 30,
+      "success_rate": 96.0,
+      "successes": 48,
+      "episodes": 50,
+      "seconds": 125.99125242233276
+    },
+    {
+      "seed": 2,
+      "policy": "quentinll/lewm-pusht",
+      "num_eval": 50,
+      "eval_budget": 50,
+      "history_len": 3,
+      "horizon": 5,
+      "action_block": 5,
+      "num_samples": 300,
+      "n_steps": 30,
+      "success_rate": 84.0,
+      "successes": 42,
+      "episodes": 50,
+      "seconds": 133.04063177108765
+    }
+  ]
+}

@@ -847,7 +847,33 @@ about which one flipped.
 | Same machine, rerun or fresh clone | Same mean. Zero or one episode different per seed |
 | Different machine, same GPU model | Same, as far as we can tell. Untested, and we have no second machine to test it on |
 | Different GPU model | Means should agree within seed noise; per-seed rates drift further |
-| Windows vs Linux, same GPU | Expect more drift than two Windows machines. Measured: Windows resolves `torch 2.11.0+cu128`, Ubuntu resolves `2.11.0+cu130`. Same torch version, different CUDA toolkit, so different kernels |
+| Windows vs Linux, same GPU | **Measured: 1 episode in 150 differs.** Better than expected, see below |
+
+#### Windows against Linux, measured
+
+Ubuntu 24.04 under WSL2, same GPU, installed from scratch by following §2:
+
+| Seed | Windows (cu128) | Linux (cu130) | Episodes differing |
+|------|-----------------|---------------|--------------------|
+| 0 | 42/50 | 42/50 | 0 |
+| 1 | 48/50 | 48/50 | 0 |
+| 2 | 41/50 | 42/50 | 1 |
+
+| | |
+|---|---|
+| Windows mean | 87.3% |
+| Linux mean | 88.0% |
+| Episodes differing | **1 of 150** |
+
+This is better agreement than the row above originally predicted, and better
+than two runs on the *same* Windows machine managed (2 of 150). The platforms
+run different CUDA toolkits, different SDL builds and a different OS, and still
+land on the same episodes almost everywhere.
+
+Read it as reassurance with a caveat: it is one comparison on one GPU, and the
+sample is small enough that 1 versus 2 differing episodes is not a real
+difference. The honest summary is that cross-platform drift is **no worse** than
+rerun noise, not that it is smaller.
 
 When two people disagree by more than a couple of episodes per seed, compare the
 environment table in `notes/results/*.md` before suspecting anything else. That
@@ -999,6 +1025,8 @@ Done:
       pixels (§5.2)
 - [x] Clone test run here: fresh clone reproduces 87.3%, and fixed two bugs
       it exposed in the install instructions (§9)
+- [x] Cold-start Linux test on Ubuntu 24.04 under WSL2: 88.0%, 1 episode in 150
+      differing from Windows, and three more documentation bugs fixed (§9)
 - [x] `.gitattributes` added; a Windows checkout is now pure LF, so Linux and
       macOS teammates see no phantom diffs
 - [x] Pushed to `Thnorty/inzva-hierarchical-planning` (private)
@@ -1007,9 +1035,10 @@ Done:
 
 Open, in the order they block things:
 
-- [ ] A **teammate** runs the five commands in §9. We already ran them in a
-      fresh clone here, which matched to the decimal and caught two real bugs
-      (§9); what that could not change is the machine. Half an hour.
+- [ ] A **teammate** runs the five commands in §9. Done twice here already, in
+      a fresh Windows clone and cold on Ubuntu under WSL2, catching five
+      documentation bugs between them (§9). What neither could change is macOS,
+      a different GPU, and a reader who did not write the document.
 - [ ] **Image resolution decided.** Pixels are stored at 224×224 because that is
       DINO's input size. The GRU almost certainly does not need it, and 64×64 is
       roughly 12× the throughput. It affects both the coarse and the fine model,
@@ -1124,6 +1153,28 @@ What it found, which is the point of doing it:
 - **The env check's percentage is not bit-stable** between checkouts, even with
   identical sources and packages. Read its pass/fail, not its number.
 
-Worth repeating on a teammate's machine, since that is the one variable this
-run could not change.
+We then did it again on **Ubuntu 24.04 under WSL2**, from a cold start: fresh
+clone, fresh install, empty caches, dataset downloaded from scratch.
+
+| Check | Result |
+|-------|--------|
+| Line endings on a Linux checkout | 296 files LF, **0 CRLF**, clean `git status` |
+| §2.1's claim that Linux needs no torch swap | **True.** `uv sync` gives `2.11.0+cu130`, CUDA already available |
+| Cold dataset download (§5) | 13,136,247,974 bytes, matching the source exactly; `zstd -t` confirms 46,300,921,856 decompressed |
+| Cold checkpoint download | Fetched and loaded, via the v5 rename patch, which Linux needs too |
+| Dataset checks | Identical to Windows, to the digit |
+| Split fingerprint | `2d5f8c4f85e918f8`, matching |
+| Three-seed mean | **88.0%** against Windows' 87.3%; 1 episode in 150 differed |
+
+Further gaps it found, all fixed:
+
+- **No way to authenticate.** The repo is private and the README never said how
+  to clone it. GitHub dropped password auth, so a fresh machine fails outright.
+- **Stale paths after the rename.** §3 still said `stable-worldmodel` while §2
+  cloned `inzva-hierarchical-planning`, which would put 46 GB outside the clone.
+- **`zstd -d` gets OOM-killed** writing 46 GB under WSL's memory cap, which is
+  how we learned `zstd -t` proves a download without expanding it.
+
+What remains untested is macOS, a different GPU, and a person who did not write
+the document trying to follow it.
 
