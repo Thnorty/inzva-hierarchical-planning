@@ -1,0 +1,49 @@
+# Shared evaluation config for the inzva hierarchical-planning project.
+#
+# Nobody edits this file alone. Horizon, receding horizon, budget, episode
+# count and seeds are what make two people's numbers comparable; changing one
+# locally silently invalidates every comparison in the report.
+#
+# Inherits scripts/plan/config/pusht.yaml, so only our deltas appear below.
+# Run it with:
+#
+#   python scripts/plan/eval_wm.py --config-name inzva_pusht policy=<ckpt>
+#
+# Three seeds minimum for anything reportable:
+#
+#   python scripts/plan/eval_wm.py --config-name inzva_pusht -m \
+#       policy=<ckpt> seed=0,1,2
+#
+defaults:
+  - pusht
+  - _self_
+
+plan_config:
+  # Uncommented on purpose. Upstream leaves this commented out, which means
+  # `plan_config.history_len=3` fails with "Could not override" and needs a
+  # `+`. Worse, forgetting it entirely is not an error: it falls back to 1
+  # while the LeWM predictor has num_frames=3, and you get a quietly bad
+  # number. Setting it here removes both failure modes.
+  history_len: 3
+
+  # horizon * action_block <= eval.eval_budget is asserted in eval_wm.py:69.
+  # 5 * 5 = 25 <= 50. Experiment A's sweep must stay inside that.
+  horizon: 5
+  receding_horizon: 5
+  action_block: 5
+
+eval:
+  # The published baselines table uses a fixed 50-step budget, NOT the
+  # unlimited budget of the original DINO-WM paper. Comparing against 74%
+  # or 96% at any other budget is meaningless.
+  eval_budget: 50
+  num_eval: 50
+  goal_offset_steps: 25
+  img_size: 224
+  dataset_name: pusht_expert_train.h5
+
+# Overridden per run via `-m seed=0,1,2`. Report mean and spread, never one seed.
+seed: 42
+
+output:
+  filename: inzva_pusht_results.txt

@@ -230,3 +230,26 @@ results/
 local_scripts/
 CLAUDE.md
 uv.lock
+
+# Local STABLEWM_HOME. $STABLEWM_HOME points inside the working tree, so
+# this keeps the expert dataset (46 GB decompressed) out of git status.
+# `checkpoints/` above already covers .stable-wm/checkpoints; the datasets
+# subdirectory was not covered by anything.
+.stable-wm/
+.stable_worldmodel/
+
+# Upstream's `results/` rule above matches a directory named `results` at ANY
+# depth, which silently swallowed `notes/results/` - the one place we track eval
+# numbers so they survive a clean and reach the rest of the team. Re-include the
+# directory first, then its contents; git cannot re-include a file whose parent
+# directory is still excluded.
+!notes/results/
+!notes/results/**
+
+# Upstream ignores uv.lock because it ships a library, and libraries should not
+# pin their dependents. We are not a library: five people need byte-identical
+# installs, and an unpinned `transformers>=4.50.0` is what silently resolved to
+# v5 and broke checkpoint loading (README section 7). Track the lock.
+# Caveat: on Windows the CUDA torch wheel is installed out of band and is NOT
+# in the lock. See README section 2.1.
+!uv.lock
