@@ -150,6 +150,15 @@ install has neither, and the `data` extra alone only adds the Lance dataset stac
 
 ### 2.1 Windows only: fix the CPU-only torch
 
+**Verified on Ubuntu 24.04**: `uv sync` there installs `torch 2.11.0+cu130`
+with `torch.cuda.is_available()` already `True`, so Linux users skip this whole
+section. It really is Windows-specific.
+
+Note the version though: Linux gets **cu130** and the Windows wheel below is
+**cu128**. The lock pins the torch version, not the CUDA build, so a Windows and
+a Linux teammate run different CUDA toolkits. See §6.4 for what that means for
+comparing their numbers.
+
 `pyproject.toml` lists `torch` unversioned with no index configuration. On Linux
 the default PyPI wheel bundles CUDA; **on Windows it does not**, so `uv sync`
 installs `torch==2.11.0+cpu` and `torch.cuda.is_available()` is `False` no matter
@@ -838,6 +847,7 @@ about which one flipped.
 | Same machine, rerun or fresh clone | Same mean. Zero or one episode different per seed |
 | Different machine, same GPU model | Same, as far as we can tell. Untested, and we have no second machine to test it on |
 | Different GPU model | Means should agree within seed noise; per-seed rates drift further |
+| Windows vs Linux, same GPU | Expect more drift than two Windows machines. Measured: Windows resolves `torch 2.11.0+cu128`, Ubuntu resolves `2.11.0+cu130`. Same torch version, different CUDA toolkit, so different kernels |
 
 When two people disagree by more than a couple of episodes per seed, compare the
 environment table in `notes/results/*.md` before suspecting anything else. That
