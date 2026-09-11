@@ -83,7 +83,33 @@ cd inzva-hierarchical-planning
 uv venv --python=3.10
 ```
 
-It is private, so ask for collaborator access first or the clone will 404.
+It is private, so you need two things: collaborator access, and a way to
+authenticate. **GitHub removed password auth for git operations**, so a plain
+`git clone` on a fresh machine fails with:
+
+```text
+remote: Invalid username or token. Password authentication is not supported
+        for Git operations.
+```
+
+Pick one, once per machine:
+
+```bash
+# 1. GitHub CLI, easiest if you already use it
+gh auth login          # then clone normally
+
+# 2. SSH key, best if you work on several machines
+ssh-keygen -t ed25519 -C "you@example.com"
+cat ~/.ssh/id_ed25519.pub        # paste into github.com/settings/keys
+git clone git@github.com:Thnorty/inzva-hierarchical-planning.git
+
+# 3. Personal access token, if you cannot install anything
+#    github.com/settings/tokens, scope `repo`, then use it as the password
+git clone https://github.com/Thnorty/inzva-hierarchical-planning.git
+```
+
+On WSL, none of your Windows credentials carry over. It is a separate machine as
+far as git is concerned, and `gh` is not installed in Ubuntu by default.
 
 Keep a link to upstream so you can see what changes there without pulling it in:
 
@@ -166,20 +192,20 @@ we added the `.stable-wm/` line ourselves.
 **macOS / Linux** (add to `~/.bashrc` or `~/.zshrc` so it persists):
 
 ```bash
-export STABLEWM_HOME="$HOME/stable-worldmodel/.stable-wm"
+export STABLEWM_HOME="$HOME/inzva-hierarchical-planning/.stable-wm"
 ```
 
 **Windows PowerShell**, current session only:
 
 ```powershell
-$env:STABLEWM_HOME = "C:\path\to\stable-worldmodel\.stable-wm"
+$env:STABLEWM_HOME = "C:\path\to\inzva-hierarchical-planning\.stable-wm"
 ```
 
 **Windows PowerShell**, persistent (do this one, the line above is forgotten when
 you close the terminal):
 
 ```powershell
-[Environment]::SetEnvironmentVariable("STABLEWM_HOME", "C:\path\to\stable-worldmodel\.stable-wm", "User")
+[Environment]::SetEnvironmentVariable("STABLEWM_HOME", "C:\path\to\inzva-hierarchical-planning\.stable-wm", "User")
 ```
 
 Reopen the terminal afterwards, then confirm:
