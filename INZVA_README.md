@@ -1049,7 +1049,6 @@ Open, in the order they block things:
       `scripts/sweep.py`, `README.md`)
 - [ ] **`k` chosen** (start at 4), whether coarse and fine share an encoder
       (probably yes), and how many seeds the compute allows (3 is the floor)
-- [ ] Decide whether TRUBA uses the Lance copy, and verify its counts first (§5.2)
 - [ ] Experiment C (`k = 1`) scores like the GRU + CEM baseline — run this
       before A and B
 - [ ] DINO-WM trained (`scripts/train/prejepa.py`) and its number recorded
