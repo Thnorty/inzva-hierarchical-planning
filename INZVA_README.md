@@ -1147,7 +1147,9 @@ Open, in the order they block things:
 - [ ] How many seeds the compute allows (3 is the floor)
 - [ ] Experiment C (`k = 1`) scores like the GRU + CEM baseline — run this
       before A and B
-- [ ] DINO-WM trained (`scripts/train/prejepa.py`) and its number recorded
+- [ ] **Score `kotmul/dinowm_patch_prop_pusht` on a server** (§11). It loads and
+      runs after two documented fixes. If it scores near 74%, Experiment B needs
+      no training at all. Only train DINO-WM if it does not.
 
 Two things worth deciding early because they are cheap now and expensive later:
 
@@ -1376,3 +1378,85 @@ Separately and in parallel, someone should start **DINO-WM training**
 (`scripts/train/prejepa.py`). It is needed for Experiment B, nobody has started
 it, and it is the item most likely to run out of calendar. If four weeks gets
 tight, B is the one to cut.
+
+---
+
+## 11. DINO-WM: there is a checkpoint, and it loads
+
+§6 said no DINO-WM checkpoint exists in the layout `load_pretrained` expects.
+That was too pessimistic. **`kotmul/dinowm_patch_prop_pusht` works**, after two
+fixes. If it also performs, Experiment B needs no training run at all.
+
+What it is: `_target_: stable_worldmodel.wm.PreJEPA`, frozen `dinov2_small`
+backbone, patch tokens, `history_size: 3`, frameskip 5, action encoder with
+`in_chans: 10` (2 dims x 5), trained on `swm/PushT-v1`. Same conventions as the
+LeWM checkpoint. Published 2026-07-13, marked epoch 10, no published score.
+
+### Fix 1: drop the `pixel_token` key
+
+Its `config.json` carries `"pixel_token": "patch"`, which is not an argument of
+this repo's `PreJEPA.__init__`. `git log -S pixel_token` finds nothing in
+`wm/prejepa/`, so the checkpoint came from a fork, not from upstream. Loading it
+raw fails:
+
+```text
+Error in call to target 'stable_worldmodel.wm.prejepa.prejepa.PreJEPA':
+TypeError("PreJEPA.__init__() got an unexpected keyword argument 'pixel_token'")
+```
+
+Copy the cached checkpoint, delete that one key from `config.json`, and it loads
+**strictly**: 302 of 302 tensors, zero missing, zero unexpected, zero shape
+mismatches. Every other key in its config matches this repo's signature exactly.
+
+```bash
+cp -r "$STABLEWM_HOME/checkpoints/models--kotmul--dinowm_patch_prop_pusht" \
+      "$STABLEWM_HOME/checkpoints/dinowm_kotmul_adapted"
+python -c "
+import json, pathlib, os
+p = pathlib.Path(os.environ['STABLEWM_HOME'])/'checkpoints'/'dinowm_kotmul_adapted'/'config.json'
+c = json.load(open(p)); c.pop('pixel_token', None); json.dump(c, open(p,'w'), indent=2)"
+```
+
+### Fix 2: use the PreJEPA objective, not the default
+
+The default `goal_mse` scores the fused latent and dies:
+
+```text
+RuntimeError: The expanded size of the tensor (404) must match the existing
+size (394) at non-singleton dimension 4
+```
+
+404 is 384 pixels + 10 proprio + 10 action; 394 is the same without action. A
+goal prescribes a state, not an action, so the fused tensor cannot be scored
+directly. The repo already ships the right objective and documents it for this
+exact model:
+
+```bash
+objective=goal_mse_pixels_proprio
+```
+
+### Run it on a server, not a laptop
+
+```bash
+python scripts/plan/eval_wm.py --config-name inzva_pusht \
+    policy=dinowm_kotmul_adapted \
+    objective=goal_mse_pixels_proprio -m seed=0,1,2
+```
+
+**This does not fit a 6 GB laptop GPU.** It exhausted 16 GB of host RAM and had
+to be killed before finishing 10 episodes. DINO-WM is far heavier than LeWM:
+`dinov2_small` gives 256 patches x 384 dims per frame against ViT-tiny's 192, so
+one frame of latents is roughly 414 KB per candidate (§7). Use TRUBA.
+
+### Still unknown
+
+**Its score.** It is epoch 10 with no published number, so it may simply be
+undertrained. Until someone runs the three seeds above, we do not know whether it
+is a usable Experiment B baseline or a smoke test. That run is the deciding
+factor for whether DINO-WM has to be trained from scratch, and it is cheap
+compared to training.
+
+If it scores anywhere near the published 74%, use it and skip the training run.
+If it scores far below, train with `scripts/train/prejepa.py` as originally
+planned, and note that this checkpoint is not comparable to the published number
+because it came from a fork.
