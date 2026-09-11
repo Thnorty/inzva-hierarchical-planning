@@ -72,14 +72,28 @@ powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
 
 ## 2. Clone and install
 
-Same for all three platforms:
+**Clone our repo, not upstream.** Upstream does not contain the shared config,
+the verification scripts, or the loader patch without which the LeWM checkpoint
+will not load at all (§7). The pinned upstream commit is already an ancestor of
+our `main`, so there is nothing to check out by hand.
 
 ```bash
-git clone https://github.com/galilai-group/stable-worldmodel
-cd stable-worldmodel
-git checkout 6f1e499e9cc0c898d326112f485c1062c3d20f24
+git clone https://github.com/Thnorty/inzva-hierarchical-planning
+cd inzva-hierarchical-planning
 uv venv --python=3.10
 ```
+
+It is private, so ask for collaborator access first or the clone will 404.
+
+Keep a link to upstream so you can see what changes there without pulling it in:
+
+```bash
+git remote add upstream https://github.com/galilai-group/stable-worldmodel
+git fetch upstream          # look, do not merge
+```
+
+`origin` is our repo and `upstream` is theirs. Nobody merges `upstream/main`
+without the whole team agreeing, for the reasons in §0.
 
 Activate the virtual environment:
 
@@ -99,6 +113,7 @@ source .venv/bin/activate
 ```
 
 Then install dependencies:
+
 
 ```bash
 uv sync --extra all --group dev
