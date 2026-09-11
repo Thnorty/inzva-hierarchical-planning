@@ -83,33 +83,31 @@ cd inzva-hierarchical-planning
 uv venv --python=3.10
 ```
 
-It is private, so you need two things: collaborator access, and a way to
-authenticate. **GitHub removed password auth for git operations**, so a plain
-`git clone` on a fresh machine fails with:
+The repo is **public**, so cloning needs no authentication and no collaborator
+access. Read-only clone works for anyone, including inside WSL, where Windows
+credentials do not carry over anyway.
 
-```text
-remote: Invalid username or token. Password authentication is not supported
-        for Git operations.
-```
-
-Pick one, once per machine:
+You still need credentials to **push**. Set that up once per machine:
 
 ```bash
-# 1. GitHub CLI, easiest if you already use it
-gh auth login          # then clone normally
+# GitHub CLI, easiest if you already use it
+gh auth login
 
-# 2. SSH key, best if you work on several machines
+# or an SSH key, better if you work on several machines
 ssh-keygen -t ed25519 -C "you@example.com"
 cat ~/.ssh/id_ed25519.pub        # paste into github.com/settings/keys
-git clone git@github.com:Thnorty/inzva-hierarchical-planning.git
-
-# 3. Personal access token, if you cannot install anything
-#    github.com/settings/tokens, scope `repo`, then use it as the password
-git clone https://github.com/Thnorty/inzva-hierarchical-planning.git
+git remote set-url origin git@github.com:Thnorty/inzva-hierarchical-planning.git
 ```
 
-On WSL, none of your Windows credentials carry over. It is a separate machine as
-far as git is concerned, and `gh` is not installed in Ubuntu by default.
+GitHub removed password auth for git operations, so pushing with a password
+fails with `Password authentication is not supported for Git operations`. That
+is what the two options above are for.
+
+**Being public has one consequence worth knowing: everything here is visible,
+including the results records and the reproduction write-up.** Nothing in the
+repo is sensitive (no credentials, no absolute paths, no personal data; the only
+machine detail is the GPU model, which is deliberate provenance for the numbers).
+But treat anything you commit from now on as published.
 
 Keep a link to upstream so you can see what changes there without pulling it in:
 
@@ -1131,7 +1129,7 @@ Done:
       differing from Windows, and three more documentation bugs fixed (§9)
 - [x] `.gitattributes` added; a Windows checkout is now pure LF, so Linux and
       macOS teammates see no phantom diffs
-- [x] Pushed to `Thnorty/inzva-hierarchical-planning` (private)
+- [x] Pushed to `Thnorty/inzva-hierarchical-planning` (public)
 - [x] **Reproduction closed** (§6.1b). 96% not reproducible; every mechanical
       explanation tested and eliminated; baseline of record is 87.3% ± 7.6
 
@@ -1265,7 +1263,7 @@ clone, fresh install, empty caches, dataset downloaded from scratch.
 
 Further gaps it found, all fixed:
 
-- **No way to authenticate.** The repo is private and the README never said how
+- **No way to authenticate.** The repo was private at the time and the README never said how
   to clone it. GitHub dropped password auth, so a fresh machine fails outright.
 - **Stale paths after the rename.** §3 still said `stable-worldmodel` while §2
   cloned `inzva-hierarchical-planning`, which would put 46 GB outside the clone.
