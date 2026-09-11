@@ -1,0 +1,57 @@
+# Normalise line endings across Windows, Linux and macOS.
+#
+# Without this, git's behaviour depends on each person's local `core.autocrlf`,
+# so a Windows contributor can commit CRLF and every Linux teammate sees the
+# whole file as changed. That buries real diffs and makes review useless.
+#
+# `text=auto eol=lf` stores every text file as LF in the repo AND checks it out
+# as LF everywhere. LF in the working tree matters here because the repo ships
+# shell scripts and pre-commit hooks (including `mixed-line-ending`), and CRLF
+# breaks both. Every editor worth using handles LF on Windows.
+
+* text=auto eol=lf
+
+# Explicit, so a new contributor's config cannot reclassify them.
+*.py    text eol=lf diff=python
+*.pyi   text eol=lf diff=python
+*.sh    text eol=lf
+*.yaml  text eol=lf
+*.yml   text eol=lf
+*.md    text eol=lf
+*.json  text eol=lf
+*.toml  text eol=lf
+*.cfg   text eol=lf
+*.txt   text eol=lf
+*.html  text eol=lf
+*.lock  text eol=lf
+.gitignore     text eol=lf
+.gitattributes text eol=lf
+
+# Binary: never touch these, and never try to diff them as text.
+*.gif   binary
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.mp4   binary
+*.pdf   binary
+*.ico   binary
+*.woff  binary
+*.woff2 binary
+*.pptx  binary
+
+# Data and checkpoints. Gitignored, but declared so an accidental `git add -f`
+# cannot mangle 46 GB by "fixing" its line endings.
+*.h5    binary
+*.hdf5  binary
+*.lance binary
+*.zst   binary
+*.pt    binary
+*.pth   binary
+*.npy   binary
+*.npz   binary
+
+# Notebooks are JSON, but a line-by-line diff of one is noise.
+*.ipynb text eol=lf linguist-language=Jupyter\ Notebook
+
+# Generated: keep it out of diffs and language stats.
+uv.lock linguist-generated=true
