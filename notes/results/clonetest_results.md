@@ -1,6 +1,6 @@
 # Eval results
 
-Generated 2026-09-11 09:12 UTC by `scripts/collect_results.py`.
+Generated 2026-09-11 09:14 UTC by `scripts/collect_results.py`.
 Do not edit by hand; rerun the script instead.
 
 Source: `$STABLEWM_HOME/checkpoints/quentinll/clonetest_results.txt`
@@ -9,7 +9,7 @@ Source: `$STABLEWM_HOME/checkpoints/quentinll/clonetest_results.txt`
 
 | | |
 |---|---|
-| commit | `94cac60` |
+| commit (at collection) | `90de485` |
 | torch | `2.11.0+cu128` |
 | cuda | `12.8` |
 | gpu | `NVIDIA GeForce RTX 3060 Laptop GPU` |

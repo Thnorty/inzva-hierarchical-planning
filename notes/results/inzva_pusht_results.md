@@ -1,6 +1,6 @@
 # Eval results
 
-Generated 2026-09-11 06:00 UTC by `scripts/collect_results.py`.
+Generated 2026-09-11 09:14 UTC by `scripts/collect_results.py`.
 Do not edit by hand; rerun the script instead.
 
 Source: `$STABLEWM_HOME/checkpoints/quentinll/inzva_pusht_results.txt`
@@ -9,7 +9,7 @@ Source: `$STABLEWM_HOME/checkpoints/quentinll/inzva_pusht_results.txt`
 
 | | |
 |---|---|
-| commit | `6f1e499` |
+| commit (at collection) | `90de485` |
 | torch | `2.11.0+cu128` |
 | cuda | `12.8` |
 | gpu | `NVIDIA GeForce RTX 3060 Laptop GPU` |

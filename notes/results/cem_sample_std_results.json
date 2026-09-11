@@ -1,8 +1,8 @@
 {
-  "generated": "2026-09-11T06:28:29.925711+00:00",
+  "generated": "2026-09-11T09:14:15.623337+00:00",
   "source": "$STABLEWM_HOME/checkpoints/quentinll/cem_sample_std_results.txt",
   "environment": {
-    "commit": "6f1e499",
+    "commit": "90de485",
     "torch": "2.11.0+cu128",
     "transformers": "5.16.1",
     "stable_pretraining": "0.1.8",

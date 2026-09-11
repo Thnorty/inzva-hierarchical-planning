@@ -138,8 +138,12 @@ def render(runs: list[dict], env: dict, source: str) -> str:
         '| | |',
         '|---|---|',
     ]
+    # The commit is HEAD *now*, not necessarily HEAD when the runs happened;
+    # eval_wm.py does not record it, and that is upstream code. Label it so
+    # nobody reads it as run provenance.
+    labels = {'commit': 'commit (at collection)'}
     for key in ('commit', 'torch', 'cuda', 'gpu', 'transformers'):
-        lines.append(f'| {key} | `{env.get(key)}` |')
+        lines.append(f'| {labels.get(key, key)} | `{env.get(key)}` |')
     lines += [
         '',
         '## Runs',
@@ -243,8 +247,11 @@ def main():
     out_dir.mkdir(parents=True, exist_ok=True)
     stem = Path(args.results_file).stem
 
+    # newline='\n' so these land as LF on every platform, matching the
+    # normalisation in .gitattributes. Without it Windows writes CRLF and every
+    # regenerated record shows up as modified until git rewrites it.
     md = out_dir / f'{stem}.md'
-    md.write_text(render(runs, env, portable), encoding='utf-8')
+    md.write_text(render(runs, env, portable), encoding='utf-8', newline='\n')
 
     js = out_dir / f'{stem}.json'
     js.write_text(
@@ -258,6 +265,7 @@ def main():
             indent=2,
         ),
         encoding='utf-8',
+        newline='\n',
     )
 
     print(f'parsed {len(runs)} run(s) from {source}')
