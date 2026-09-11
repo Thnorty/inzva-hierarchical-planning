@@ -765,40 +765,47 @@ from the ViT forward pass and the cost evaluation.
 
 ### What to expect, and what to check
 
-**Measured, not assumed: the eval is not deterministic even on one machine.**
-Seed 0 was run twice, same command, same code, same GPU, same process image:
+**Measured, not assumed.** A fresh clone of this repo into a different directory
+on the same machine, installed from scratch by following §2, reproduces the
+original almost exactly:
 
-| Run | Result |
-|-----|--------|
-| First | 42/50 = 84% |
-| Repeat | 43/50 = 86% |
-| Episodes differing | 1 of 50 (episode 49) |
+| Seed | Original | Fresh clone | Episodes differing |
+|------|----------|-------------|--------------------|
+| 0 | 42/50 | 42/50 | 0 |
+| 1 | 48/50 | 47/50 | 1 |
+| 2 | 41/50 | 42/50 | 1 |
 
-So repeating a run costs you about two percentage points of pure
-run-to-run noise, before any seed or hardware difference enters. This is
-ordinary CUDA nondeterminism: cuDNN autotuning picks algorithms per run, and
-several reductions use atomics whose accumulation order is not fixed. Normally
-invisible; here CEM amplifies it, because a last-bit cost difference reorders
-near-tied candidates and the trajectories diverge from there.
+| | |
+|---|---|
+| Original mean | 87.3% |
+| Clone mean | **87.3%** |
+| Episodes differing | 2 of 150 |
 
-The practical consequence is blunt: **identical hardware does not buy you an
-exact-match acceptance test.** It is tempting to assume that a team all running
-the same GPU can demand per-seed equality. They cannot, because the same GPU
-cannot even reproduce itself.
+Across every paired run we have done on this machine, **3 episodes in 200
+disagree, about 1.5%**. In practice that means a rerun usually matches exactly
+and occasionally moves by a single episode, which is 2 points on a 50-episode
+rate. It is not a constant 2-point tax.
+
+The cause is ordinary CUDA nondeterminism: cuDNN autotuning picks algorithms per
+run and some reductions use atomics whose accumulation order is not fixed.
+Normally invisible; here CEM amplifies it, because a last-bit cost difference
+reorders near-tied candidates and the rollout diverges from there. Only episodes
+that were already marginal flip.
+
+So per-seed rates are *nearly* reproducible and the three-seed mean is solidly
+so. The sensible acceptance test is still the **mean over three seeds**, because
+that is robust to the occasional flipped episode without needing anyone to argue
+about which one flipped.
 
 | Comparison | Expect |
 |---|---|
-| Same machine, same seed, rerun | Within a couple of episodes. **Not identical** |
-| Different machine, same GPU model, same seed | Same as above |
-| Different GPU model | Means agree within seed noise; per-seed rates drift further |
+| Same machine, rerun or fresh clone | Same mean. Zero or one episode different per seed |
+| Different machine, same GPU model | Same, as far as we can tell. Untested, and we have no second machine to test it on |
+| Different GPU model | Means should agree within seed noise; per-seed rates drift further |
 
-So the acceptance test for "a second person reproduced it" is the **mean over
-three seeds**, with the spread reported. Never a per-seed exact match: correct
-code fails that test.
-
-When two machines disagree by more than seed noise, compare the environment
-table in `notes/results/*.md` before suspecting anything else. That table exists
-for this.
+When two people disagree by more than a couple of episodes per seed, compare the
+environment table in `notes/results/*.md` before suspecting anything else. That
+table exists for this.
 
 ### We are not chasing bit-exact determinism
 
@@ -923,14 +930,19 @@ Done:
 - [x] Lance copy downloaded and compared: same row order, bit-identical
       `action`/`proprio`/`state`, identical episode selection, lossy JPEG
       pixels (§5.2)
+- [x] Clone test run here: fresh clone reproduces 87.3%, and fixed two bugs
+      it exposed in the install instructions (§9)
+- [x] `.gitattributes` added; a Windows checkout is now pure LF, so Linux and
+      macOS teammates see no phantom diffs
+- [x] Pushed to `Thnorty/inzva-hierarchical-planning` (private)
 - [x] **Reproduction closed** (§6.1b). 96% not reproducible; every mechanical
       explanation tested and eliminated; baseline of record is 87.3% ± 7.6
 
 Open, in the order they block things:
 
-- [ ] Second person runs the five commands in §9 on a clean clone. This is a
-      test of the setup instructions, not of their hardware (§9). Half an hour
-      of someone else's time, and it is the last reproduction item.
+- [ ] A **teammate** runs the five commands in §9. We already ran them in a
+      fresh clone here, which matched to the decimal and caught two real bugs
+      (§9); what that could not change is the machine. Half an hour.
 - [ ] **Image resolution decided.** Pixels are stored at 224×224 because that is
       DINO's input size. The GRU almost certainly does not need it, and 64×64 is
       roughly 12× the throughput. It affects both the coarse and the fine model,
@@ -1016,3 +1028,35 @@ The second reason is less obvious and matters more: **nobody has followed this
 document on a clean machine.** It was written from a session where everything
 was already working, which is exactly how setup instructions acquire silent
 gaps. The run is as much a test of §2 and §3 as of the person's laptop.
+
+### This was run once, and it found something
+
+A fresh clone into a different directory on the same machine, installed by
+following §2 and §2.1 from scratch, then run through all five commands.
+
+What it confirmed:
+
+| Check | Result |
+|-------|--------|
+| Line endings on a Windows checkout | 292 files LF, **0 CRLF**, clean `git status` |
+| `uv sync` honours the lock | Lockfile unchanged; `transformers` stayed pinned at 5.16.1 |
+| Environment reproduces | 227 packages in both, identical except the project's own editable path |
+| Dataset checks | 18,685 episodes, same correlations, same 2,904 out-of-box actions, same alignment |
+| Split fingerprint | `2d5f8c4f85e918f8`, matching |
+| Three-seed mean | **87.3%**, matching the original to the decimal; 2 of 150 episodes differed |
+
+What it found, which is the point of doing it:
+
+- **§2 told people to clone upstream.** Following the README exactly gave you
+  none of the shared config, none of the scripts, and not the loader patch,
+  so the checkpoint would fail with ~300 missing keys and no explanation.
+  Fixed in `7ea1425`.
+- **The CPU-torch trap is real and still bites.** `uv sync` installed
+  `2.11.0+cpu` exactly as §2.1 warns. The lock pins the version, not the build
+  variant, so that step cannot be automated away.
+- **The env check's percentage is not bit-stable** between checkouts, even with
+  identical sources and packages. Read its pass/fail, not its number.
+
+Worth repeating on a teammate's machine, since that is the one variable this
+run could not change.
+
