@@ -31,7 +31,12 @@ import stable_worldmodel as swm
 # antialiasing on a shape outline.
 INTENSITY_TOLERANCE = 24
 # Above this fraction of substantially-differing pixels, the environments are
-# not the same. Measured agreement at 6f1e499 is 0.37%.
+# not the same. Measured agreement at 6f1e499 is 0.30% to 0.39% depending on the
+# frame, and the exact figure shifts by a few hundredths of a percent between
+# checkouts even with identical sources and identical packages: SDL picks
+# rendering code paths at runtime, so edge antialiasing is not bit-stable. Read
+# the pass/fail, not the percentage. The threshold sits about 5x above what a
+# matching env produces, and a real geometry change misses by far more.
 FRACTION_THRESHOLD = 0.02
 
 
