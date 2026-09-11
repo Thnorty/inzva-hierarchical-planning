@@ -92,16 +92,7 @@ You still need credentials to **push**. Set that up once per machine:
 ```bash
 # GitHub CLI, easiest if you already use it
 gh auth login
-
-# or an SSH key, better if you work on several machines
-ssh-keygen -t ed25519 -C "you@example.com"
-cat ~/.ssh/id_ed25519.pub        # paste into github.com/settings/keys
-git remote set-url origin git@github.com:Thnorty/inzva-hierarchical-planning.git
 ```
-
-GitHub removed password auth for git operations, so pushing with a password
-fails with `Password authentication is not supported for Git operations`. That
-is what the two options above are for.
 
 **Being public has one consequence worth knowing: everything here is visible,
 including the results records and the reproduction write-up.** Nothing in the
