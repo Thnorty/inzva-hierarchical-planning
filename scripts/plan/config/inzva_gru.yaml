@@ -1,0 +1,44 @@
+# Evaluation config for OUR GRU world model.
+#
+# Separate from inzva_pusht.yaml on purpose. That one evaluates the published
+# LeWM checkpoint, whose action encoder takes 10 inputs as 2 action dims times
+# frameskip 5, so it is stuck at action_block: 5 and horizon: 5. Ours is not.
+# Changing the shared config in place would break the LeWM reference command.
+#
+# Everything not overridden here is inherited, so the eval protocol itself
+# (episode count, budget, goal offset, seeds, resolution) stays identical
+# between the two. That is what keeps the numbers comparable.
+#
+#   python scripts/plan/eval_wm.py --config-name inzva_gru -m \
+#       policy=<our-checkpoint> seed=0,1,2
+#
+defaults:
+  - inzva_pusht
+  - _self_
+
+plan_config:
+  # LOCKED. See INZVA_README.md section 6.5.
+  #
+  # eval_wm.py:69 asserts horizon * action_block <= eval.eval_budget (50).
+  # 40 * 1 = 40, so this fits with room to spare.
+  #
+  # action_block 1 because the frameskip-5 constraint came from someone else's
+  # checkpoint, not from our model. horizon 40 with a coarse stride of k = 8
+  # gives 5 waypoints, which is the spec's "40 steps becomes 5 decisions".
+  #
+  # This makes flat CEM roll 40 model steps per candidate instead of 5. That 8x
+  # is the gap the hierarchy exists to close, not an accident: coarse plans 5
+  # strided steps and fine fills 8 between waypoints, roughly 13 instead of 40.
+  action_block: 1
+  horizon: 40
+
+  # Replan every 5 env steps, so a 50-step episode replans 10 times.
+  receding_horizon: 5
+
+  # Our GRU is Markovian in its latent state, so it does not need the 3-frame
+  # context the LeWM predictor was trained with. Revisit if the model turns out
+  # to want history.
+  history_len: 1
+
+output:
+  filename: inzva_gru_results.txt

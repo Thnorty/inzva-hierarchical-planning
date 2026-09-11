@@ -951,7 +951,7 @@ longer row 3's, so the baseline has to be retrained and re-evaluated on the same
 model or Experiment A stops being a planner-only comparison. That is roughly
 double the training budget. Decide it deliberately, not by accident.
 
-### Horizon, action block and k: proposed, not yet locked
+### Horizon, action block and k: locked
 
 The three are bound together by an assertion in `scripts/plan/eval_wm.py:69`:
 
@@ -966,8 +966,8 @@ hierarchy at all: a coarse stride of 4 over a 5-step horizon gives one waypoint.
 checkpoint's action encoder, which takes 10 inputs as 2 action dims times
 frameskip 5 (§7). Our GRU is ours and can use a block of 1.
 
-Proposal, which reproduces the spec's own framing of "40 steps becomes 5
-decisions":
+Locked, in `scripts/plan/config/inzva_gru.yaml`. It reproduces the spec's own
+framing of "40 steps becomes 5 decisions":
 
 | Key | Value | Why |
 |-----|-------|-----|
@@ -975,7 +975,7 @@ decisions":
 | `horizon` | 40 | 40 x 1 = 40 <= 50, satisfies the assertion |
 | `k` | 8 | 40 / 8 = 5 coarse waypoints |
 
-Two things to understand before adopting it:
+Two things to keep in mind about what this buys and costs:
 
 - **This deliberately makes flat CEM expensive.** At `action_block: 1` and
   `horizon: 40` the model rolls 40 steps per candidate against 5 in the current
@@ -1112,6 +1112,8 @@ Done:
 - [x] **Image resolution decided: 224 everywhere** (§6.1)
 - [x] **Shared encoder decided: share and freeze**, with the cap it implies
       and the cost of reversing it written down (§6.5)
+- [x] **`k` = 8, horizon = 40, action_block = 1 locked** into
+      `scripts/plan/config/inzva_gru.yaml` (§6.5)
 - [x] Eval results saved to a tracked location, with versions (§6.3)
 - [x] `uv.lock` tracked, so dependencies are pinned as well as the commit (§0)
 - [x] `15a8bb4` tested as the cause of the gap and ruled out (§6.1)
@@ -1142,8 +1144,7 @@ Open, in the order they block things:
 - [ ] **Six files assigned to five people** (`models/gru_wm.py`,
       `models/gru_coarse.py`, `solver/hierarchical.py`, `scripts/train_gru.py`,
       `scripts/sweep.py`, `README.md`)
-- [ ] **`k`, horizon and action block locked** (§6.5 proposes 8 / 40 / 1), and
-      how many seeds the compute allows (3 is the floor)
+- [ ] How many seeds the compute allows (3 is the floor)
 - [ ] Experiment C (`k = 1`) scores like the GRU + CEM baseline — run this
       before A and B
 - [ ] DINO-WM trained (`scripts/train/prejepa.py`) and its number recorded
@@ -1272,3 +1273,106 @@ Further gaps it found, all fixed:
 What remains untested is macOS, a different GPU, and a person who did not write
 the document trying to follow it.
 
+---
+
+## 10. Next task: the fine GRU
+
+Everything else waits on this. Both the baseline row and our own method need the
+fine GRU, and neither the coarse model nor the hierarchical solver can be tested
+without it.
+
+**Files:** `models/gru_wm.py` and `scripts/train_gru.py`.
+
+### The contract is two methods
+
+To be driven by the existing CEM solver through `WorldModelPolicy`, a world model
+needs to satisfy `stable_worldmodel.protocols.Dynamics`, which is exactly this:
+
+```python
+def encode(self, x: dict) -> dict:
+    """Add latents to an observation dict (pixels, proprio -> emb)."""
+
+def rollout(self, info_dict: dict, action_candidates: torch.Tensor) -> dict:
+    """Roll candidates forward. action_candidates is (B, S, horizon, action_dim).
+    Return the dict with predicted_emb of shape (B, S, H + horizon, dim),
+    whose first H entries are the encoded context frames."""
+```
+
+It is a `runtime_checkable` `Protocol`, so there is nothing to subclass and
+nothing to register. If you find yourself needing to modify the solver or
+`WorldModelPolicy` to make your model fit, stop: that means the model is wrong,
+not the harness.
+
+### It must be loadable the way every other checkpoint is
+
+`load_pretrained` reads `config.json`, calls `hydra.utils.instantiate` on it, and
+then `load_state_dict`. So the class has to be constructible from a plain config
+dict with a `_target_` key, the way `stable_worldmodel.wm.lewm.LeWM` is. Save
+with `swm.wm.utils.save_pretrained(model, run_name, config=cfg)` and it writes
+`weights.pt` plus `config.json` into `$STABLEWM_HOME/checkpoints/<run_name>/`.
+
+Get this right from the first checkpoint. Retrofitting it later means retraining.
+
+### Everything already decided, do not re-litigate
+
+| Setting | Value | Where |
+|---------|-------|-------|
+| Resolution | 224 | §6.1 |
+| Train/val split | seed `20260910`, 5% held out, fingerprint `2d5f8c4f85e918f8` | §6.2 |
+| Encoder | one, shared, frozen after fine training | §6.5 |
+| `action_block` | 1 | §6.5, `scripts/plan/config/inzva_gru.yaml` |
+| `horizon` | 40 | same |
+| `k` | 8 | same, for the coarse model later |
+| Eval protocol | inherited from `inzva_pusht.yaml`, unchanged | §6.1 |
+
+Use the split from code, not by hand:
+
+```python
+from scripts.inzva_split import split_episodes
+train_eps, val_eps = split_episodes(num_episodes=18685)
+```
+
+### How you know it works
+
+In order, cheapest first. Do not skip to the last one.
+
+1. **It loads.** `save_pretrained` then `load_pretrained` round-trips and the
+   state dict matches.
+2. **It satisfies the protocol.**
+   `isinstance(model, stable_worldmodel.protocols.Dynamics)` is `True`, and
+   `rollout` returns `predicted_emb` of the documented shape.
+3. **It plans at all.** A laptop-scale smoke run finishes and beats random:
+
+   ```bash
+   python scripts/plan/eval_wm.py --config-name inzva_gru \
+       policy=<your-run-name> eval.num_eval=4 \
+       solver.num_samples=50 solver.n_steps=10
+   ```
+
+   That proves the pipeline, not the model. It is not a reportable number (§7).
+4. **It scores.** Full protocol, three seeds, via the shared config. Record with
+   `python scripts/collect_results.py --results-file inzva_gru_results.txt`.
+
+That fourth number becomes the **baseline of record for Experiment A**, the thing
+the hierarchical solver has to beat.
+
+### Two things to keep in mind while building
+
+- **Seed variance on PushT is 14 points** at 50 episodes (§6.1b). Any difference
+  under roughly 5 points will not be distinguishable from noise at three seeds.
+  That sets how large an effect Experiment A needs before it can claim anything,
+  and it is worth knowing before you tune.
+- **A 40-step rollout compounds model error.** Expect this GRU to score below the
+  LeWM reference's 87%. That is fine and expected: Experiment A compares our two
+  planners on our own stack, so a shared handicap cancels. Do not tune toward 87%.
+
+### After this lands
+
+`models/gru_coarse.py` (stride `k`, frozen encoder, dynamics head only), then
+`solver/hierarchical.py`, then Experiment C (`k = 1`) as the correctness gate
+before A or B mean anything.
+
+Separately and in parallel, someone should start **DINO-WM training**
+(`scripts/train/prejepa.py`). It is needed for Experiment B, nobody has started
+it, and it is the item most likely to run out of calendar. If four weeks gets
+tight, B is the one to cut.
