@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 import urllib.request
 from pathlib import Path
 import torch
@@ -47,6 +48,52 @@ def save_pretrained(
     return
 
 
+# HuggingFace ``transformers`` v5 renamed the ViT submodules: ``encoder.layer``
+# became ``layers``, the ``ViTSelfAttention``/``ViTSelfOutput`` pair collapsed
+# into one ``attention`` with ``q_proj``/``k_proj``/``v_proj``/``o_proj``, and
+# the ``intermediate``/``output`` pair became ``mlp.fc1``/``mlp.fc2``. The
+# tensors themselves are unchanged, so checkpoints published under v4 (such as
+# ``quentinll/lewm-pusht``) differ from a v5-built model by key names only.
+#
+# ``from_pretrained`` handles this through v5's ``WeightConverter`` machinery,
+# but ``load_pretrained`` below restores a raw ``state_dict`` with
+# ``load_state_dict``, which bypasses it entirely. These rules are applied as a
+# fallback so one checkpoint loads under either major version.
+#
+# Order matters: the attention rule must run before the plain ``output.dense``
+# rule so that ``attention.output.dense`` is not also rewritten to ``mlp.fc2``.
+_LEGACY_VIT_RENAMES = (
+    (r'(^|\.)encoder\.layer\.(\d+)\.', r'\1layers.\2.'),
+    (r'\.attention\.attention\.query\.', '.attention.q_proj.'),
+    (r'\.attention\.attention\.key\.', '.attention.k_proj.'),
+    (r'\.attention\.attention\.value\.', '.attention.v_proj.'),
+    (r'\.attention\.output\.dense\.', '.attention.o_proj.'),
+    (r'\.intermediate\.dense\.', '.mlp.fc1.'),
+    (r'\.output\.dense\.', '.mlp.fc2.'),
+)
+
+
+def _rename_legacy_vit_keys(state_dict: dict) -> dict:
+    """Rewrite pre-v5 ``transformers`` ViT keys to their v5 names.
+
+    Args:
+        state_dict: Checkpoint state dict, possibly using the old names.
+
+    Returns:
+        A new dict with renamed keys, or ``state_dict`` unchanged when no
+        key matched (so callers can re-raise the original load error).
+    """
+    renamed = {}
+    changed = False
+    for key, value in state_dict.items():
+        new_key = key
+        for pattern, replacement in _LEGACY_VIT_RENAMES:
+            new_key = re.sub(pattern, replacement, new_key)
+        changed |= new_key != key
+        renamed[new_key] = value
+    return renamed if changed else state_dict
+
+
 def load_pretrained(name: str, cache_dir: str = None, extra_args=None):
     """Load a model from a local checkpoint or a HuggingFace repository.
 
@@ -92,7 +139,18 @@ def load_pretrained(name: str, cache_dir: str = None, extra_args=None):
             d[parts[-1]] = value
 
     model = instantiate(config)
-    model.load_state_dict(state_dict)
+    try:
+        model.load_state_dict(state_dict)
+    except RuntimeError:
+        # A checkpoint saved under transformers v4 only differs by key names.
+        renamed = _rename_legacy_vit_keys(state_dict)
+        if renamed is state_dict:
+            raise
+        model.load_state_dict(renamed)
+        logger.warning(
+            f'{name}: loaded after renaming pre-v5 transformers ViT keys. '
+            'The weights are unchanged; only the module names differ.'
+        )
     return model
 
 
