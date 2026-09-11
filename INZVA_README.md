@@ -941,6 +941,20 @@ three seeds with the spread, and it is accounted for.
   a single frame, before activations. Laptop smoke tests: `eval.num_eval=4
   solver.num_samples=50 solver.n_steps=10`. Those prove the pipeline; they are
   not numbers anyone may report.
+- **Decompressing the dataset needs headroom, not just disk.** `zstd -d` on the
+  13 GB archive writes 46 GB, and on WSL that filled the VM's page cache until
+  the host OOM-killed it, twice. Two ways round it: lower the WSL memory cap
+  first, or verify the archive without expanding it, which is enough to prove a
+  download is good:
+
+  ```bash
+  zstd -t "$STABLEWM_HOME/datasets/pusht_expert_train.h5.zst"
+  ```
+
+  That checks zstd's own frame checksums and prints the decompressed size. Ours
+  reports `46300921856 bytes`, and the archive itself is `13136247974` bytes,
+  both matching the source exactly. A download that passes those two numbers
+  does not need decompressing to be trusted.
 - **16 GB of RAM is tight, and WSL makes it tighter.** Two things got
   OOM-killed on a 15.8 GB laptop during this work: loading the Lance dataset
   through the repo's reader (§5.2), and a `uv sync` running alongside a large
