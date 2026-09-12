@@ -43,6 +43,9 @@ echo "seeds       : $SEEDS"
 echo "extra       : $EXTRA"
 nvidia-smi --query-gpu=name,memory.total --format=csv,noheader
 
+# -m has to come before the overrides. Hydra parses the overrides as one
+# trailing positional list, so an option written after them ends that list
+# and argparse rejects the rest: "unrecognized arguments: seed=0,1,2".
 # shellcheck disable=SC2086
-srun python scripts/plan/eval_wm.py --config-name "$CONFIG" \
-    policy="$POLICY" $EXTRA -m seed="$SEEDS"
+srun python scripts/plan/eval_wm.py --config-name "$CONFIG" -m \
+    policy="$POLICY" seed="$SEEDS" $EXTRA
