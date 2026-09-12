@@ -1126,6 +1126,8 @@ Done:
 - [x] **TRUBA set up and verified** (§12): checkout, venv, dataset, and both
       checkpoints in place. Dataset fingerprint matches this file exactly.
       torch has to be the cu126 build there or it has no kernels for the GPUs
+- [x] CPU preflight passes 8/8 on TRUBA (§12.2b), including headless
+      rendering and the DINO-WM checkpoint, which needs a compute node
 
 Open, in the order they block things:
 
@@ -1557,6 +1559,25 @@ identical to "no kernels":
 ```bash
 python -c "import torch; print(torch._C._cuda_getArchFlags())"
 ```
+
+### 12.2b Check before you queue
+
+```bash
+slurm/submit.sh slurm/smoke.slurm
+```
+
+`scripts/preflight.py` verifies the torch build, the dataset fingerprint,
+both checkpoints, headless rendering and both eval configs, all on CPU. The
+job asks for no GPU, so it lands on an idle node and answers in about a
+minute even when every V100 is allocated and a GPU job is quoting a start
+time eleven hours out. Run it after any change to the environment, and after
+a fresh clone on any machine, not only on TRUBA.
+
+It reports 8/8 on the cluster today.
+
+The torch check needs to know what it is checking against. Given a GPU it
+reads the device capability; with no GPU it uses `PREFLIGHT_REQUIRE_ARCH`,
+which the smoke job sets to `sm_70`.
 
 ### 12.3 Headless rendering
 
