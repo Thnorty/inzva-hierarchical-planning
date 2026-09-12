@@ -1492,6 +1492,33 @@ anything that will not finish inside four hours.
 The GPU queue is genuinely busy. Expect to wait, and prefer one job that does
 three seeds over three jobs that each do one.
 
+**Ask for the time you need, not the maximum.** The scheduler backfills short
+jobs into gaps it is holding open for large ones, so a job that asks for 45
+minutes can start hours before an identical job that asks for the partition
+limit. The LeWM eval at three seeds takes about fifteen minutes:
+
+```bash
+slurm/submit.sh slurm/eval.slurm -t 00:45:00 --export=ALL,POLICY=quentinll/lewm-pusht
+```
+
+Being killed at the limit loses the whole run, so leave real headroom, and do
+not trim the limit on a job whose runtime you have not measured yet. DINO-WM is
+far heavier than LeWM and has no measured time at all.
+
+**Always submit through `slurm/submit.sh`.** `sbatch` reads its command line as
+`sbatch [options] script [job args]`, so anything written after the script path
+goes to the job instead of to the scheduler. Written as bare `sbatch`, this
+
+```bash
+sbatch slurm/eval.slurm --export=ALL,POLICY=quentinll/lewm-pusht   # WRONG
+```
+
+drops the `--export` without a word, and the job then fails on an unset
+`POLICY`. A `-t` in that position is ignored equally quietly, and the job simply
+keeps the time limit the script declared, which is how you end up waiting hours
+for a run you thought you had shortened. The wrapper reorders the arguments so
+this cannot happen.
+
 ### 12.2 torch must be the cu126 build
 
 **This is the one thing that will not work if you follow section 2 blindly.**
