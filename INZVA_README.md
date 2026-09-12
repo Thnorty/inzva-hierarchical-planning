@@ -137,6 +137,29 @@ uv sync --extra all --group dev
 `--extra all` pulls in both the environment and training dependencies. The base
 install has neither, and the `data` extra alone only adds the Lance dataset stack.
 
+### 2.0b If `box2d-py` fails to build
+
+```text
+error: command 'swig' failed: No such file or directory
+```
+
+`gymnasium[all]` pulls in `box2d-py`, which has no wheel and compiles through
+SWIG at install time. `uv` downloads a `swig` *Python package* as a build
+dependency, but `box2d-py` invokes `swig` as a command, so an interpreter-level
+package does not satisfy it. The build needs the executable on `PATH`.
+
+Nothing about PushT uses Box2D. It arrives through `gymnasium[all]` and the
+install fails whether or not you will ever touch it.
+
+```bash
+uv tool install swig      # no root needed, lands in ~/.local/bin
+sudo apt install swig     # or system-wide, if you have root
+```
+
+Then re-run `uv sync`. Machines differ here for no visible reason: TRUBA ships
+SWIG 4.3.0 system-wide so it builds there with no intervention, while a stock
+Ubuntu 22.04 desktop has none and fails. Measured on both.
+
 ### 2.1 Windows only: fix the CPU-only torch
 
 **Verified on Ubuntu 24.04**: `uv sync` there installs `torch 2.11.0+cu130`
