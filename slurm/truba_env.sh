@@ -1,4 +1,7 @@
+# shellcheck shell=bash
 # Shared environment for every TRUBA job. Source this, do not execute it.
+# (No shebang on purpose: it is sourced, never executed. The directive above
+# is what tells shellcheck which shell to assume.)
 #
 # Everything here is a fact about the cluster rather than a choice about the
 # experiment. Experiment parameters live in scripts/plan/config/inzva_*.yaml so
@@ -28,7 +31,7 @@ export PYGAME_HIDE_SUPPORT_PROMPT=1
 export OMP_NUM_THREADS="${SLURM_CPUS_PER_TASK:-10}"
 export MKL_NUM_THREADS="${SLURM_CPUS_PER_TASK:-10}"
 
-cd "$REPO"
+cd "$REPO" || return 1
 # shellcheck disable=SC1091
 source .venv/bin/activate
 
