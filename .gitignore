@@ -213,6 +213,11 @@ logs/
 **/*.pyc
 !scripts/minerl.sh
 
+# Upstream ignores *.sh wholesale. Our TRUBA job scripts have to be tracked:
+# they are how the cluster runs are reproduced, and they are useless to a
+# teammate who cannot see them. (slurm/logs/ stays ignored via `logs/` above.)
+!slurm/*.sh
+
 outputs/
 multirun/
 checkpoints/

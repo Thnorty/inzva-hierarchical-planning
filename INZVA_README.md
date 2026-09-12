@@ -1123,6 +1123,9 @@ Done:
 - [x] Pushed to `Thnorty/inzva-hierarchical-planning` (public)
 - [x] **Reproduction closed** (§6.1b). 96% not reproducible; every mechanical
       explanation tested and eliminated; baseline of record is 87.3% ± 7.6
+- [x] **TRUBA set up and verified** (§12): checkout, venv, dataset, and both
+      checkpoints in place. Dataset fingerprint matches this file exactly.
+      torch has to be the cu126 build there or it has no kernels for the GPUs
 
 Open, in the order they block things:
 
@@ -1449,3 +1452,94 @@ If it scores anywhere near the published 74%, use it and skip the training run.
 If it scores far below, train with `scripts/train/prejepa.py` as originally
 planned, and note that this checkpoint is not comparable to the published number
 because it came from a fork.
+
+## 12. TRUBA (the ARF cluster)
+
+The cluster is set up and verified. `ssh truba` needs the VPN up first; the
+usage notes for the account live in `~/truba_guide.md` on the cluster itself.
+
+| | |
+|---|---|
+| Checkout | `/arf/scratch/$USER/inzva-hierarchical-planning` |
+| `STABLEWM_HOME` | `.stable-wm` inside it, same as everywhere else |
+| GPUs | `akya-cuda`: 4x V100 16GB. `barbun-cuda`: 2x P100 16GB |
+| Wall clock | 3 days on the GPU partitions, 4 hours on `debug` |
+
+Three cluster rules cause most first-day failures:
+
+1. **Jobs must be submitted from under `/arf/scratch`.** A submit plugin rejects
+   anything else with a Turkish error that does not say so in English.
+   `slurm/submit.sh` sets `--chdir` for you.
+2. **Omitting `--time` kills the job after two minutes**, and the GPU partitions
+   reject any job without `--gres=gpu:N`.
+3. **`/arf/scratch` is wiped after roughly a month and nothing is backed up.**
+   Trained checkpoints must be copied to `/arf/home` or pulled down. The dataset
+   is disposable; it is a re-download, not a loss.
+
+### 12.1 Submitting
+
+```bash
+slurm/submit.sh slurm/eval.slurm --export=ALL,POLICY=quentinll/lewm-pusht
+slurm/submit.sh slurm/eval.slurm \
+    --export=ALL,POLICY=dinowm_kotmul_adapted,OBJECTIVE=goal_mse_pixels_proprio
+```
+
+`slurm/eval.slurm` documents the variables it accepts. It defaults to the
+`debug` partition, whose GPU nodes are a subset of `akya-cuda`, because it
+reaches the front of the queue sooner. Use `-p akya-cuda -t 1-00:00:00` for
+anything that will not finish inside four hours.
+
+The GPU queue is genuinely busy. Expect to wait, and prefer one job that does
+three seeds over three jobs that each do one.
+
+### 12.2 torch must be the cu126 build
+
+**This is the one thing that will not work if you follow section 2 blindly.**
+`uv sync` installs `torch 2.11.0` from PyPI, which is a CUDA 13 build. CUDA 13
+dropped Maxwell, Pascal and Volta, so it has no kernels for either GPU here:
+
+```text
+archflags: sm_75 sm_80 sm_86 sm_90 sm_100 sm_120     # cu130 and cu128
+archflags: sm_50 sm_60 sm_70 sm_75 sm_80 sm_86 sm_90 # cu126
+```
+
+The V100 is `sm_70` and the P100 is `sm_60`, so only the cu126 build runs here.
+It is the **same torch version**, so nothing diverges from the rest of the team
+except the CUDA variant:
+
+```bash
+uv sync --extra all --group dev
+uv pip install --index-url https://download.pytorch.org/whl/cu126 \
+    "torch==2.11.0+cu126" "torchvision==0.26.0+cu126"
+```
+
+Install torchvision explicitly with the `+cu126` suffix. Naming it without the
+suffix is not enough: the version number already matches, so the resolver keeps
+the CUDA 13 build it already has, and then the first import fails with
+
+```text
+RuntimeError: operator torchvision::nms does not exist
+```
+
+which reads like a missing package rather than a mismatched one.
+
+Check it with the compile-time flags, not `torch.cuda.get_arch_list()`. The
+latter returns `[]` on a login node because there is no GPU there, which looks
+identical to "no kernels":
+
+```bash
+python -c "import torch; print(torch._C._cuda_getArchFlags())"
+```
+
+### 12.3 Headless rendering
+
+Compute nodes have no display and PushT renders through pygame, so jobs need
+`SDL_VIDEODRIVER=dummy`. `slurm/truba_env.sh` exports it along with the rest of
+the per-node settings. Source that file in any new job script rather than
+re-deriving it.
+
+### 12.4 Do not run models on the login node
+
+`arf-ui1` is shared and limited. Loading the DINO-WM checkpoint there segfaults
+after the DINOv2 backbone downloads. Small checks are fine; anything that builds
+a model belongs in a job, per the cluster's own guidance.
