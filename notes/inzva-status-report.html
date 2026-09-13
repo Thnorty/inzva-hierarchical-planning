@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Status report: hierarchical planning on PushT</title>
+<meta name="description" content="Where the project stands on 13 September 2026: protocol locked, baseline measured at 87.3 percent, three machines agreeing, and the hierarchical method still unwritten.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1b2422;
+  --ink-soft:#5d6764;
+  --paper:#f6f6f2;
+  --card:#ffffff;
+  --rule:#dcdcd4;
+  --accent:#0f6e56;
+  --accent-wash:#e1f5ee;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Source Serif 4",Georgia,serif;
+  font-size:17px;
+  line-height:1.62;
+  font-variant-numeric:oldstyle-nums;
+}
+.wrap{max-width:860px;margin:0 auto;padding:0 24px 96px}
+code,.mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.87em;font-variant-numeric:normal}
+code{background:var(--accent-wash);color:#085041;padding:1px 5px;border-radius:3px}
+
+header{padding:80px 0 40px}
+.question{
+  font-size:clamp(28px,5.2vw,42px);
+  line-height:1.24;
+  font-weight:600;
+  letter-spacing:-.015em;
+  margin:0 0 28px;
+  max-width:16ch;
+}
+.question em{font-style:normal;color:var(--accent)}
+.lede{font-size:19px;color:var(--ink-soft);margin:0 0 40px;max-width:56ch}
+.facts{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:20px 28px;
+  border-top:1px solid var(--rule);
+  border-bottom:1px solid var(--rule);
+  padding:20px 0;
+}
+.facts div{font-size:15px}
+.facts dt{color:var(--ink-soft);font-size:14px;margin-bottom:2px}
+.facts dd{margin:0}
+.facts a{color:var(--accent)}
+
+section{
+  display:grid;
+  grid-template-columns:64px 1fr;
+  gap:0 24px;
+  padding-top:56px;
+}
+.num{
+  font-family:"IBM Plex Mono",monospace;
+  font-size:14px;
+  color:var(--accent);
+  padding-top:9px;
+  font-variant-numeric:normal;
+}
+.body{min-width:0;max-width:66ch}
+h2{
+  font-size:26px;
+  font-weight:600;
+  letter-spacing:-.01em;
+  line-height:1.25;
+  margin:0 0 18px;
+}
+h3{font-size:19px;font-weight:600;margin:34px 0 10px}
+p{margin:0 0 16px}
+ul{margin:0 0 16px;padding-left:20px}
+li{margin-bottom:7px}
+.body > p:last-child,.body > ul:last-child{margin-bottom:0}
+
+figure{margin:28px 0;background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:20px 16px}
+figure svg{display:block;width:100%;height:auto;max-width:380px;margin:0 auto}
+figcaption{font-size:14px;color:var(--ink-soft);text-align:center;margin-top:12px}
+
+table{width:100%;border-collapse:collapse;margin:20px 0;font-size:15px}
+th{
+  text-align:left;
+  font-weight:600;
+  border-bottom:1.5px solid var(--ink);
+  padding:0 12px 8px 0;
+}
+td{border-bottom:1px solid var(--rule);padding:10px 12px 10px 0;vertical-align:top}
+td:last-child,th:last-child{padding-right:0}
+.ours{color:var(--accent);font-weight:600}
+.blank{color:var(--ink-soft)}
+
+.callout{
+  background:var(--accent-wash);
+  border-radius:10px;
+  padding:18px 20px;
+  margin:24px 0;
+  font-size:16px;
+}
+.callout p{margin:0}
+.callout p + p{margin-top:12px}
+
+.exp{border-top:1px solid var(--rule);padding-top:18px;margin-top:24px}
+.exp h4{font-size:16px;font-weight:600;margin:0 0 8px}
+.exp p{font-size:16px}
+
+.weeks{list-style:none;padding:0;margin:0}
+.weeks li{
+  display:grid;
+  grid-template-columns:88px 1fr;
+  gap:16px;
+  padding:14px 0;
+  border-bottom:1px solid var(--rule);
+  margin:0;
+}
+.weeks b{font-weight:600;font-size:15px}
+.weeks span{min-width:0}
+
+footer{
+  margin-top:72px;
+  padding-top:20px;
+  border-top:1px solid var(--rule);
+  font-size:14px;
+  color:var(--ink-soft);
+}
+
+@media (max-width:640px){
+  body{font-size:16px}
+  header{padding:48px 0 32px}
+  section{grid-template-columns:1fr;padding-top:44px}
+  .num{padding:0 0 6px}
+  .weeks li{grid-template-columns:1fr;gap:4px}
+}
+@media print{
+  body{background:#fff;font-size:11pt}
+  section{break-inside:avoid;padding-top:28px}
+  figure,table,.exp{break-inside:avoid}
+  .wrap{max-width:none;padding:0}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1 class="question">The instrument is built. The <em>experiment</em> has not run.</h1>
+  <p class="lede">Everything needed to run and trust a result exists and agrees across three machines. The protocol is locked, the baseline is measured, and the cluster works. Not one line of the hierarchical method has been written yet.</p>
+  <dl class="facts">
+    <div><dt>Written</dt><dd>13 September 2026</dd></div>
+    <div><dt>Baseline of record</dt><dd>87.3% over 3 seeds</dd></div>
+    <div><dt>Machines verified</dt><dd>3</dd></div>
+    <div><dt>Experiments run</dt><dd class="blank">None</dd></div>
+  </dl>
+</header>
+
+<section>
+  <div class="num">01</div>
+  <div class="body">
+    <h2>What we are testing</h2>
+    <p>Planning at two time scales beats planning at one, when the compute budget is small. A flat planner searches every step of a 40-step horizon. Ours plans five coarse waypoints at a stride of eight, then fills in between them. If the claim holds, the hierarchy reaches the same success rate with far fewer model evaluations, and the gap widens as the budget shrinks.</p>
+    <p>Three systems, one evaluation protocol, everything else held fixed.</p>
+    <table>
+      <thead><tr><th>Row</th><th>World model</th><th>Planner</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>DINO-WM</td><td>CEM</td><td>Published reference point</td></tr>
+        <tr><td>2</td><td>Our GRU</td><td>CEM, flat</td><td>The baseline we must beat</td></tr>
+        <tr><td class="ours">3</td><td class="ours">Our GRU</td><td class="ours">Coarse then fine</td><td class="ours">The contribution</td></tr>
+      </tbody>
+    </table>
+
+    <div class="exp">
+      <h4>Experiment C, first</h4>
+      <p>Set the stride to one. The hierarchy must then collapse to row 2's score. This is a correctness check on the implementation, not a result, and it costs almost nothing. <b>Run it before A and B.</b> If it fails, neither of them means anything.</p>
+    </div>
+    <div class="exp">
+      <h4>Experiment A</h4>
+      <p>Rows 2 against 3 across compute budgets. This is the actual claim, and the only one that must succeed.</p>
+    </div>
+    <div class="exp">
+      <h4>Experiment B</h4>
+      <p>Rows 1 against 3 across factors of variation. Generality evidence. Droppable if compute runs short.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="num">02</div>
+  <div class="body">
+    <h2>What is finished</h2>
+    <p><b>The protocol is locked.</b> One shared config fixes episode count, budget, goal offset, resolution and seeds. Changing it silently invalidates every comparison in the report, so nobody edits it alone.</p>
+    <p><b>The reproduction question is closed.</b> The published 96% is not reproducible. Every mechanical explanation was tested and eliminated: the solver's sampling change, the success criterion, the block geometry, the environment itself, every numeric planning parameter, and the dataset format. Our baseline is 87.3% with a spread of 7.6 points over three seeds, and that is what we compare against.</p>
+    <p><b>Three machines agree.</b> The same three seeds, on three GPU generations, three CUDA builds and two operating systems.</p>
+    <table>
+      <thead><tr><th>Seed</th><th>Windows, RTX 3060</th><th>Cluster, V100</th><th>Ubuntu, RTX A4000</th></tr></thead>
+      <tbody>
+        <tr><td>0</td><td>42/50</td><td>42/50</td><td>42/50</td></tr>
+        <tr><td>1</td><td>48/50</td><td>47/50</td><td>47/50</td></tr>
+        <tr><td>2</td><td>41/50</td><td>41/50</td><td>42/50</td></tr>
+        <tr><td><b>Mean</b></td><td><b>87.3%</b></td><td><b>86.7%</b></td><td><b>87.3%</b></td></tr>
+      </tbody>
+    </table>
+    <p>No pair disagrees by more than two episodes in 150, and all three means land within 0.6 points. That replaced a prediction that per-seed rates would drift further apart on different hardware. They do not. <b>The three-seed mean is portable.</b></p>
+    <p><b>The cluster works.</b> Job scripts, a shared environment file, and a processor-only preflight that catches a broken setup in about a minute instead of after a half-day queue.</p>
+    <p><b>The model decisions are locked:</b> a stride of 8, a horizon of 40, one action per planning step, 224 pixels everywhere, and a single encoder shared between the coarse and fine models, then frozen.</p>
+  </div>
+</section>
+
+<section>
+  <div class="num">03</div>
+  <div class="body">
+    <h2>What is left, in blocking order</h2>
+    <p>Six files, none of which exist. This is the whole project.</p>
+    <table>
+      <thead><tr><th>File</th><th>What it is</th></tr></thead>
+      <tbody>
+        <tr><td class="ours"><code>models/gru_wm.py</code></td><td class="ours">The fine world model. <b>Critical path</b>, everything depends on it</td></tr>
+        <tr><td class="ours"><code>scripts/train_gru.py</code></td><td class="ours">Its training loop. <b>Critical path</b></td></tr>
+        <tr><td><code>models/gru_coarse.py</code></td><td>The coarse model, one step per eight</td></tr>
+        <tr><td><code>solver/hierarchical.py</code></td><td>The coarse-to-fine planner. The contribution itself</td></tr>
+        <tr><td><code>scripts/sweep.py</code></td><td>Budget sweep driver for Experiment A</td></tr>
+        <tr><td><code>README.md</code></td><td>Write-up</td></tr>
+      </tbody>
+    </table>
+    <div class="callout">
+      <p><b>Nothing can be evaluated until the fine model trains.</b> It has to satisfy the repo's dynamics protocol, meaning it exposes an encode step and a rollout step, or the existing planner cannot call it at all.</p>
+    </div>
+    <p>Then Experiment C to prove the implementation is sound, then A for the claim, then B if compute allows.</p>
+  </div>
+</section>
+
+<section>
+  <div class="num">04</div>
+  <div class="body">
+    <h2>The DINO-WM decision</h2>
+    <p>Experiment B needs a number from the published DINO-WM checkpoint. It now loads and runs, after three separate faults were found and fixed. All three are scripted or configured rather than written down as steps to repeat by hand.</p>
+    <p><b>It has never been scored.</b> The evaluation was cancelled for time. What we do know is what it costs.</p>
+    <table>
+      <thead><tr><th></th><th>Per environment, per plan</th><th>One seed, 50 episodes</th></tr></thead>
+      <tbody>
+        <tr><td>LeWM</td><td>about 1 second</td><td>64 seconds</td></tr>
+        <tr><td>DINO-WM, RTX A4000</td><td>282 seconds</td><td>7.8 hours</td></tr>
+        <tr><td>DINO-WM, Tesla V100</td><td>145 seconds</td><td>4.0 hours</td></tr>
+      </tbody>
+    </table>
+    <p>So roughly twelve GPU-hours for three seeds, and the cluster queue has been quoting more than a day. Three options, cheapest first:</p>
+    <ul>
+      <li>Run it on the cluster whenever the queue allows. If it scores near the published 74%, Experiment B needs no training at all.</li>
+      <li>Drop Experiment B and report A and C only. A is the actual claim.</li>
+      <li>Train DINO-WM ourselves. The most expensive route, justified only if the checkpoint scores poorly and B is considered essential.</li>
+    </ul>
+    <div class="callout">
+      <p><b>Do not let this block anything.</b> It is independent of the critical path. Start it when the queue is free and carry on writing the method.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="num">05</div>
+  <div class="body">
+    <h2>Things that will bite you</h2>
+    <p>Each of these cost hours to find. All are documented in full in the repo manual.</p>
+    <table>
+      <thead><tr><th>Trap</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td>Seed noise is 14 points</td><td>At three seeds, any effect under about 5 points is indistinguishable from luck. Experiment A has to clear that bar, or show its gap widening consistently across budgets</td></tr>
+        <tr><td>The frozen shared encoder</td><td>It is trained for short-horizon prediction, but the coarse model needs features that predict eight steps ahead. If A shows no benefit at any budget while C passes, suspect this first</td></tr>
+        <tr><td>The cluster needs a non-default torch build</td><td>The standard package has no kernels for its GPUs. It installs cleanly and then fails on first use</td></tr>
+        <tr><td>DINO-WM is 145 times slower than LeWM</td><td>Budget for it in days, not afternoons</td></tr>
+        <tr><td>A refused pull leaves the cluster on old code</td><td>Job submission keeps working regardless, so runs look healthy while executing stale code. Verify the pull landed before submitting</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="num">06</div>
+  <div class="body">
+    <h2>Still to decide</h2>
+    <ul>
+      <li>Assign the six files to five people. The two on the critical path go first.</li>
+      <li>How many seeds the compute allows. Three is the floor, not a nicety: measured spread at 50 episodes runs from 82% to 96%, so a single-seed number carries no information.</li>
+      <li>Whether a teammate runs the setup on their own machine. Done three times here, but never by someone who did not write the instructions.</li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  Status report, 13 September 2026. The repo manual is the source of truth for how to do anything; this says where we are. Built on stable-worldmodel at a pinned commit.
+</footer>
+
+</div>
+</body>
+</html>
