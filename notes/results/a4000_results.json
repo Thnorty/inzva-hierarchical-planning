@@ -1,0 +1,59 @@
+{
+  "generated": "2026-09-12T23:58:26.038189+00:00",
+  "source": "$STABLEWM_HOME/checkpoints/quentinll/a4000_results.txt",
+  "environment": {
+    "commit": "8a3fe3a",
+    "torch": "2.11.0+cu130",
+    "transformers": "5.16.1",
+    "stable_pretraining": "0.1.8",
+    "cuda": "13.0",
+    "gpu": "NVIDIA RTX A4000"
+  },
+  "runs": [
+    {
+      "seed": 0,
+      "policy": "quentinll/lewm-pusht",
+      "num_eval": 50,
+      "eval_budget": 50,
+      "history_len": 3,
+      "horizon": 5,
+      "action_block": 5,
+      "num_samples": 300,
+      "n_steps": 30,
+      "success_rate": 84.0,
+      "successes": 42,
+      "episodes": 50,
+      "seconds": 77.67034077644348
+    },
+    {
+      "seed": 1,
+      "policy": "quentinll/lewm-pusht",
+      "num_eval": 50,
+      "eval_budget": 50,
+      "history_len": 3,
+      "horizon": 5,
+      "action_block": 5,
+      "num_samples": 300,
+      "n_steps": 30,
+      "success_rate": 94.0,
+      "successes": 47,
+      "episodes": 50,
+      "seconds": 76.89741969108582
+    },
+    {
+      "seed": 2,
+      "policy": "quentinll/lewm-pusht",
+      "num_eval": 50,
+      "eval_budget": 50,
+      "history_len": 3,
+      "horizon": 5,
+      "action_block": 5,
+      "num_samples": 300,
+      "n_steps": 30,
+      "success_rate": 84.0,
+      "successes": 42,
+      "episodes": 50,
+      "seconds": 81.0166175365448
+    }
+  ]
+}

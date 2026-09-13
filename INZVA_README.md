@@ -873,9 +873,47 @@ about which one flipped.
 | Comparison | Expect |
 |---|---|
 | Same machine, rerun or fresh clone | Same mean. Zero or one episode different per seed |
-| Different machine, same GPU model | Same, as far as we can tell. Untested, and we have no second machine to test it on |
-| Different GPU model | Means should agree within seed noise; per-seed rates drift further |
+| Different machine, same GPU model | Same, as far as we can tell. Still untested |
+| Different GPU model | **Measured: at most 2 episodes in 150 differ.** See below |
 | Windows vs Linux, same GPU | **Measured: 1 episode in 150 differs.** Better than expected, see below |
+
+#### Three machines, three GPU generations, measured
+
+The same three seeds, run on every machine we have. Nothing is shared between
+them but the repo and the lockfile:
+
+| Seed | Windows, RTX 3060 | TRUBA, V100 | Ubuntu, RTX A4000 |
+|------|-------------------|-------------|-------------------|
+| 0 | 42/50 | 42/50 | 42/50 |
+| 1 | 48/50 | 47/50 | 47/50 |
+| 2 | 41/50 | 41/50 | 42/50 |
+| **Mean** | **87.3%** | **86.7%** | **87.3%** |
+
+| | Windows | TRUBA | Ubuntu |
+|---|---|---|---|
+| GPU architecture | `sm_86` | `sm_70` | `sm_86` |
+| torch | `2.11.0+cu128` | `2.11.0+cu126` | `2.11.0+cu130` |
+| OS | Windows 11 | Rocky Linux 9.2 | Ubuntu 22.04 |
+
+Records: `notes/results/inzva_pusht_results.md`, `truba_results.md`,
+`a4000_results.md`.
+
+No pair disagrees on more than 2 episodes of 150, and all three means land
+within 0.6 points. That covers three CUDA major/minor builds, two GPU
+generations including one that predates the others by four years, and two
+operating systems.
+
+This is the strongest version of the claim the section makes: **the three-seed
+mean is portable**, and per-seed rates move by at most one episode. It does not
+make the drift zero, and it is still one benchmark on one checkpoint, but the
+"different GPU model" row above no longer has to be a guess.
+
+Note the three torch builds. Every machine runs torch 2.11.0, and every machine
+runs a *different CUDA build* of it, for reasons that are forced rather than
+chosen: Windows installs its CUDA wheel out of band (§2.1), TRUBA needs cu126 or
+it has no kernels for a V100 (§12.2), and a stock Linux box gets cu130 from the
+lockfile. The lock pins the version, not the build, and that turns out not to
+matter at the resolution we care about.
 
 #### Windows against Linux, measured
 
@@ -1151,6 +1189,11 @@ Done:
       torch has to be the cu126 build there or it has no kernels for the GPUs
 - [x] CPU preflight passes 8/8 on TRUBA (§12.2b), including headless
       rendering and the DINO-WM checkpoint, which needs a compute node
+- [x] **Third machine tested cold** (Ubuntu 22.04, RTX A4000): found the
+      `swig` build failure (§2.0b) and that the DINO-WM fix needed scripting
+      (`scripts/adapt_dinowm.py`). Preflight 8/8, eval mean 87.3%
+- [x] **Cross-machine agreement measured on three GPUs** (§6.4): at most 2
+      episodes of 150 differ, all three means within 0.6 points
 
 Open, in the order they block things:
 
