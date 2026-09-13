@@ -127,8 +127,18 @@ def run(cfg: DictConfig):
         objective = hydra.utils.instantiate(cfg.objective)
         cost = swm.planning.ShootingCostEvaluator(model, objective)
         solver = hydra.utils.instantiate(cfg.solver, cost=cost)
+        # history_keys decides which observation keys are stacked over the
+        # last history_len block timesteps. It defaults to pixels alone, which
+        # silently breaks any model whose extra encoders read a value per
+        # context frame: pixels grow to history_len while proprio stays at 1,
+        # and the model's own torch.cat then fails partway into the episode
+        # rather than at startup. See INZVA_README.md section 11.
         policy = swm.policy.WorldModelPolicy(
-            solver=solver, config=config, process=process, transform=transform
+            solver=solver,
+            config=config,
+            process=process,
+            transform=transform,
+            history_keys=tuple(cfg.get('history_keys', ['pixels'])),
         )
 
     else:

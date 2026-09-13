@@ -1502,6 +1502,59 @@ exact model:
 objective=goal_mse_pixels_proprio
 ```
 
+### Fix 3: stack proprio over history, not just pixels
+
+Fixes 1 and 2 get it to start. It then dies partway into the first episode:
+
+```text
+RuntimeError: Sizes of tensors must match except in dimension 3.
+Expected size 3 but got size 1 for tensor number 1 in the list.
+```
+
+`WorldModelPolicy` stacks only `pixels` over the last `history_len` block
+timesteps (`policy.py:344`, `history_keys=('pixels',)`), and `eval_wm.py` never
+passed anything else. PreJEPA reads proprio through a **per-frame** extra
+encoder, so it needs one proprio vector per context frame.
+
+The reason it starts and then fails is the nastiest part. At `t=0` the history
+holds a single frame, so pixels and proprio both arrive as 1 and agree. The
+history then grows to `history_len`, pixels become 3, proprio stays 1, and the
+model's own `torch.cat` fails. **At the shared protocol that first planning call
+takes 3.9 hours**, so the crash lands hours in and looks like a long run dying
+for no reason.
+
+`eval_wm.py` now forwards a `history_keys` config key, and
+`scripts/plan/config/inzva_dinowm.yaml` sets it. Use that config rather than
+assembling the overrides by hand:
+
+```bash
+python scripts/plan/eval_wm.py --config-name inzva_dinowm -m     policy=dinowm_kotmul_adapted seed=0,1,2
+```
+
+It also selects `goal_mse_pixels_proprio`, so fix 2 is no longer something to
+remember either. Leave `history_keys` alone for LeWM: that model takes no
+per-frame proprio, and `inzva_pusht.yaml` deliberately does not set it.
+
+### It costs about 8 GPU-hours per seed
+
+Measured on an RTX A4000, at the shared protocol:
+
+| | LeWM | DINO-WM |
+|---|---|---|
+| One environment, one plan | ~1 s | ~282 s |
+| One seed, 50 episodes | 64 s | **~7.8 h** |
+| Three seeds | ~4 min | **~23 h** |
+
+The solver runs `batch_size: 1`, one environment at a time, so wall time scales
+with `eval.num_eval` and memory does not. DINO-WM needs **8.6 GB for a single
+environment**, so batching two would want ~17 GB and does not fit a 16 GB card.
+Both the A4000 and the TRUBA V100s are 16 GB, so neither can batch it.
+
+Plan Experiment B around that number. One job per seed on `akya-cuda`, which
+allows 3 days; three concurrent jobs turn a day into an evening, and
+`slurm/eval.slurm` gives each its own results file so they cannot corrupt one
+another.
+
 ### Run it on a server, not a laptop
 
 ```bash

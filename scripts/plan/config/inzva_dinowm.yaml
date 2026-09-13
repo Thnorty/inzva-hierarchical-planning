@@ -1,0 +1,32 @@
+# Evaluation config for the DINO-WM baseline (Experiment B reference).
+#
+# Inherits the shared protocol from inzva_pusht, so episode count, budget, goal
+# offset and resolution are identical to every other number we report. Only the
+# two things DINO-WM needs differently are set here, and both are requirements
+# of the checkpoint rather than choices:
+#
+#   python scripts/plan/eval_wm.py --config-name inzva_dinowm -m \
+#       policy=dinowm_kotmul_adapted seed=0,1,2
+#
+# The checkpoint needs preparing first; see scripts/adapt_dinowm.py.
+#
+# Be aware of the cost before launching: measured at roughly 280 seconds per
+# episode per plan, so one seed at 50 episodes is about 8 GPU-hours. Run it on
+# TRUBA, one job per seed. See INZVA_README.md section 11.
+defaults:
+  - inzva_pusht
+  - override objective: goal_mse_pixels_proprio
+  - _self_
+
+# PreJEPA reads proprio through a per-frame extra encoder, so proprio has to be
+# stacked over history exactly like pixels. Upstream stacks pixels only, which
+# does not fail at startup: at t=0 the history holds a single frame and every
+# modality agrees. It fails once the history has grown, when pixels arrive as 3
+# frames and proprio as 1, deep inside the model's own concat.
+#
+# Leave this alone for LeWM. That model takes no per-frame proprio, so stacking
+# it would change nothing except waste memory.
+history_keys: [pixels, proprio]
+
+output:
+  filename: inzva_dinowm_results.txt
