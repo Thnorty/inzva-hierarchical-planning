@@ -325,6 +325,46 @@ footer{
 <section>
   <div class="num">07</div>
   <div class="body">
+    <h2>Published baselines: what other teams report for LeWM and DINO-WM</h2>
+    <p>Section 01 says our numbers will be comparable with published work. Before writing any code, we collected every Push-T success rate we could find for LeWM and DINO-WM across papers building on the same benchmark, ours included as row zero of the comparison. The spread is wide enough that "comparable" needs a caveat attached: horizon length, episode count, and planner choice move the number by tens of points, even for the same underlying world model.</p>
+
+    <h3>DINO-WM, Push-T success rate</h3>
+    <table>
+      <thead><tr><th>Source</th><th>Success rate</th><th>Protocol</th></tr></thead>
+      <tbody>
+        <tr><td>SD-JEPA paper</td><td>92%</td><td>Chart comparison across the four-environment LeWM suite</td></tr>
+        <tr><td>swm benchmark paper</td><td>92%</td><td>In-distribution, DINO-WM's own official planning config</td></tr>
+        <tr><td>DDP-WM paper</td><td>90%</td><td>Own reproduction, DINO-WM's official CEM settings</td></tr>
+        <tr><td>LeFlow paper, own rerun</td><td>84%</td><td>DINO-WM's own official CEM config, 50 cases</td></tr>
+        <tr><td>LeFlow paper, cited from Maes et al.</td><td>74.0%</td><td>LeWM-codebase-default protocol (H=5, 50 episodes)</td></tr>
+        <tr><td>FF-JEPA paper, cited from Zhang et al.</td><td>84.0% (t=25) &middot; 89.0% hierarchical variant (t=25) &middot; 61.0% hierarchical (t=75)</td><td>256 episodes, not independently rerun by that team</td></tr>
+      </tbody>
+    </table>
+
+    <h3>LeWM, Push-T success rate</h3>
+    <table>
+      <thead><tr><th>Source</th><th>Success rate</th><th>Protocol</th></tr></thead>
+      <tbody>
+        <tr><td>SD-JEPA paper, citing Wang et al. 2026</td><td>96%</td><td>Chart comparison &mdash; likely origin of the published 96% we could not reproduce</td></tr>
+        <tr><td>swm benchmark paper</td><td>94%</td><td>In-distribution, same expert dataset as DINO-WM</td></tr>
+        <tr><td>FF-JEPA paper, own rerun</td><td>94.53% (t=25) &middot; 3.52% (t=75) &middot; 0.00% (random init)</td><td>256 episodes; flat LeWM collapses outside the standard short horizon</td></tr>
+        <tr><td>LeFlow paper, own rerun</td><td>89.3% &plusmn; 6.4</td><td>LeWM + CEM, LeWM codebase-default protocol (H=5, 50 episodes)</td></tr>
+        <tr><td>GC-IDM paper, own rerun</td><td>82.5% matched defaults &middot; 90% best CEM config</td><td>n=200, same frozen LeWM encoder swept across planners</td></tr>
+        <tr><td>Delta-JEPA paper, own rerun</td><td>84.53% &plusmn; 1.50</td><td>Retrained from scratch, 50 epochs, 3 seeds</td></tr>
+        <tr><td class="ours">Us, our baseline of record</td><td class="ours">87.3%, spread 7.6 over 3 seeds</td><td class="ours">Verified across 3 machines, mean stable within 0.6 points</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout">
+      <p><b>What this means for us.</b> The 96% figure most people cite traces to a single chart in the SD-JEPA paper, citing Wang et al. 2026, not the original LeWM paper. Every team that reran evaluation independently, rather than citing the published number, landed between 82% and 90%. Our own 87.3% sits inside that band.</p>
+      <p>This does not replace Experiment C as our correctness check, and it does not excuse us from running it. But it means we should not read a gap from 96% as evidence our implementation is broken going in. Several other independent reruns found the same gap before us.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="num">08</div>
+  <div class="body">
     <h2>Four weeks</h2>
     <ul class="weeks">
       <li><b>Week 1</b><span>Two people collect PushT data and train the fine model until it plans at all with stock CEM. Two people reproduce the DINO-WM baseline and record its numbers. One person pins the commit, writes the shared eval config, and sets up the results folder and plotting script.</span></li>
@@ -336,7 +376,7 @@ footer{
 </section>
 
 <section>
-  <div class="num">08</div>
+  <div class="num">09</div>
   <div class="body">
     <h2>Inherited and authored</h2>
     <p>This table goes early in the write-up. It answers "isn't this just their repo" in one glance.</p>
@@ -357,7 +397,7 @@ footer{
 </section>
 
 <section>
-  <div class="num">09</div>
+  <div class="num">10</div>
   <div class="body">
     <h2>Risks</h2>
     <table>
@@ -374,7 +414,7 @@ footer{
 </section>
 
 <section>
-  <div class="num">10</div>
+  <div class="num">11</div>
   <div class="body">
     <h2>Still to decide</h2>
     <ul>
@@ -386,7 +426,7 @@ footer{
 </section>
 
 <footer>
-  Project spec, revision 1. Built on stable-worldmodel at a pinned commit, recorded in the repo README.
+  Project spec, revision 2. Built on stable-worldmodel at a pinned commit, recorded in the repo README. Section 07 added 13 September 2026 with baseline figures collected from published work.
 </footer>
 
 </div>
