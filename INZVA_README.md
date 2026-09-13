@@ -1149,6 +1149,33 @@ Experiment C and must score like the flat baseline.
 
 ---
 
+### 7.x `git pull` refuses because of `notes/results/`
+
+```text
+error: The following untracked working tree files would be overwritten by merge:
+	notes/results/a4000_results.md
+```
+
+Expected, and harmless. `scripts/collect_results.py` writes into `notes/results/`
+on the machine that ran the eval, where the file starts untracked. Once someone
+commits that record, every machine that generated its own copy has an untracked
+file sitting where a tracked one is about to land, and git refuses rather than
+clobber it.
+
+Delete your copies and pull; git holds the same content:
+
+```bash
+rm notes/results/<name>_results.md notes/results/<name>_results.json
+git pull --ff-only
+```
+
+Check first if you want to be sure (`sha256sum` on both sides). This has been
+identical every time so far, because the committed copy *is* the generated one.
+
+**This bites hardest on a cluster.** A refused pull leaves the checkout on an
+old commit while `sbatch` keeps working, so jobs quietly run stale code. Verify
+the pull landed before submitting, not after.
+
 ## 8. Status
 
 Done:
