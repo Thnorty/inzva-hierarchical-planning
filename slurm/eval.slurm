@@ -49,21 +49,22 @@ nvidia-smi --query-gpu=name,memory.total --format=csv,noheader
 # -m has to come before the overrides. Hydra parses the overrides as one
 # trailing positional list, so an option written after them ends that list
 # and argparse rejects the rest: "unrecognized arguments: seed=0,1,2".
+#
+# output.filename is forced to match STEM rather than left to the config.
+# eval_wm.py APPENDS to that file, so two jobs sharing it interleave their
+# output and neither record parses. One file per STEM makes concurrent jobs
+# safe, which is what lets a 3-seed sweep run as 3 jobs at once.
 # shellcheck disable=SC2086
 srun python scripts/plan/eval_wm.py --config-name "$CONFIG" -m \
-    policy="$POLICY" seed="$SEEDS" $EXTRA
+    policy="$POLICY" seed="$SEEDS" \
+    output.filename="${STEM}_results.txt" $EXTRA
 
 # Collect inside the allocation, while the GPU is still visible. Collected
 # afterwards on a login node it records "gpu: cpu", which is worse than no
 # provenance at all: the table exists to say which card produced the numbers.
 #
-# eval_wm.py appends to checkpoints/<dirname of policy>/<output.filename>
-# (eval_wm.py:137), so a policy id with no slash lands directly in
-# checkpoints/. Copy that file under STEM first, so two policies sharing one
-# config do not overwrite each other's record.
-POLICY_DIR=$(dirname "$POLICY")
-RESULTS_DIR="$STABLEWM_HOME/checkpoints/$POLICY_DIR"
-SRC=$(python -c "import sys, yaml; print(yaml.safe_load(open('scripts/plan/config/' + sys.argv[1] + '.yaml'))['output']['filename'])" "$CONFIG")
-cp "$RESULTS_DIR/$SRC" "$RESULTS_DIR/${STEM}_results.txt"
+# eval_wm.py writes to checkpoints/<dirname of policy>/ (eval_wm.py:137), so
+# a policy id with no slash lands directly in checkpoints/.
 srun python scripts/collect_results.py \
-    --results-file "${STEM}_results.txt" --policy-dir "$POLICY_DIR"
+    --results-file "${STEM}_results.txt" \
+    --policy-dir "$(dirname "$POLICY")"
