@@ -1562,15 +1562,25 @@ It also selects `goal_mse_pixels_proprio`, so fix 2 is no longer something to
 remember either. Leave `history_keys` alone for LeWM: that model takes no
 per-frame proprio, and `inzva_pusht.yaml` deliberately does not set it.
 
-### It costs about 8 GPU-hours per seed
+### It costs 4 to 8 GPU-hours per seed, depending on the card
 
-Measured on an RTX A4000, at the shared protocol:
+Measured at the shared protocol, one environment and one plan:
 
-| | LeWM | DINO-WM |
-|---|---|---|
-| One environment, one plan | ~1 s | ~282 s |
-| One seed, 50 episodes | 64 s | **~7.8 h** |
-| Three seeds | ~4 min | **~23 h** |
+| | LeWM | DINO-WM | One seed, 50 eps |
+|---|---|---|---|
+| RTX A4000 | ~1 s | 282 s | ~7.8 h |
+| Tesla V100 | ~1 s | **145 s** | **~4.0 h** |
+
+The V100 is 1.9x faster here despite being the older card, because this
+workload is memory-bandwidth bound rather than compute bound: 900 GB/s against
+448. Worth knowing before assuming a newer GPU is the faster one.
+
+An episode needs 2 plans (`horizon 5` x `action_block 5` = 25 env steps against
+a 50-step budget), and the solver plans for all environments in one call, so a
+seed is 2 solves of `num_eval` x per-env time.
+
+That lands a V100 seed at just over 4 hours, which is **just past the `debug`
+partition's 4-hour ceiling**. Use `akya-cuda` and accept the queue.
 
 The solver runs `batch_size: 1`, one environment at a time, so wall time scales
 with `eval.num_eval` and memory does not. DINO-WM needs **8.6 GB for a single
