@@ -153,8 +153,8 @@ footer{
 <div class="wrap">
 
 <header>
-  <h1 class="question">The instrument is built. The <em>experiment</em> has not run.</h1>
-  <p class="lede">Everything needed to run and trust a result exists and agrees across three machines. The protocol is locked, the baseline is measured, and the cluster works. Not one line of the hierarchical method has been written yet.</p>
+  <h1 class="question">We built the instrument. We have not run the <em>experiment</em>.</h1>
+  <p class="lede">We have everything we need to run a result and trust it, and we have checked it agrees across three machines. We locked the protocol, measured the baseline, and got the cluster working. We have not yet written a single line of the hierarchical method.</p>
   <dl class="facts">
     <div><dt>Written</dt><dd>13 September 2026</dd></div>
     <div><dt>Baseline of record</dt><dd>87.3% over 3 seeds</dd></div>
@@ -167,28 +167,28 @@ footer{
   <div class="num">01</div>
   <div class="body">
     <h2>What we are testing</h2>
-    <p>Planning at two time scales beats planning at one, when the compute budget is small. A flat planner searches every step of a 40-step horizon. Ours plans five coarse waypoints at a stride of eight, then fills in between them. If the claim holds, the hierarchy reaches the same success rate with far fewer model evaluations, and the gap widens as the budget shrinks.</p>
-    <p>Three systems, one evaluation protocol, everything else held fixed.</p>
+    <p>We are testing whether planning at two time scales beats planning at one when the compute budget is small. A flat planner searches every step of a 40-step horizon. Ours plans five coarse waypoints at a stride of eight, then fills in between them. If we are right, the hierarchy reaches the same success rate with far fewer model evaluations, and the gap widens as the budget shrinks.</p>
+    <p>We compare three systems under one evaluation protocol, holding everything else fixed.</p>
     <table>
       <thead><tr><th>Row</th><th>World model</th><th>Planner</th><th>Purpose</th></tr></thead>
       <tbody>
         <tr><td>1</td><td>DINO-WM</td><td>CEM</td><td>Published reference point</td></tr>
-        <tr><td>2</td><td>Our GRU</td><td>CEM, flat</td><td>The baseline we must beat</td></tr>
-        <tr><td class="ours">3</td><td class="ours">Our GRU</td><td class="ours">Coarse then fine</td><td class="ours">The contribution</td></tr>
+        <tr><td>2</td><td>Our GRU</td><td>CEM, flat</td><td>The baseline we have to beat</td></tr>
+        <tr><td class="ours">3</td><td class="ours">Our GRU</td><td class="ours">Coarse then fine</td><td class="ours">Our contribution</td></tr>
       </tbody>
     </table>
 
     <div class="exp">
-      <h4>Experiment C, first</h4>
-      <p>Set the stride to one. The hierarchy must then collapse to row 2's score. This is a correctness check on the implementation, not a result, and it costs almost nothing. <b>Run it before A and B.</b> If it fails, neither of them means anything.</p>
+      <h4>Experiment C, which we run first</h4>
+      <p>We set the stride to one, and the hierarchy then has to collapse to row 2's score. We treat this as a correctness check on our implementation rather than a result, and it costs us almost nothing. <b>We run it before A and B</b>, because if it fails neither of them means anything.</p>
     </div>
     <div class="exp">
       <h4>Experiment A</h4>
-      <p>Rows 2 against 3 across compute budgets. This is the actual claim, and the only one that must succeed.</p>
+      <p>We compare rows 2 and 3 across compute budgets. This is our actual claim, and the only one that has to succeed.</p>
     </div>
     <div class="exp">
       <h4>Experiment B</h4>
-      <p>Rows 1 against 3 across factors of variation. Generality evidence. Droppable if compute runs short.</p>
+      <p>We compare rows 1 and 3 across factors of variation, as evidence of generality. We drop this one if compute runs short.</p>
     </div>
   </div>
 </section>
@@ -196,10 +196,10 @@ footer{
 <section>
   <div class="num">02</div>
   <div class="body">
-    <h2>What is finished</h2>
-    <p><b>The protocol is locked.</b> One shared config fixes episode count, budget, goal offset, resolution and seeds. Changing it silently invalidates every comparison in the report, so nobody edits it alone.</p>
-    <p><b>The reproduction question is closed.</b> The published 96% is not reproducible. Every mechanical explanation was tested and eliminated: the solver's sampling change, the success criterion, the block geometry, the environment itself, every numeric planning parameter, and the dataset format. Our baseline is 87.3% with a spread of 7.6 points over three seeds, and that is what we compare against.</p>
-    <p><b>Three machines agree.</b> The same three seeds, on three GPU generations, three CUDA builds and two operating systems.</p>
+    <h2>What we have done</h2>
+    <p><b>We locked the protocol.</b> One shared config fixes episode count, budget, goal offset, resolution and seeds. Changing it silently invalidates every comparison we report, so we agreed that nobody edits it alone.</p>
+    <p><b>We closed the reproduction question.</b> We could not reproduce the published 96%, and we tested and eliminated every mechanical explanation for it: the solver's sampling change, the success criterion, the block geometry, the environment itself, every numeric planning parameter, and the dataset format. We settled on 87.3% with a spread of 7.6 points over three seeds as our baseline of record.</p>
+    <p><b>We ran the same three seeds on three machines</b>, spanning three GPU generations, three CUDA builds and two operating systems.</p>
     <table>
       <thead><tr><th>Seed</th><th>Windows, RTX 3060</th><th>Cluster, V100</th><th>Ubuntu, RTX A4000</th></tr></thead>
       <tbody>
@@ -209,41 +209,41 @@ footer{
         <tr><td><b>Mean</b></td><td><b>87.3%</b></td><td><b>86.7%</b></td><td><b>87.3%</b></td></tr>
       </tbody>
     </table>
-    <p>No pair disagrees by more than two episodes in 150, and all three means land within 0.6 points. That replaced a prediction that per-seed rates would drift further apart on different hardware. They do not. <b>The three-seed mean is portable.</b></p>
-    <p><b>The cluster works.</b> Job scripts, a shared environment file, and a processor-only preflight that catches a broken setup in about a minute instead of after a half-day queue.</p>
-    <p><b>The model decisions are locked:</b> a stride of 8, a horizon of 40, one action per planning step, 224 pixels everywhere, and a single encoder shared between the coarse and fine models, then frozen.</p>
+    <p>No pair disagrees by more than two episodes in 150, and all three means land within 0.6 points. We had predicted that per-seed rates would drift further apart on different hardware, and we were wrong: <b>the three-seed mean is portable.</b></p>
+    <p><b>We got the cluster working.</b> We wrote job scripts and a shared environment file, and added a processor-only preflight that catches a broken setup in about a minute instead of after a half-day queue.</p>
+    <p><b>We locked the model decisions:</b> a stride of 8, a horizon of 40, one action per planning step, 224 pixels everywhere, and a single encoder shared between the coarse and fine models, then frozen.</p>
   </div>
 </section>
 
 <section>
   <div class="num">03</div>
   <div class="body">
-    <h2>What is left, in blocking order</h2>
-    <p>Six files, none of which exist. This is the whole project.</p>
+    <h2>What we still have to build</h2>
+    <p>We still have to write six files, none of which exist yet. They are the whole project.</p>
     <table>
       <thead><tr><th>File</th><th>What it is</th></tr></thead>
       <tbody>
         <tr><td class="ours"><code>models/gru_wm.py</code></td><td class="ours">The fine world model. <b>Critical path</b>, everything depends on it</td></tr>
         <tr><td class="ours"><code>scripts/train_gru.py</code></td><td class="ours">Its training loop. <b>Critical path</b></td></tr>
         <tr><td><code>models/gru_coarse.py</code></td><td>The coarse model, one step per eight</td></tr>
-        <tr><td><code>solver/hierarchical.py</code></td><td>The coarse-to-fine planner. The contribution itself</td></tr>
+        <tr><td><code>solver/hierarchical.py</code></td><td>The coarse-to-fine planner, our contribution itself</td></tr>
         <tr><td><code>scripts/sweep.py</code></td><td>Budget sweep driver for Experiment A</td></tr>
         <tr><td><code>README.md</code></td><td>Write-up</td></tr>
       </tbody>
     </table>
     <div class="callout">
-      <p><b>Nothing can be evaluated until the fine model trains.</b> It has to satisfy the repo's dynamics protocol, meaning it exposes an encode step and a rollout step, or the existing planner cannot call it at all.</p>
+      <p><b>We cannot evaluate anything until the fine model trains.</b> We have to make it satisfy the repo's dynamics protocol, meaning it exposes an encode step and a rollout step, or the existing planner cannot call it at all.</p>
     </div>
-    <p>Then Experiment C to prove the implementation is sound, then A for the claim, then B if compute allows.</p>
+    <p>We then run Experiment C to prove our implementation is sound, then A for the claim, then B if compute allows.</p>
   </div>
 </section>
 
 <section>
   <div class="num">04</div>
   <div class="body">
-    <h2>The DINO-WM decision</h2>
-    <p>Experiment B needs a number from the published DINO-WM checkpoint. It now loads and runs, after three separate faults were found and fixed. All three are scripted or configured rather than written down as steps to repeat by hand.</p>
-    <p><b>It has never been scored.</b> The evaluation was cancelled for time. What we do know is what it costs.</p>
+    <h2>What we decided about DINO-WM</h2>
+    <p>For Experiment B we need a number from the published DINO-WM checkpoint. We found and fixed three separate faults in getting it to run, and scripted or configured all three rather than writing them down as steps to repeat by hand. It now loads and plans.</p>
+    <p><b>We have not scored it.</b> We cancelled the evaluation for time. What we did learn is what it costs us.</p>
     <table>
       <thead><tr><th></th><th>Per environment, per plan</th><th>One seed, 50 episodes</th></tr></thead>
       <tbody>
@@ -252,20 +252,20 @@ footer{
         <tr><td>DINO-WM, Tesla V100</td><td>145 seconds</td><td>4.0 hours</td></tr>
       </tbody>
     </table>
-    <p>So roughly twelve GPU-hours for three seeds, and the cluster queue has been quoting more than a day. Three options, cheapest first:</p>
+    <p>That puts three seeds at roughly twelve GPU-hours, against a cluster queue that has been quoting us more than a day. We see three options, cheapest first:</p>
     <ul>
-      <li>Run it on the cluster whenever the queue allows. If it scores near the published 74%, Experiment B needs no training at all.</li>
-      <li>Drop Experiment B and report A and C only. A is the actual claim.</li>
-      <li>Train DINO-WM ourselves. The most expensive route, justified only if the checkpoint scores poorly and B is considered essential.</li>
+      <li>We run it on the cluster whenever the queue allows. If it scores near the published 74%, we need no training for Experiment B at all.</li>
+      <li>We drop Experiment B and report A and C only, since A is our actual claim.</li>
+      <li>We train DINO-WM ourselves. This is our most expensive route, and we only take it if the checkpoint scores poorly and we decide B is essential.</li>
     </ul>
     <div class="callout">
-      <p><b>Do not let this block anything.</b> It is independent of the critical path. Start it when the queue is free and carry on writing the method.</p>
+      <p><b>We decided this does not block anything.</b> It sits off our critical path, so we start it when the queue is free and carry on writing the method in the meantime.</p>
     </div>
   </div>
 </section>
 
 <footer>
-  Status report, 13 September 2026. The repo manual is the source of truth for how to do anything; this says where we are. Built on stable-worldmodel at a pinned commit.
+  Status report, 13 September 2026. The repo manual is our source of truth for how to do anything; this says where we are. Built on stable-worldmodel at a pinned commit.
 </footer>
 
 </div>
