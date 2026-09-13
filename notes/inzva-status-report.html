@@ -264,36 +264,6 @@ footer{
   </div>
 </section>
 
-<section>
-  <div class="num">05</div>
-  <div class="body">
-    <h2>Things that will bite you</h2>
-    <p>Each of these cost hours to find. All are documented in full in the repo manual.</p>
-    <table>
-      <thead><tr><th>Trap</th><th>What it does</th></tr></thead>
-      <tbody>
-        <tr><td>Seed noise is 14 points</td><td>At three seeds, any effect under about 5 points is indistinguishable from luck. Experiment A has to clear that bar, or show its gap widening consistently across budgets</td></tr>
-        <tr><td>The frozen shared encoder</td><td>It is trained for short-horizon prediction, but the coarse model needs features that predict eight steps ahead. If A shows no benefit at any budget while C passes, suspect this first</td></tr>
-        <tr><td>The cluster needs a non-default torch build</td><td>The standard package has no kernels for its GPUs. It installs cleanly and then fails on first use</td></tr>
-        <tr><td>DINO-WM is 145 times slower than LeWM</td><td>Budget for it in days, not afternoons</td></tr>
-        <tr><td>A refused pull leaves the cluster on old code</td><td>Job submission keeps working regardless, so runs look healthy while executing stale code. Verify the pull landed before submitting</td></tr>
-      </tbody>
-    </table>
-  </div>
-</section>
-
-<section>
-  <div class="num">06</div>
-  <div class="body">
-    <h2>Still to decide</h2>
-    <ul>
-      <li>Assign the six files to five people. The two on the critical path go first.</li>
-      <li>How many seeds the compute allows. Three is the floor, not a nicety: measured spread at 50 episodes runs from 82% to 96%, so a single-seed number carries no information.</li>
-      <li>Whether a teammate runs the setup on their own machine. Done three times here, but never by someone who did not write the instructions.</li>
-    </ul>
-  </div>
-</section>
-
 <footer>
   Status report, 13 September 2026. The repo manual is the source of truth for how to do anything; this says where we are. Built on stable-worldmodel at a pinned commit.
 </footer>
