@@ -898,6 +898,13 @@ them but the repo and the lockfile:
 Records: `notes/results/inzva_pusht_results.md`, `truba_results.md`,
 `a4000_results.md`.
 
+The V100 was then run a second time, unchanged, and moved by 2 episodes of
+150 (seed 1: 47 to 48, seed 2: 41 to 42). That is same-machine rerun noise,
+not drift, and it matches the roughly 1.5% measured on Windows. Pooled over
+both runs the V100 sits at **262/300 = 87.3%**, the same figure as Windows.
+It is in `truba_results.md` as six rows rather than three, on purpose: the
+repeat is evidence, not clutter.
+
 No pair disagrees on more than 2 episodes of 150, and all three means land
 within 0.6 points. That covers three CUDA major/minor builds, two GPU
 generations including one that predates the others by four years, and two
