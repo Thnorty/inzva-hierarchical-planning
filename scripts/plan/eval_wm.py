@@ -193,8 +193,14 @@ def run(cfg: DictConfig):
     world.set_policy(policy)
 
     results_path.mkdir(parents=True, exist_ok=True)
+    # One video directory per run, named after output.filename. Upstream wrote
+    # every run's env_{i}.mp4 straight into the checkpoint directory, so
+    # concurrent runs of one policy (one job per seed, or the same policy on
+    # two partitions) overwrote each other's videos as they finished.
+    video_path = results_path / Path(cfg.output.filename).stem
+    video_path.mkdir(parents=True, exist_ok=True)
     print(
-        f'[eval] saving videos to {results_path.resolve()} '
+        f'[eval] saving videos to {video_path.resolve()} '
         '(one env_{i}.mp4 per env)'
     )
 
@@ -222,7 +228,7 @@ def run(cfg: DictConfig):
                 callables=OmegaConf.to_container(
                     cfg.eval.get('callables'), resolve=True
                 ),
-                video=results_path,
+                video=video_path,
             )
         print('Warmup done.')
 
@@ -237,12 +243,12 @@ def run(cfg: DictConfig):
             callables=OmegaConf.to_container(
                 cfg.eval.get('callables'), resolve=True
             ),
-            video=results_path,
+            video=video_path,
         )
     end_time = time.time()
 
     print(metrics)
-    print(f'[eval] videos saved to {results_path.resolve()}')
+    print(f'[eval] videos saved to {video_path.resolve()}')
 
     results_path = results_path / cfg.output.filename
     results_path.parent.mkdir(parents=True, exist_ok=True)
