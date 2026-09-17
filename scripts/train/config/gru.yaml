@@ -1,0 +1,88 @@
+# Training config for the fine GRU world model. See INZVA_README.md section 10.
+#
+#   python scripts/train_gru.py
+#   python scripts/train_gru.py output_model_name=gru_fine_v2 rollout_steps=24
+#
+# Settings locked elsewhere are referenced, not re-decided: 224 px (section 6.1),
+# the episode split (section 6.2, checked against its fingerprint at startup),
+# one action per step to match action_block: 1 in inzva_gru.yaml (section 6.5).
+#
+# The encoder, projector, action embedder and SIGReg weight are copied from
+# scripts/train/config/lewm.yaml, because that recipe is known to produce a
+# usable latent on this dataset. The predictor is the only deliberate change.
+
+output_model_name: gru_fine
+seed: 20260917
+dataset_name: pusht_expert_train.h5
+
+img_size: 224
+patch_size: 14
+encoder_scale: tiny
+embed_dim: 192
+action_emb_dim: 192
+
+# Open-loop steps per training clip; a clip is rollout_steps + 1 frames. Planning
+# rolls 40 steps, so longer is better for compounding error and costs one more
+# ViT forward pass per frame per sample.
+rollout_steps: 16
+
+train:
+  batch_size: 32
+  num_workers: 6
+  # An "epoch" is a random draw of this many clips, not a pass over the data.
+  # Consecutive clips overlap in all but one frame, so a full pass (~1.9M clips)
+  # is mostly repetition, and a short epoch means a checkpoint lands before a
+  # cluster time limit can take the work with it.
+  samples_per_epoch: 64000
+  val_samples: 4096
+  max_epochs: 30
+  # bf16 on Ampere and newer (RTX 30xx, A4000). The V100 and P100 have no bf16
+  # kernels; use fp16 there.
+  precision: bf16
+  grad_clip: 1.0
+  log_every: 50
+  resume: true
+
+optim:
+  encoder_lr: 5.0e-5
+  dynamics_lr: 3.0e-4
+  weight_decay: 1.0e-3
+  warmup_fraction: 0.01
+
+loss:
+  sigreg:
+    weight: 0.09
+    kwargs:
+      knots: 17
+      num_proj: 1024
+
+model:
+  _target_: stable_worldmodel.wm.gru.GRUWorldModel
+  encoder:
+    _target_: stable_pretraining.backbone.utils.vit_hf
+    size: ${encoder_scale}
+    patch_size: ${patch_size}
+    image_size: ${img_size}
+    pretrained: false
+    use_mask_token: false
+  projector:
+    _target_: stable_worldmodel.wm.lewm.module.MLP
+    input_dim: ${embed_dim}
+    output_dim: ${embed_dim}
+    hidden_dim: 2048
+    norm_fn:
+      _target_: torch.nn.BatchNorm1d
+      _partial_: true
+  action_encoder:
+    _target_: stable_worldmodel.wm.lewm.module.Embedder
+    input_dim: 2
+    emb_dim: ${action_emb_dim}
+  predictor:
+    _target_: stable_worldmodel.wm.gru.GRUPredictor
+    latent_dim: ${embed_dim}
+    action_dim: ${action_emb_dim}
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .
