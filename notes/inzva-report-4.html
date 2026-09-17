@@ -154,11 +154,12 @@ footer{
 
 <header>
   <h1 class="question">We built the instrument. We have not run the <em>experiment</em>.</h1>
-  <p class="lede">We have everything we need to run a result and trust it, and we have checked it agrees across three machines. We locked the protocol, measured the baseline, and got the cluster working. We have not yet written a single line of the hierarchical method.</p>
+  <p class="lede">We have everything we need to run a result and trust it, and we have checked it agrees across three machines. We locked the protocol, measured the baseline, scored the DINO-WM reference, and got the cluster working. We have not yet written a single line of the hierarchical method.</p>
   <dl class="facts">
-    <div><dt>Written</dt><dd>13 September 2026</dd></div>
+    <div><dt>Written</dt><dd>13 September 2026, updated 17 September</dd></div>
     <div><dt>Baseline of record</dt><dd>87.3% over 3 seeds</dd></div>
     <div><dt>Machines verified</dt><dd>3</dd></div>
+    <div><dt>DINO-WM reference</dt><dd>84.0% over 3 seeds</dd></div>
     <div><dt>Experiments run</dt><dd class="blank">None</dd></div>
   </dl>
 </header>
@@ -242,30 +243,36 @@ footer{
   <div class="num">04</div>
   <div class="body">
     <h2>What we decided about DINO-WM</h2>
-    <p>For Experiment B we need a number from the published DINO-WM checkpoint. We found and fixed three separate faults in getting it to run, and scripted or configured all three rather than writing them down as steps to repeat by hand. It now loads and plans.</p>
-    <p><b>We have not scored it.</b> We cancelled the evaluation for time. What we did learn is what it costs us.</p>
+    <p>For Experiment B we need a number from the published DINO-WM checkpoint. We found and fixed three separate faults in getting it to run, and scripted or configured all three rather than writing them down as steps to repeat by hand.</p>
+    <p><b>We scored it at 84.0% over three seeds</b>, under exactly the protocol we use for LeWM. We raced the same evaluation across an RTX A4000 and two cluster GPU partitions, and kept whichever finished first.</p>
     <table>
-      <thead><tr><th></th><th>Per environment, per plan</th><th>One seed, 50 episodes</th></tr></thead>
+      <thead><tr><th>Seed</th><th>Success</th></tr></thead>
       <tbody>
-        <tr><td>LeWM</td><td>about 1 second</td><td>64 seconds</td></tr>
-        <tr><td>DINO-WM, RTX A4000</td><td>282 seconds</td><td>7.8 hours</td></tr>
-        <tr><td>DINO-WM, Tesla V100</td><td>145 seconds</td><td>4.0 hours</td></tr>
+        <tr><td>0</td><td>45/50</td></tr>
+        <tr><td>1</td><td>41/50</td></tr>
+        <tr><td>2</td><td>40/50</td></tr>
+        <tr><td><b>Mean</b></td><td><b>84.0%, spread 5.3</b></td></tr>
       </tbody>
     </table>
-    <p>That puts three seeds at roughly twelve GPU-hours, against a cluster queue that has been quoting us more than a day. We see three options, cheapest first:</p>
-    <ul>
-      <li>We run it on the cluster whenever the queue allows. If it scores near the published 74%, we need no training for Experiment B at all.</li>
-      <li>We drop Experiment B and report A and C only, since A is our actual claim.</li>
-      <li>We train DINO-WM ourselves. This is our most expensive route, and we only take it if the checkpoint scores poorly and we decide B is essential.</li>
-    </ul>
+    <p>That is ten points above the 74% most often cited for this same protocol, and inside the 84% to 92% band that independent reruns report. Against our LeWM baseline of 87.3% it is 3.3 points lower, which at three seeds sits inside seed noise, so we treat the two as indistinguishable.</p>
     <div class="callout">
-      <p><b>We decided this does not block anything.</b> It sits off our critical path, so we start it when the queue is free and carry on writing the method in the meantime.</p>
+      <p><b>We decided to use this checkpoint as our Experiment B reference, and not to train DINO-WM ourselves.</b> One caveat travels with the number: the checkpoint comes from a fork of the harness and is marked epoch 10, so we report it as this checkpoint rather than as DINO-WM in general.</p>
     </div>
+    <p>It is expensive to evaluate, which limits how often we can afford to rerun it.</p>
+    <table>
+      <thead><tr><th></th><th>One seed, 50 episodes</th></tr></thead>
+      <tbody>
+        <tr><td>LeWM</td><td>about 1 minute</td></tr>
+        <tr><td>DINO-WM, RTX A4000</td><td>4.5 to 5.1 hours, measured</td></tr>
+        <tr><td>DINO-WM, Tesla V100</td><td>about 2.5 hours, estimated</td></tr>
+      </tbody>
+    </table>
+    <p>We had estimated 7.8 hours per seed on the A4000, assuming both planning passes cover every episode. In fact the second pass only replans the episodes that have not already succeeded, so it is far shorter.</p>
   </div>
 </section>
 
 <footer>
-  Status report, 13 September 2026. The repo manual is our source of truth for how to do anything; this says where we are. Built on stable-worldmodel at a pinned commit.
+  Status report, 13 September 2026, updated 17 September 2026 with the DINO-WM result. The repo manual is our source of truth for how to do anything; this says where we are. Built on stable-worldmodel at a pinned commit.
 </footer>
 
 </div>

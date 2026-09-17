@@ -1,0 +1,59 @@
+{
+  "generated": "2026-09-17T12:32:13.617630+00:00",
+  "source": "$STABLEWM_HOME/checkpoints/dinowm_romer_results.txt",
+  "environment": {
+    "commit": "34613f8",
+    "torch": "2.11.0+cu130",
+    "transformers": "5.16.1",
+    "stable_pretraining": "0.1.8",
+    "cuda": "13.0",
+    "gpu": "NVIDIA RTX A4000"
+  },
+  "runs": [
+    {
+      "seed": 0,
+      "policy": "dinowm_kotmul_adapted",
+      "num_eval": 50,
+      "eval_budget": 50,
+      "history_len": 3,
+      "horizon": 5,
+      "action_block": 5,
+      "num_samples": 300,
+      "n_steps": 30,
+      "success_rate": 90.0,
+      "successes": 45,
+      "episodes": 50,
+      "seconds": 16225.445877313614
+    },
+    {
+      "seed": 1,
+      "policy": "dinowm_kotmul_adapted",
+      "num_eval": 50,
+      "eval_budget": 50,
+      "history_len": 3,
+      "horizon": 5,
+      "action_block": 5,
+      "num_samples": 300,
+      "n_steps": 30,
+      "success_rate": 82.0,
+      "successes": 41,
+      "episodes": 50,
+      "seconds": 18364.205623865128
+    },
+    {
+      "seed": 2,
+      "policy": "dinowm_kotmul_adapted",
+      "num_eval": 50,
+      "eval_budget": 50,
+      "history_len": 3,
+      "horizon": 5,
+      "action_block": 5,
+      "num_samples": 300,
+      "n_steps": 30,
+      "success_rate": 80.0,
+      "successes": 40,
+      "episodes": 50,
+      "seconds": 18038.52795767784
+    }
+  ]
+}
