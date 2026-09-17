@@ -201,6 +201,13 @@ def run(cfg: DictConfig):
         pin_memory=device.type == 'cuda',
         persistent_workers=cfg.train.num_workers > 0,
     )
+    if cfg.train.num_workers > 0 and sys.platform != 'win32':
+        # Not fork: importing stable_worldmodel starts JAX's threads, and
+        # forking a threaded process can deadlock. Every worker start used
+        # to print exactly that warning, and a deadlock hours into a
+        # cluster job would look like a hang with no error. Windows only
+        # has spawn, which is already safe.
+        loader_kwargs['multiprocessing_context'] = 'forkserver'
     train_loader = torch.utils.data.DataLoader(
         train_set,
         sampler=torch.utils.data.RandomSampler(
@@ -261,7 +268,9 @@ def run(cfg: DictConfig):
         optimizer.load_state_dict(state['optimizer'])
         scheduler.load_state_dict(state['scheduler'])
         scaler.load_state_dict(state['scaler'])
-        generator.set_state(state['generator'])
+        # map_location moved every tensor to the GPU, but a torch.Generator
+        # only accepts CPU state.
+        generator.set_state(state['generator'].cpu())
         start_epoch, step = state['epoch'], state['step']
         print(f'resumed {run_name} at epoch {start_epoch}', flush=True)
 
