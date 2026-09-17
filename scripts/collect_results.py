@@ -20,6 +20,7 @@ Usage:
 import argparse
 import json
 import os
+import posixpath
 import re
 import statistics
 import subprocess
@@ -122,7 +123,7 @@ def parse_runs(path: Path) -> list[dict]:
     return runs
 
 
-def render(runs: list[dict], env: dict, source: str) -> str:
+def render(runs: list[dict], env: dict, source: str, config_name: str) -> str:
     """Render the Markdown record."""
     stamp = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')
     lines = [
@@ -187,25 +188,23 @@ def render(runs: list[dict], env: dict, source: str) -> str:
             f'| Pooled | {pooled_ok}/{pooled_n} = {100 * pooled_ok / pooled_n:.1f}% |',
         ]
 
+    # Derived from the runs themselves. This used to be a hardcoded LeWM
+    # command, so every record claimed LeWM produced it, whatever the policy.
+    seeds = ','.join(str(s) for s in sorted({r['seed'] for r in runs}))
     lines += [
         '',
         '## Commands',
         '',
-        'The shared config, three seeds:',
+        'Reproduce these runs with:',
         '',
         '```bash',
-        'python scripts/plan/eval_wm.py --config-name inzva_pusht -m \\',
-        '    policy=quentinll/lewm-pusht seed=0,1,2',
-        '```',
-        '',
-        'A single run at the upstream config (needs the `+`, see README §7):',
-        '',
-        '```bash',
-        'python scripts/plan/eval_wm.py \\',
-        '    policy=quentinll/lewm-pusht +plan_config.history_len=3',
-        '```',
-        '',
     ]
+    for policy in sorted({r['policy'] for r in runs}):
+        lines += [
+            f'python scripts/plan/eval_wm.py --config-name {config_name} -m \\',
+            f'    policy={policy} seed={seeds}',
+        ]
+    lines += ['```', '']
     return '\n'.join(lines)
 
 
@@ -221,6 +220,11 @@ def main():
         default='quentinll',
         help='subdirectory of checkpoints/ holding the results file',
     )
+    parser.add_argument(
+        '--config-name',
+        default='inzva_pusht',
+        help='eval config the runs used; only written into the Commands section',
+    )
     parser.add_argument('--out', default=str(DEFAULT_OUT))
     args = parser.parse_args()
 
@@ -234,8 +238,10 @@ def main():
         raise SystemExit(f'no results file at {source}')
     # Record the path relative to STABLEWM_HOME so the tracked file is the
     # same on every machine and diffs stay readable.
-    portable = (
-        f'$STABLEWM_HOME/checkpoints/{args.policy_dir}/{args.results_file}'
+    # normpath, because a policy id with no owner passes --policy-dir . and
+    # would otherwise record checkpoints/./<file>.
+    portable = '$STABLEWM_HOME/' + posixpath.normpath(
+        f'checkpoints/{args.policy_dir}/{args.results_file}'
     )
 
     runs = parse_runs(source)
@@ -251,7 +257,11 @@ def main():
     # normalisation in .gitattributes. Without it Windows writes CRLF and every
     # regenerated record shows up as modified until git rewrites it.
     md = out_dir / f'{stem}.md'
-    md.write_text(render(runs, env, portable), encoding='utf-8', newline='\n')
+    md.write_text(
+        render(runs, env, portable, args.config_name),
+        encoding='utf-8',
+        newline='\n',
+    )
 
     js = out_dir / f'{stem}.json'
     js.write_text(

@@ -67,4 +67,5 @@ srun python scripts/plan/eval_wm.py --config-name "$CONFIG" -m \
 # a policy id with no slash lands directly in checkpoints/.
 srun python scripts/collect_results.py \
     --results-file "${STEM}_results.txt" \
-    --policy-dir "$(dirname "$POLICY")"
+    --policy-dir "$(dirname "$POLICY")" \
+    --config-name "$CONFIG"
