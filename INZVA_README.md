@@ -534,7 +534,7 @@ released DINO-WM checkpoint in the layout `load_pretrained()` expects
 | Repo | What it is | Verdict |
 |------|-----------|---------|
 | `quentinll/lewm-pusht` | Official LeWM checkpoint, correct layout | **Use this** |
-| `kotmul/dinowm_patch_prop_pusht` | Community PreJEPA, epoch 10, ~11 downloads, no published number | Smoke test only |
+| `kotmul/dinowm_patch_prop_pusht` | Community PreJEPA, epoch 10, ~11 downloads, no published number | **Use this for Experiment B**: 84.0% over 3 seeds (§11) |
 | `kevin510/swm-dino-wm-checkpoints` | Raw hydra run dirs, wrong layout, 0 downloads | Ignore |
 
 ### Consequence for week 1
@@ -543,10 +543,14 @@ released DINO-WM checkpoint in the layout `load_pretrained()` expects
 checkpoint, and it validates the eval config, the dataset and the solver exactly
 as well as DINO-WM would — in a day rather than a training run.
 
-DINO-WM stays the Experiment B comparison baseline, but obtaining it means
-**training it ourselves**. In this repo "DINO-WM" is PreJEPA with a frozen
-`dinov2_small` backbone: `scripts/train/prejepa.py`, config
-`scripts/train/config/prejepa.yaml`. Budget for that in the week 1 plan.
+DINO-WM stays the Experiment B comparison baseline. We first assumed that meant
+**training it ourselves**, and budgeted for it. **It does not.** The kotmul
+checkpoint above scores 84.0% under our protocol after three fixes, so we use it
+as is (§11).
+
+Training remains the fallback if that checkpoint is ever ruled out. In this repo
+"DINO-WM" is PreJEPA with a frozen `dinov2_small` backbone:
+`scripts/train/prejepa.py`, config `scripts/train/config/prejepa.yaml`.
 
 ---
 
@@ -1228,6 +1232,9 @@ Done:
       (`scripts/adapt_dinowm.py`). Preflight 8/8, eval mean 87.3%
 - [x] **Cross-machine agreement measured on three GPUs** (§6.4): at most 2
       episodes of 150 differ, all three means within 0.6 points
+- [x] **DINO-WM scored: 84.0% over three seeds** (§11). The kotmul checkpoint
+      runs after three fixes and is our Experiment B reference. We do not
+      train DINO-WM ourselves
 
 Open, in the order they block things:
 
@@ -1241,9 +1248,6 @@ Open, in the order they block things:
 - [ ] How many seeds the compute allows (3 is the floor)
 - [ ] Experiment C (`k = 1`) scores like the GRU + CEM baseline — run this
       before A and B
-- [ ] **Score `kotmul/dinowm_patch_prop_pusht` on a server** (§11). It loads and
-      runs after two documented fixes. If it scores near 74%, Experiment B needs
-      no training at all. Only train DINO-WM if it does not.
 
 Two things worth deciding early because they are cheap now and expensive later:
 
@@ -1562,25 +1566,31 @@ It also selects `goal_mse_pixels_proprio`, so fix 2 is no longer something to
 remember either. Leave `history_keys` alone for LeWM: that model takes no
 per-frame proprio, and `inzva_pusht.yaml` deliberately does not set it.
 
-### It costs 4 to 8 GPU-hours per seed, depending on the card
+### It costs roughly 2.5 to 5 GPU-hours per seed, depending on the card
 
-Measured at the shared protocol, one environment and one plan:
+At the shared protocol:
 
-| | LeWM | DINO-WM | One seed, 50 eps |
+| | LeWM, one env, one plan | DINO-WM, one env, one plan | DINO-WM, one seed, 50 eps |
 |---|---|---|---|
-| RTX A4000 | ~1 s | 282 s | ~7.8 h |
-| Tesla V100 | ~1 s | **145 s** | **~4.0 h** |
+| RTX A4000 | ~1 s | 282 s | **4.5 to 5.1 h, measured** |
+| Tesla V100 | ~1 s | **145 s** | ~2.5 h, estimated |
 
 The V100 is 1.9x faster here despite being the older card, because this
 workload is memory-bandwidth bound rather than compute bound: 900 GB/s against
 448. Worth knowing before assuming a newer GPU is the faster one.
 
-An episode needs 2 plans (`horizon 5` x `action_block 5` = 25 env steps against
-a 50-step budget), and the solver plans for all environments in one call, so a
-seed is 2 solves of `num_eval` x per-env time.
+An episode needs at most 2 plans (`horizon 5` x `action_block 5` = 25 env steps
+against a 50-step budget), and the solver plans for all environments in one
+call. **The first solve covers every environment; the second only replans the
+ones that have not already succeeded**, so it is far shorter. On seed 0 the two
+took 3.9 and 0.6 hours. We had estimated 7.8 hours per seed by assuming both
+solves cover all fifty; that was wrong, and so was the conclusion drawn from it.
 
-That lands a V100 seed at just over 4 hours, which is **just past the `debug`
-partition's 4-hour ceiling**. Use `akya-cuda` and accept the queue.
+The V100 figure scales the A4000 measurement by the per-environment ratio and
+has not been run end to end. On paper it fits inside the `debug` partition's
+4-hour ceiling, but seeds here varied by 13% and the A4000 slowed further when
+it ran hot, so treat `debug` as worth a try when the queue is long, not as a
+safe default. `akya-cuda` remains the reliable choice.
 
 The solver runs `batch_size: 1`, one environment at a time, so wall time scales
 with `eval.num_eval` and memory does not. DINO-WM needs **8.6 GB for a single
@@ -1588,35 +1598,48 @@ environment**, so batching two would want ~17 GB and does not fit a 16 GB card.
 Both the A4000 and the TRUBA V100s are 16 GB, so neither can batch it.
 
 Plan Experiment B around that number. One job per seed on `akya-cuda`, which
-allows 3 days; three concurrent jobs turn a day into an evening, and
+allows 3 days; three concurrent jobs finish in the time of one seed, and
 `slurm/eval.slurm` gives each its own results file so they cannot corrupt one
 another.
 
 ### Run it on a server, not a laptop
 
 ```bash
-python scripts/plan/eval_wm.py --config-name inzva_pusht \
-    policy=dinowm_kotmul_adapted \
-    objective=goal_mse_pixels_proprio -m seed=0,1,2
+python scripts/plan/eval_wm.py --config-name inzva_dinowm -m \
+    policy=dinowm_kotmul_adapted seed=0,1,2
 ```
+
+Use `inzva_dinowm`, not `inzva_pusht` with overrides. It carries fixes 2 and 3,
+so there is nothing to remember at the command line.
 
 **This does not fit a 6 GB laptop GPU.** It exhausted 16 GB of host RAM and had
 to be killed before finishing 10 episodes. DINO-WM is far heavier than LeWM:
 `dinov2_small` gives 256 patches x 384 dims per frame against ViT-tiny's 192, so
-one frame of latents is roughly 414 KB per candidate (§7). Use TRUBA.
+one frame of latents is roughly 414 KB per candidate (§7). Use TRUBA, or any
+16 GB card: the scored run above was an RTX A4000.
 
-### Still unknown
+### Its score: 84.0%, and we use it
 
-**Its score.** It is epoch 10 with no published number, so it may simply be
-undertrained. Until someone runs the three seeds above, we do not know whether it
-is a usable Experiment B baseline or a smoke test. That run is the deciding
-factor for whether DINO-WM has to be trained from scratch, and it is cheap
-compared to training.
+Scored on 17 September 2026 under the shared protocol with `inzva_dinowm.yaml`,
+on an RTX A4000. Record: `notes/results/dinowm_romer_results.md`.
 
-If it scores anywhere near the published 74%, use it and skip the training run.
-If it scores far below, train with `scripts/train/prejepa.py` as originally
-planned, and note that this checkpoint is not comparable to the published number
-because it came from a fork.
+| Seed | Success |
+|------|---------|
+| 0 | 45/50 |
+| 1 | 41/50 |
+| 2 | 40/50 |
+| **Mean** | **84.0%**, spread 5.3 |
+
+The worry that an epoch-10 checkpoint might be undertrained did not bear out. It
+lands ten points above the 74% most often cited for this same protocol, inside
+the 84% to 92% band that independent reruns report (section 07 of
+`notes/inzva-project-spec.html`), and 3.3 points below our LeWM baseline, which
+is inside seed noise at three seeds.
+
+**Decision: this checkpoint is the Experiment B reference, and we do not train
+DINO-WM.** Report it as this checkpoint rather than as DINO-WM in general. It came
+from a fork of the harness and is marked epoch 10, so it is not the artifact
+behind the published 74%.
 
 ## 12. TRUBA (the ARF cluster)
 
