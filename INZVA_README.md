@@ -1027,8 +1027,8 @@ hierarchy at all: a coarse stride of 4 over a 5-step horizon gives one waypoint.
 checkpoint's action encoder, which takes 10 inputs as 2 action dims times
 frameskip 5 (§7). Our GRU is ours and can use a block of 1.
 
-Locked, in `scripts/plan/config/inzva_gru.yaml`. It reproduces the spec's own
-framing of "40 steps becomes 5 decisions":
+Locked, in `scripts/plan/config/inzva_gru.yaml`. It keeps the spec's framing of
+five coarse decisions, at the horizon the flat planner actually handles (§13):
 
 | Key | Value | Why |
 |-----|-------|-----|
@@ -1044,15 +1044,17 @@ framing of "40 steps becomes 5 decisions":
 
 Two things to keep in mind about what this buys and costs:
 
-- **This deliberately makes flat CEM expensive.** At `action_block: 1` and
-  `horizon: 40` the model rolls 40 steps per candidate against 5 in the current
-  config. That 8x is not waste, it is the gap the hierarchy exists to close:
-  coarse plans 5 strided steps, fine fills 8 between waypoints, so roughly 13
-  model steps instead of 40. If flat CEM stays cheap, there is nothing to win.
-- **Long rollouts compound model error.** A GRU rolled 40 steps drifts more than
-  one rolled 5 blocks, so both our planners may land below the LeWM reference.
-  Expected and harmless: Experiment A compares our two planners on our own
-  stack, so a shared handicap cancels.
+- **The saving per plan is now small, and that is a real risk to Experiment A.**
+  At `horizon: 10` and `k: 2`, flat CEM rolls 10 model steps per candidate while
+  the hierarchy rolls 5 coarse plus 2 fine, about 7. At the old `horizon: 40`
+  the gap was 40 against roughly 13. The hierarchy's advantage has to come from
+  searching a smaller space, not from cheaper rollouts.
+- **This is why Experiment A sweeps the sample budget.** If the two planners are
+  close at every budget, that is a negative result and we report it (§0). The
+  horizon sweep in §13 is the other axis worth having if compute allows.
+- **Long rollouts compound model error.** This is measured now: the same model
+  scores 62.0% at `horizon: 10` and 15.3% at 40 (§13). Both our planners meet at
+  the same horizon, so the handicap is shared and cancels in Experiment A.
 
 `k` is the natural thing to sweep. Try at least `{4, 8}`, and remember `k = 1` is
 Experiment C and must score like the flat baseline.
@@ -1449,8 +1451,8 @@ Get this right from the first checkpoint. Retrofitting it later means retraining
 | Train/val split | seed `20260910`, 5% held out, fingerprint `2d5f8c4f85e918f8` | §6.2 |
 | Encoder | one, shared, frozen after fine training | §6.5 |
 | `action_block` | 1 | §6.5, `scripts/plan/config/inzva_gru.yaml` |
-| `horizon` | 40 | same |
-| `k` | 8 | same, for the coarse model later |
+| `horizon` | 10 | same, and §13 |
+| `k` | 2 | same, for the coarse model later |
 | Eval protocol | inherited from `inzva_pusht.yaml`, unchanged | §6.1 |
 
 Use the split from code, not by hand:

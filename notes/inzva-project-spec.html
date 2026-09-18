@@ -185,7 +185,8 @@ footer{
     <h2>What two time scales means</h2>
     <p>Time scale means how far apart the steps in a plan are.</p>
     <p><b>One time scale.</b> Every step in the plan is one environment step. To look 40 steps ahead, the planner samples a full 40-action sequence, rolls the model forward 40 times, scores it, and repeats for hundreds of candidates. The search grows with the horizon, so looking further ahead gets expensive fast.</p>
-    <p><b>Two time scales.</b> We plan twice, at different resolutions. The coarse model jumps 8 steps at a time, so a 40-step future is only 5 decisions: roughly where should the block be at step 8, 16, 24, 32, and 40. Then the fine model fills each gap with real actions. Five short searches instead of one long one.</p>
+    <p><b>Two time scales.</b> We plan twice, at different resolutions. The coarse model jumps <span class="mono">k</span> steps at a time, so the future is only 5 decisions: roughly where should the block be at each waypoint. Then the fine model fills each gap with real actions. Five short searches instead of one long one.</p>
+    <p><b>Updated 18 September 2026:</b> we first set a 40-step horizon with <span class="mono">k</span> = 8. Measuring the trained model showed a 40-step horizon aims past the goal the evaluation actually sets, which is 25 steps ahead, and scores 15.3% against 62.0% at a 10-step horizon. We now plan 10 steps with <span class="mono">k</span> = 2, which is still five waypoints, at steps 2, 4, 6, 8 and 10.</p>
 
     <figure>
       <svg viewBox="0 0 380 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Top: a plan of sixteen single steps. Bottom: five waypoints with short fine segments filling the gaps.">
@@ -419,7 +420,7 @@ footer{
   <div class="body">
     <h2>Still to decide</h2>
     <ul>
-      <li>The value of <code>k</code>. Start at 4.</li>
+      <li><s>The value of <code>k</code>.</s> Decided: <code>k</code> = 2, with a 10-step horizon. See the update in section 02.</li>
       <li>Whether the coarse model shares an encoder with the fine model. Sharing is simpler and probably right.</li>
       <li>What compute we actually have, and therefore how many seeds we can afford. Three is the floor.</li>
     </ul>
