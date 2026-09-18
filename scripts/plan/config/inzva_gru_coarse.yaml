@@ -13,9 +13,14 @@
 # hierarchical solver is bad". If the hierarchy underperforms while this number
 # is healthy, the solver is the suspect, and the other way round.
 #
-# It is NOT a row in any experiment. Experiment A compares flat CEM on the fine
-# model against our solver on both models; nothing in the plan compares against
-# coarse-only planning.
+# Careful when comparing its number with inzva_gru.yaml's: receding_horizon is
+# 5 in *solver* steps, which is 10 environment steps here against the fine
+# model's 5. That difference is worth about 16 points on its own (section 13),
+# and most of the coarse model's apparent lead is it, not the stride.
+#
+# Coarse-only planning was not in the original experiment plan. On the evidence
+# it probably should be a row in Experiment A: if the hierarchy cannot beat
+# planning coarsely and never refining, the refinement is not earning its keep.
 defaults:
   - inzva_gru
   - _self_

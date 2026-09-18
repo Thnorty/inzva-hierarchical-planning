@@ -111,6 +111,7 @@ def parse_runs(path: Path) -> list[dict]:
                 'eval_budget': cfg.get('eval', {}).get('eval_budget'),
                 'history_len': cfg.get('plan_config', {}).get('history_len'),
                 'horizon': cfg.get('plan_config', {}).get('horizon'),
+                'receding': cfg.get('plan_config', {}).get('receding_horizon'),
                 'action_block': cfg.get('plan_config', {}).get('action_block'),
                 'num_samples': cfg.get('solver', {}).get('num_samples'),
                 'n_steps': cfg.get('solver', {}).get('n_steps'),
@@ -149,19 +150,20 @@ def render(runs: list[dict], env: dict, source: str, config_name: str) -> str:
         '',
         '## Runs',
         '',
-        '| Policy | Seed | Horizon | Block | Episodes | Samples | CEM steps '
-        '| Success | Seconds |',
-        '|--------|------|---------|-------|----------|---------|-----------'
-        '|---------|---------|',
+        '| Policy | Seed | Horizon | Block | Recede | Episodes | Samples '
+        '| CEM steps | Success | Seconds |',
+        '|--------|------|---------|-------|--------|----------|---------'
+        '|-----------|---------|---------|',
     ]
     for r in runs:
         secs = f'{r["seconds"]:.0f}' if r['seconds'] else '-'
-        # Horizon and action_block belong in the table: two runs that differ
-        # only by horizon were otherwise indistinguishable here, and the
-        # horizon turned out to be worth 45 points (README section 13).
+        # Every planner setting we have measured as worth double digits gets
+        # a column. Horizon is worth up to 45 points and the replanning
+        # interval up to 16, and two runs differing only in those used to
+        # look identical here (README section 13).
         lines.append(
             f'| `{r["policy"]}` | {r["seed"]} | {r["horizon"]} '
-            f'| {r["action_block"]} | {r["num_eval"]} '
+            f'| {r["action_block"]} | {r["receding"]} | {r["num_eval"]} '
             f'| {r["num_samples"]} | {r["n_steps"]} '
             f'| {r["successes"]}/{r["episodes"]} = {r["success_rate"]:.0f}% '
             f'| {secs} |'

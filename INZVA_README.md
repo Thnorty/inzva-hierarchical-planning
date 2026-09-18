@@ -1244,11 +1244,20 @@ Done:
       A4000. **62.0%** over two three-seed runs: the Experiment A baseline
 - [x] **Planning horizon decided** (§13): `horizon: 10`, `k: 2`, still 5
       waypoints. The old 40 scored 15.3% because it aims past the goal
+- [x] **Coarse model trained** (§10). Stride 2 on the fine model's frozen
+      latent, 2.5 h. 74.7% planned alone, `notes/results/inzva_gru_coarse_results.md`
+- [x] **Replanning interval measured** (§13): worth up to 16 points, and the
+      coarse model's apparent lead over the fine one is mostly this
 - [x] **DINO-WM scored: 84.0% over three seeds** (§11). The kotmul checkpoint
       runs after three fixes and is our Experiment B reference. We do not
       train DINO-WM ourselves
 
 Open, in the order they block things:
+
+- [ ] **Decide the replanning interval for our rows** (§13). The locked 5 was
+      copied from upstream and never measured; 10 scores ~9 points higher for
+      both our models. Whatever is chosen, flat and hierarchical planners must
+      match in *environment* steps, or the hierarchy gets a free 10 points
 
 - [ ] A **teammate** runs the five commands in §9. Done twice here already, in
       a fresh Windows clone and cold on Ubuntu under WSL2, catching five
@@ -1396,6 +1405,16 @@ It scored 15.3% before the horizon was fixed (§13).
 
 **Files:** `stable_worldmodel/wm/gru/gru_wm.py`, `scripts/train_gru.py`,
 `scripts/train/config/gru.yaml`, `tests/wm/test_gru_wm.py`.
+
+**The coarse model is done too** (`scripts/train/config/gru_coarse.yaml`): the
+same architecture at stride 2 over the fine model's frozen latent, 2.5 h to
+train because a frozen encoder needs no backward pass. Planned on its own with
+plain CEM it scores 74.7%, but read §13 before comparing that with the fine
+model's 62.0%: most of the gap is the replanning interval, not the stride.
+
+```bash
+python scripts/train_gru.py --config-name gru_coarse   # needs gru_fine first
+```
 
 Train it, or continue an interrupted run, with:
 
@@ -1897,3 +1916,45 @@ Two consequences worth carrying forward:
   The collapse from 60% to 14% as the horizon grows is exactly the weakness the
   hierarchy claims to fix. We rejected it on compute, not on merit; revisit it
   if the budget allows.
+
+### The same trap again: the replanning interval
+
+`receding_horizon: 5` is inherited from `inzva_pusht.yaml`, where it was copied
+from upstream's PushT config. Like `horizon: 40`, nobody measured it against our
+model. It is worth up to 16 points.
+
+The planner plans `horizon` steps and then executes only `receding_horizon` of
+them before replanning. **Replanning less often scores better here, for both of
+our models**, which is the opposite of the usual expectation that more feedback
+helps. Three seeds each:
+
+| Environment steps executed per plan | 4 | 5 (locked) | 7 | 10 |
+|---|---|---|---|---|
+| Fine model, `horizon: 10` | — | 62.0% | 64.7% | **71.3%** |
+| Coarse model, `horizon: 5`, `k = 2` | 58.7% | — | 68.0% | **74.7%** |
+
+Read the columns, not the rows: the two models are close at every matched
+cadence. The coarse model's headline 74.7% comes mostly from executing 10
+environment steps per plan, not from temporal abstraction. Its default
+`receding_horizon: 5` means 5 coarse steps, which is 10 environment steps,
+while the fine model's 5 means 5.
+
+**This matters for Experiment A more than the raw numbers do.** Any comparison
+between the flat planner and the hierarchy has to hold the replanning interval
+fixed *in environment steps*, or the hierarchy inherits a 10-point advantage
+that has nothing to do with the method. A coarse or hierarchical planner that
+keeps `receding_horizon: 5` in its own step units is silently replanning half as
+often as the flat baseline.
+
+Why longer intervals win is not established. A plausible reading is that CEM
+re-solves from scratch each time, so frequent replanning resamples a noisy
+20-dimensional search and can replace a good plan with a worse one, while the
+model is accurate enough over 10 steps that the original plan survives contact
+with the environment. That is a hypothesis, not a measurement.
+
+### What is still unmeasured
+
+`num_samples: 300` and `n_steps: 30` are also inherited rather than chosen, and
+Experiment A sweeps the sample budget anyway. Nobody has checked whether our
+models want a different CEM budget than LeWM did. Expect the same pattern:
+settings picked for someone else's model are not automatically right for ours.
