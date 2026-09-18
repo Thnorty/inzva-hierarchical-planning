@@ -370,7 +370,9 @@ def run(cfg: DictConfig):
                             'epoch': epoch + 1,
                             'step': step,
                             **{k: round(v, 5) for k, v in row.items()},
-                            'lr_dynamics': scheduler.get_last_lr()[1],
+                            # Last group is always the dynamics one; with
+                            # a frozen encoder it is the only one.
+                            'lr_dynamics': scheduler.get_last_lr()[-1],
                             'clips_per_s': round(seen / elapsed, 1),
                         }
                     ),
