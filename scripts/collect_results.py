@@ -149,13 +149,19 @@ def render(runs: list[dict], env: dict, source: str, config_name: str) -> str:
         '',
         '## Runs',
         '',
-        '| Policy | Seed | Episodes | Samples | CEM steps | Success | Seconds |',
-        '|--------|------|----------|---------|-----------|---------|---------|',
+        '| Policy | Seed | Horizon | Block | Episodes | Samples | CEM steps '
+        '| Success | Seconds |',
+        '|--------|------|---------|-------|----------|---------|-----------'
+        '|---------|---------|',
     ]
     for r in runs:
         secs = f'{r["seconds"]:.0f}' if r['seconds'] else '-'
+        # Horizon and action_block belong in the table: two runs that differ
+        # only by horizon were otherwise indistinguishable here, and the
+        # horizon turned out to be worth 45 points (README section 13).
         lines.append(
-            f'| `{r["policy"]}` | {r["seed"]} | {r["num_eval"]} '
+            f'| `{r["policy"]}` | {r["seed"]} | {r["horizon"]} '
+            f'| {r["action_block"]} | {r["num_eval"]} '
             f'| {r["num_samples"]} | {r["n_steps"]} '
             f'| {r["successes"]}/{r["episodes"]} = {r["success_rate"]:.0f}% '
             f'| {secs} |'

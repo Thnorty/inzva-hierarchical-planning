@@ -1033,13 +1033,14 @@ framing of "40 steps becomes 5 decisions":
 | Key | Value | Why |
 |-----|-------|-----|
 | `action_block` | 1 | ours to choose; the constraint came from someone else's checkpoint |
-| `horizon` | 40 | 40 x 1 = 40 <= 50, satisfies the assertion |
-| `k` | 8 | 40 / 8 = 5 coarse waypoints |
+| `horizon` | 10 | measured best for the flat planner (§13); 10 x 1 = 10 <= 50 |
+| `k` | 2 | 10 / 2 = 5 coarse waypoints, the spec's "5 decisions" |
 
-> **`horizon: 40` is contested by measurement (§13).** The evaluation goal is
-> 25 steps ahead, so a 40-step horizon aims past it. The trained GRU scores
-> 15.3% at 40 and 60.0% at 10. Nothing here has been changed; the team has to
-> decide. Read §13 before using this table.
+> **Changed 2026-09-18, from `horizon: 40` and `k: 8`.** Those were derived from
+> the method's shape, not measured. The evaluation goal is 25 steps ahead and
+> `GoalMSE` scores only the last predicted step, so a 40-step horizon aims 15
+> steps past the goal: the trained GRU scores 15.3% at 40 against 60.0% at 10.
+> The waypoint count is unchanged at 5. Full reasoning and the sweep are in §13.
 
 Two things to keep in mind about what this buys and costs:
 
@@ -1238,16 +1239,14 @@ Done:
 - [x] **Cross-machine agreement measured on three GPUs** (§6.4): at most 2
       episodes of 150 differ, all three means within 0.6 points
 - [x] **Fine GRU written, trained and scored** (§10). 30 epochs, 7.5 h on an
-      A4000. 15.3% at the locked horizon, 60.0% at `horizon: 10`
+      A4000. **60.0% over three seeds**, spread 2.0: the Experiment A baseline
+- [x] **Planning horizon decided** (§13): `horizon: 10`, `k: 2`, still 5
+      waypoints. The old 40 scored 15.3% because it aims past the goal
 - [x] **DINO-WM scored: 84.0% over three seeds** (§11). The kotmul checkpoint
       runs after three fixes and is our Experiment B reference. We do not
       train DINO-WM ourselves
 
 Open, in the order they block things:
-
-- [ ] **Decide the planning horizon** (§13). The locked 40 scores 15.3% and 10
-      scores 60.0%. Experiment A is unfair to the hierarchy's favour until this
-      is settled, and `k` is derived from whatever is chosen
 
 - [ ] A **teammate** runs the five commands in §9. Done twice here already, in
       a fresh Windows clone and cold on Ubuntu under WSL2, catching five
@@ -1389,8 +1388,9 @@ the document trying to follow it.
 ## 10. The fine GRU: built, trained and scored
 
 **Done.** Trained 30 epochs on an RTX A4000 in 7.5 hours; predicts the latent
-24x better than assuming nothing moves. Scores 15.3% over three seeds under the
-locked config and 60.0% at `horizon: 10` (§13).
+24x better than assuming nothing moves. **Scores 60.0% over three seeds**
+(spread 2.0) under the locked config, which is the baseline Experiment A has to
+beat. It scored 15.3% before the horizon was fixed (§13).
 
 **Files:** `stable_worldmodel/wm/gru/gru_wm.py`, `scripts/train_gru.py`,
 `scripts/train/config/gru.yaml`, `tests/wm/test_gru_wm.py`.
@@ -1806,10 +1806,10 @@ re-deriving it.
 after the DINOv2 backbone downloads. Small checks are fine; anything that builds
 a model belongs in a job, per the cluster's own guidance.
 
-## 13. The planning horizon: 40 is wrong for the fine GRU
+## 13. The planning horizon: why it is 10 and not 40
 
-**This section describes an open decision, not a settled one.** The value it
-questions, `horizon: 40`, is locked in §6.5 and nothing has been changed.
+**Decided 2026-09-18: `horizon: 10`, `k: 2`.** Set in
+`scripts/plan/config/inzva_gru.yaml` and recorded in §6.5. This section is why.
 
 ### What the horizon is
 
@@ -1859,25 +1859,30 @@ has to produce before it can claim anything (§6.1b).
 
 `horizon` must stay at or above `receding_horizon` (5). A run at 3 fails.
 
-### What has to be decided
+### What we decided, and why
 
-Experiment A compares flat CEM against our coarse-to-fine solver. If the flat
-baseline is pinned at `horizon: 40`, we would be comparing against a setting we
-have already measured as bad, and beating it would prove little. **A fair
-Experiment A compares the hierarchy against the best flat configuration.**
+Experiment A compares flat CEM against our coarse-to-fine solver. Pinned at
+`horizon: 40`, the flat baseline would be a setting we had already measured as
+bad, and beating it would prove little. **A fair Experiment A compares the
+hierarchy against the best flat configuration**, so we moved the horizon to
+where the flat planner is actually good.
 
-The options, in the order they cost us:
+`horizon: 10` with `k = 2` keeps the spec's five waypoints and changes nothing
+about the method: the coarse model still plans 5 strided steps and the fine
+model still fills the gaps. Only the size of the gaps changed, from 8 steps to
+2.
 
-1. **Keep `horizon: 40` for both rows and report the horizon-10 flat number
-   alongside.** Nothing changes in the method. The write-up has to state plainly
-   that a shorter horizon beats both, if it does.
-2. **Re-pick the horizon and derive `k` from it.** A horizon of 10 with `k = 2`
-   gives 5 waypoints, the same "5 decisions" the spec asks for. This keeps the
-   comparison fair and the hierarchy intact, at the cost of reopening §6.5.
-3. **Sweep the horizon as a second axis of Experiment A.** The most informative
-   and the most compute. The collapse from 60% to 14% as the horizon grows is
-   precisely the weakness the hierarchy claims to fix, so measuring both planners
-   across horizons is arguably the experiment we actually want.
+**The baseline of record for Experiment A is 60.0%**, spread 2.0, in
+`notes/results/inzva_gru_results.md`. The earlier 15.3% run is kept as
+`notes/results/gru_horizon40_results.md`: it is what the old config produced
+and is the evidence for this section, not a number to quote.
 
-Whatever is chosen, it has to be chosen once and written into
-`scripts/plan/config/inzva_gru.yaml`, like every other shared setting.
+Two consequences worth carrying forward:
+
+- **Do not raise the horizon to make the hierarchy look better.** The two
+  planners have to meet at the same horizon, and that horizon has to be one the
+  flat planner handles well.
+- **A horizon sweep is still the most informative version of Experiment A.**
+  The collapse from 60% to 14% as the horizon grows is exactly the weakness the
+  hierarchy claims to fix. We rejected it on compute, not on merit; revisit it
+  if the budget allows.

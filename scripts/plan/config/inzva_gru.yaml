@@ -17,20 +17,25 @@ defaults:
   - _self_
 
 plan_config:
-  # LOCKED. See INZVA_README.md section 6.5.
+  # LOCKED. See INZVA_README.md sections 6.5 and 13.
   #
   # eval_wm.py:69 asserts horizon * action_block <= eval.eval_budget (50).
-  # 40 * 1 = 40, so this fits with room to spare.
+  # 10 * 1 = 10, well inside it.
   #
   # action_block 1 because the frameskip-5 constraint came from someone else's
-  # checkpoint, not from our model. horizon 40 with a coarse stride of k = 8
-  # gives 5 waypoints, which is the spec's "40 steps becomes 5 decisions".
+  # checkpoint, not from our model.
   #
-  # This makes flat CEM roll 40 model steps per candidate instead of 5. That 8x
-  # is the gap the hierarchy exists to close, not an accident: coarse plans 5
-  # strided steps and fine fills 8 between waypoints, roughly 13 instead of 40.
+  # horizon 10, with a coarse stride of k = 2, gives the 5 waypoints the spec
+  # asks for. It was 40 with k = 8 until we measured it (section 13): the
+  # evaluation goal is 25 env steps ahead and GoalMSE scores only the last
+  # predicted step, so a 40-step horizon aims 15 steps past the goal. The
+  # trained GRU scores 15.3% at 40 and 60.0% at 10, both over three seeds.
+  #
+  # Do not raise this to make the hierarchy look better. Experiment A compares
+  # the two planners at the same horizon, and that horizon has to be one the
+  # flat planner is actually good at, or beating it proves nothing.
   action_block: 1
-  horizon: 40
+  horizon: 10
 
   # Replan every 5 env steps, so a 50-step episode replans 10 times.
   receding_horizon: 5
