@@ -1,6 +1,6 @@
 # Eval results
 
-Generated 2026-09-18 14:52 UTC by `scripts/collect_results.py`.
+Generated 2026-09-18 15:03 UTC by `scripts/collect_results.py`.
 Do not edit by hand; rerun the script instead.
 
 Source: `$STABLEWM_HOME/checkpoints/inzva_gru_coarse_results.txt`
@@ -9,7 +9,7 @@ Source: `$STABLEWM_HOME/checkpoints/inzva_gru_coarse_results.txt`
 
 | | |
 |---|---|
-| commit (at collection) | `e73c7a6` |
+| commit (at collection) | `e072ba3` |
 | torch | `2.11.0+cu130` |
 | cuda | `13.0` |
 | gpu | `NVIDIA RTX A4000` |
@@ -17,11 +17,11 @@ Source: `$STABLEWM_HOME/checkpoints/inzva_gru_coarse_results.txt`
 
 ## Runs
 
-| Policy | Seed | Horizon | Block | Episodes | Samples | CEM steps | Success | Seconds |
-|--------|------|---------|-------|----------|---------|-----------|---------|---------|
-| `gru_coarse` | 0 | 5 | 2 | 50 | 300 | 30 | 38/50 = 76% | 14 |
-| `gru_coarse` | 1 | 5 | 2 | 50 | 300 | 30 | 37/50 = 74% | 14 |
-| `gru_coarse` | 2 | 5 | 2 | 50 | 300 | 30 | 37/50 = 74% | 14 |
+| Policy | Seed | Horizon | Block | Recede | Episodes | Samples | CEM steps | Success | Seconds |
+|--------|------|---------|-------|--------|----------|---------|-----------|---------|---------|
+| `gru_coarse` | 0 | 5 | 2 | 5 | 50 | 300 | 30 | 38/50 = 76% | 14 |
+| `gru_coarse` | 1 | 5 | 2 | 5 | 50 | 300 | 30 | 37/50 = 74% | 14 |
+| `gru_coarse` | 2 | 5 | 2 | 5 | 50 | 300 | 30 | 37/50 = 74% | 14 |
 
 ## Full-protocol summary
 
