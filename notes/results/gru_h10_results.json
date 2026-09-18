@@ -1,0 +1,59 @@
+{
+  "generated": "2026-09-18T05:20:20.220763+00:00",
+  "source": "$STABLEWM_HOME/checkpoints/gru_h10_results.txt",
+  "environment": {
+    "commit": "2c9ff91",
+    "torch": "2.11.0+cu130",
+    "transformers": "5.16.1",
+    "stable_pretraining": "0.1.8",
+    "cuda": "13.0",
+    "gpu": "NVIDIA RTX A4000"
+  },
+  "runs": [
+    {
+      "seed": 0,
+      "policy": "gru_fine",
+      "num_eval": 50,
+      "eval_budget": 50,
+      "history_len": 1,
+      "horizon": 10,
+      "action_block": 1,
+      "num_samples": 300,
+      "n_steps": 30,
+      "success_rate": 57.99999999999999,
+      "successes": 29,
+      "episodes": 50,
+      "seconds": 23.40569233894348
+    },
+    {
+      "seed": 1,
+      "policy": "gru_fine",
+      "num_eval": 50,
+      "eval_budget": 50,
+      "history_len": 1,
+      "horizon": 10,
+      "action_block": 1,
+      "num_samples": 300,
+      "n_steps": 30,
+      "success_rate": 62.0,
+      "successes": 31,
+      "episodes": 50,
+      "seconds": 22.75870108604431
+    },
+    {
+      "seed": 2,
+      "policy": "gru_fine",
+      "num_eval": 50,
+      "eval_budget": 50,
+      "history_len": 1,
+      "horizon": 10,
+      "action_block": 1,
+      "num_samples": 300,
+      "n_steps": 30,
+      "success_rate": 60.0,
+      "successes": 30,
+      "episodes": 50,
+      "seconds": 23.398569583892822
+    }
+  ]
+}
