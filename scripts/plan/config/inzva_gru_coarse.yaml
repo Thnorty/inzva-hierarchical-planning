@@ -1,0 +1,31 @@
+# Evaluation config for the COARSE model, planned with plain CEM.
+#
+#   python scripts/plan/eval_wm.py --config-name inzva_gru_coarse -m \
+#       policy=gru_coarse seed=0,1,2
+#
+# This is a diagnostic, not one of the three experiments. The coarse model's
+# real job is inside the hierarchical solver, but it also satisfies the plain
+# Dynamics contract, so the existing planner can drive it directly: 5 coarse
+# steps of 2 environment actions each cover the same 10 environment steps the
+# fine model plans over in inzva_gru.yaml.
+#
+# What it is good for: separating "the coarse model is bad" from "the
+# hierarchical solver is bad". If the hierarchy underperforms while this number
+# is healthy, the solver is the suspect, and the other way round.
+#
+# It is NOT a row in any experiment. Experiment A compares flat CEM on the fine
+# model against our solver on both models; nothing in the plan compares against
+# coarse-only planning.
+defaults:
+  - inzva_gru
+  - _self_
+
+plan_config:
+  # 5 x 2 = 10 environment steps, matching inzva_gru.yaml exactly. The solver
+  # samples 5 actions per candidate instead of 10, which is the search-space
+  # reduction the hierarchy is built on, without the fine model refining it.
+  action_block: 2
+  horizon: 5
+
+output:
+  filename: inzva_gru_coarse_results.txt

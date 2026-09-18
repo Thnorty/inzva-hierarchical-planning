@@ -68,7 +68,7 @@ def build_dataset(cfg: DictConfig):
     dataset = swm.data.load_dataset(
         cfg.dataset_name,
         num_steps=cfg.rollout_steps + 1,
-        frameskip=1,
+        frameskip=cfg.frameskip,
         keys_to_load=['pixels', 'action'],
         keys_to_cache=['action'],
     )
@@ -124,25 +124,42 @@ def compute_losses(model, sigreg, batch, cfg, device, amp_dtype):
     """One forward pass. Returns the loss and detached diagnostics."""
     pixels = batch['pixels'].to(device, non_blocking=True)
     action = torch.nan_to_num(batch['action'].to(device, non_blocking=True))
+    frozen = cfg.freeze_encoder
 
     with torch.autocast(
         device_type=device.type,
         dtype=amp_dtype or torch.float32,
         enabled=amp_dtype is not None,
     ):
-        out = model.encode({'pixels': pixels, 'action': action})
+        if frozen:
+            # Nothing upstream of the latent is trained, so do not build a
+            # graph through the encoder at all. The action encoder is still
+            # trained, so it stays outside the no_grad block.
+            with torch.no_grad():
+                emb_raw = model.encode({'pixels': pixels})['emb']
+            act_emb = model.action_encoder(action)
+        else:
+            out = model.encode({'pixels': pixels, 'action': action})
+            emb_raw, act_emb = out['emb'], out['act_emb']
         # The action leaving the last frame has no target inside the clip.
-        preds = model.unroll(out['emb'][:, 0], out['act_emb'][:, :-1])
+        preds = model.unroll(emb_raw[:, 0], act_emb[:, :-1])
 
     # Losses in float32: SIGReg evaluates cosines and sines of projections,
     # which is where half precision tends to go wrong first.
-    emb = out['emb'].float()
+    emb = emb_raw.float()
     preds = preds.float()
     target = emb[:, 1:]
 
     pred_loss = (preds - target).pow(2).mean()
-    sigreg_loss = sigreg(emb.transpose(0, 1))
-    loss = pred_loss + cfg.loss.sigreg.weight * sigreg_loss
+    # A frozen encoder makes SIGReg a constant: it only ever shaped the
+    # latent, and the latent is no longer moving. Skip it, do not pay for it.
+    weight = cfg.loss.sigreg.weight
+    sigreg_loss = (
+        sigreg(emb.transpose(0, 1))
+        if weight
+        else torch.zeros((), device=emb.device)
+    )
+    loss = pred_loss + weight * sigreg_loss
 
     with torch.no_grad():
         metrics = {
@@ -174,10 +191,14 @@ def run(cfg: DictConfig):
 
     # -- data
     dataset = build_dataset(cfg)
-    if dataset.get_dim('action') != cfg.model.action_encoder.input_dim:
+    # A clip step spans `frameskip` env steps and the reader groups their
+    # actions together, so the action encoder sees frameskip x action_dim.
+    expected = dataset.get_dim('action') * cfg.frameskip
+    if expected != cfg.model.action_encoder.input_dim:
         raise SystemExit(
-            f'dataset actions have {dataset.get_dim("action")} dims but '
-            f'the action encoder expects {cfg.model.action_encoder.input_dim}'
+            f'actions are {dataset.get_dim("action")} dims x frameskip '
+            f'{cfg.frameskip} = {expected}, but the action encoder expects '
+            f'{cfg.model.action_encoder.input_dim}'
         )
     train_idx, val_idx = split_clips(dataset)
     print(
@@ -228,25 +249,54 @@ def run(cfg: DictConfig):
     model_cfg = OmegaConf.to_container(cfg.model, resolve=True)
     model = hydra.utils.instantiate(cfg.model).to(device)
     sigreg = SIGReg(**cfg.loss.sigreg.kwargs).to(device)
-    optimizer = torch.optim.AdamW(
-        [
-            {
-                'params': [
-                    *model.encoder.parameters(),
-                    *model.projector.parameters(),
-                ],
-                'lr': cfg.optim.encoder_lr,
-            },
-            {
-                'params': [
-                    *model.predictor.parameters(),
-                    *model.action_encoder.parameters(),
-                ],
-                'lr': cfg.optim.dynamics_lr,
-            },
-        ],
-        weight_decay=cfg.optim.weight_decay,
-    )
+    if cfg.init_from:
+        # The coarse model predicts in the fine model's latent space, so it
+        # starts from that encoder. Only the encoder and projector are
+        # copied: the predictor and action encoder change shape with the
+        # stride, and they are what this run trains.
+        from stable_worldmodel.wm.utils import load_pretrained
+
+        source = load_pretrained(cfg.init_from).state_dict()
+        shared = {
+            k: v
+            for k, v in source.items()
+            if k.startswith(('encoder.', 'projector.'))
+        }
+        if not shared:
+            raise SystemExit(f'{cfg.init_from} provided no encoder weights')
+        _, unexpected = model.load_state_dict(shared, strict=False)
+        if unexpected:
+            raise SystemExit(
+                f'unexpected keys from {cfg.init_from}: {unexpected[:3]}'
+            )
+        print(
+            f'copied {len(shared)} encoder tensors from {cfg.init_from}',
+            flush=True,
+        )
+
+    encoder_params = [
+        *model.encoder.parameters(),
+        *model.projector.parameters(),
+    ]
+    if cfg.freeze_encoder:
+        model.encoder.requires_grad_(False)
+        model.projector.requires_grad_(False)
+        encoder_params = []
+
+    groups = [
+        {
+            'params': [
+                *model.predictor.parameters(),
+                *model.action_encoder.parameters(),
+            ],
+            'lr': cfg.optim.dynamics_lr,
+        }
+    ]
+    if encoder_params:
+        groups.insert(
+            0, {'params': encoder_params, 'lr': cfg.optim.encoder_lr}
+        )
+    optimizer = torch.optim.AdamW(groups, weight_decay=cfg.optim.weight_decay)
     steps_per_epoch = len(train_loader)
     total_steps = steps_per_epoch * cfg.train.max_epochs
     scheduler = torch.optim.lr_scheduler.LambdaLR(
@@ -275,15 +325,24 @@ def run(cfg: DictConfig):
         print(f'resumed {run_name} at epoch {start_epoch}', flush=True)
 
     params = sum(p.numel() for p in model.parameters())
+    trainable = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(
-        f'model: {params / 1e6:.1f}M params | device {device} | '
-        f'precision {cfg.train.precision} | {steps_per_epoch} steps/epoch',
+        f'model: {params / 1e6:.1f}M params, '
+        f'{trainable / 1e6:.1f}M trainable | stride {cfg.frameskip} | '
+        f'device {device} | precision {cfg.train.precision} | '
+        f'{steps_per_epoch} steps/epoch',
         flush=True,
     )
 
     # -- train
     for epoch in range(start_epoch, cfg.train.max_epochs):
         model.train()
+        if cfg.freeze_encoder:
+            # eval(), not just requires_grad_(False): BatchNorm running
+            # stats are buffers and would keep drifting in train mode,
+            # moving the latent space this model predicts in.
+            model.encoder.eval()
+            model.projector.eval()
         window, t0, seen = [], time.time(), 0
         for batch in train_loader:
             loss, metrics = compute_losses(

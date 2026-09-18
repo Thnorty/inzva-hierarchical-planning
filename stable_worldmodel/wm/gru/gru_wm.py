@@ -98,8 +98,16 @@ class GRUWorldModel(nn.Module):
             has ``last_hidden_state`` (the first token is used, as in LeWM), or
             any module returning ``(N, D)`` directly.
         predictor: One-step dynamics, normally a :class:`GRUPredictor`.
-        action_encoder: Maps actions ``(N, T, action_dim)`` to embeddings.
+        action_encoder: Maps actions ``(N, T, action_dim)`` to embeddings. For a
+            coarse model its input is the ``stride`` actions spanned by one
+            prediction, so ``input_dim`` is ``stride * env_action_dim``.
         projector: Maps the encoder output to the latent. Defaults to identity.
+        stride: Environment steps advanced by one call to ``predictor``. 1 for
+            the fine model. The coarse model of the hierarchy sets ``k``, and
+            planning reads this to convert between its own steps and
+            environment steps. It is metadata: nothing here behaves
+            differently, because a strided model is just a model trained on
+            strided data.
     """
 
     def __init__(
@@ -108,6 +116,7 @@ class GRUWorldModel(nn.Module):
         predictor: nn.Module,
         action_encoder: nn.Module,
         projector: nn.Module | None = None,
+        stride: int = 1,
         **kwargs,
     ):
         super().__init__()
@@ -115,6 +124,7 @@ class GRUWorldModel(nn.Module):
         self.predictor = predictor
         self.action_encoder = action_encoder
         self.projector = projector or nn.Identity()
+        self.stride = stride
 
     def _embed(self, pixels: torch.Tensor) -> torch.Tensor:
         """Encode a flat batch of images, ``(N, C, H, W) -> (N, D)``."""

@@ -26,6 +26,17 @@ action_emb_dim: 192
 # ViT forward pass per frame per sample.
 rollout_steps: 16
 
+# Environment steps spanned by one model step. 1 for the fine model; the
+# coarse model sets k (gru_coarse.yaml). The reader groups the actions of a
+# strided step together, so the action encoder widens with it.
+frameskip: 1
+
+# Copy the encoder and projector from an existing checkpoint, and optionally
+# stop training them. The coarse model needs both: it has to predict in the
+# same latent space the fine model planned in, and that space must not move.
+init_from: null
+freeze_encoder: false
+
 train:
   batch_size: 32
   num_workers: 6

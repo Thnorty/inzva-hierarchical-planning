@@ -145,6 +145,44 @@ def test_gradients_reach_action_candidates():
     assert actions.grad.abs().sum() > 0
 
 
+def test_stride_defaults_to_one_and_is_recorded():
+    """The hierarchy reads stride to convert its steps into environment steps."""
+    assert _model().stride == 1
+    coarse = GRUWorldModel(
+        encoder=TinyEncoder(),
+        predictor=GRUPredictor(latent_dim=D, action_dim=D),
+        action_encoder=Embedder(input_dim=2 * A, emb_dim=D),
+        stride=2,
+    )
+    assert coarse.stride == 2
+
+
+def test_coarse_model_rolls_strided_actions():
+    """One coarse step consumes the k actions it spans, as one input."""
+    torch.manual_seed(0)
+    coarse = GRUWorldModel(
+        encoder=TinyEncoder(),
+        predictor=GRUPredictor(latent_dim=D, action_dim=D),
+        action_encoder=Embedder(input_dim=2 * A, emb_dim=D),
+        stride=2,
+    ).eval()
+    nn.init.normal_(coarse.predictor.out_proj.weight, std=0.5)
+
+    info = {
+        'pixels': torch.randn(B, S, 1, 3, IMG, IMG),
+        'goal': torch.randn(B, S, 1, 3, IMG, IMG),
+        'action': torch.randn(B, S, 1, 2 * A),
+    }
+    # T coarse steps, each carrying stride x action_dim numbers.
+    out = coarse.rollout(info, torch.randn(B, S, T, 2 * A))
+    assert out['predicted_emb'].shape == (B, S, 1 + T, D)
+
+    cost = ShootingCostEvaluator(coarse, GoalMSE()).get_cost(
+        info, torch.randn(B, S, T, 2 * A)
+    )
+    assert cost.shape == (B, S) and torch.isfinite(cost).all()
+
+
 def test_checkpoint_round_trips_through_load_pretrained(tmp_path):
     """The real config: ViT encoder, BatchNorm projector, loaded by Hydra."""
     pytest.importorskip('stable_pretraining')

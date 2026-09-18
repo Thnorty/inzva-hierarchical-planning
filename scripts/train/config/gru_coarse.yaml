@@ -1,0 +1,46 @@
+# Training config for the COARSE world model. See INZVA_README.md sections 6.5
+# and 13.
+#
+#   python scripts/train_gru.py --config-name gru_coarse
+#
+# The coarse model is the fine model with a longer stride. It predicts the
+# latent k = 2 environment steps ahead instead of 1, consuming the two actions
+# in between as one input. Everything else is inherited from gru.yaml, so the
+# two models differ only where they have to.
+#
+# It is trained **after** the fine model and **from** it: section 6.5 locks one
+# shared encoder, trained with the fine model and then frozen. The coarse model
+# therefore predicts inside a latent space it cannot change, which is what lets
+# the hierarchical solver hand a coarse waypoint to the fine model as a target.
+#
+# The cost of that decision is written down in section 6.5: the encoder was
+# optimised for one-step prediction, so it may cap how well any strided model
+# can do. If the coarse model plateaus far short of the fine one, suspect this
+# before suspecting the GRU.
+defaults:
+  - gru
+  - _self_
+
+output_model_name: gru_coarse
+
+# k, the coarse stride. 10 / 2 = 5 waypoints (section 13).
+frameskip: 2
+
+# 8 coarse steps span 16 environment steps, the same clip length the fine model
+# trained on, for the same cost per sample.
+rollout_steps: 8
+
+init_from: gru_fine
+freeze_encoder: true
+
+loss:
+  sigreg:
+    # The encoder is frozen, so SIGReg has nothing left to shape and would only
+    # add a constant. compute_losses skips it entirely at weight 0.
+    weight: 0.0
+
+model:
+  action_encoder:
+    # One coarse step consumes k actions of 2 dims each.
+    input_dim: 4
+  stride: 2
