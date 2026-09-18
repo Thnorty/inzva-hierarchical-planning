@@ -153,13 +153,14 @@ footer{
 <div class="wrap">
 
 <header>
-  <h1 class="question">We built the instrument. We have not run the <em>experiment</em>.</h1>
-  <p class="lede">We have everything we need to run a result and trust it, and we have checked it agrees across three machines. We locked the protocol, measured the baseline, scored the DINO-WM reference, and got the cluster working. We have not yet written a single line of the hierarchical method.</p>
+  <h1 class="question">The instrument is built. Our first <em>model</em> runs.</h1>
+  <p class="lede">We have everything we need to run a result and trust it, and we have checked it agrees across three machines. We locked the protocol, measured the baseline, scored the DINO-WM reference, and got the cluster working. We have now trained the first of our own models. The hierarchy itself is still unwritten.</p>
   <dl class="facts">
-    <div><dt>Written</dt><dd>13 September 2026, updated 17 September</dd></div>
+    <div><dt>Written</dt><dd>13 September 2026, updated 18 September</dd></div>
     <div><dt>Baseline of record</dt><dd>87.3% over 3 seeds</dd></div>
     <div><dt>Machines verified</dt><dd>3</dd></div>
     <div><dt>DINO-WM reference</dt><dd>84.0% over 3 seeds</dd></div>
+    <div><dt>Our GRU</dt><dd>60.0% at horizon 10</dd></div>
     <div><dt>Experiments run</dt><dd class="blank">None</dd></div>
   </dl>
 </header>
@@ -220,12 +221,12 @@ footer{
   <div class="num">03</div>
   <div class="body">
     <h2>What we still have to build</h2>
-    <p>We still have to write six files, none of which exist yet. They are the whole project.</p>
+    <p>Two of the six files exist and are merged. The fine world model trained for 7.5 hours on an RTX A4000 and predicts the latent 24 times better than assuming nothing moves. The four that remain are the hierarchy itself.</p>
     <table>
       <thead><tr><th>File</th><th>What it is</th></tr></thead>
       <tbody>
-        <tr><td class="ours"><code>models/gru_wm.py</code></td><td class="ours">The fine world model. <b>Critical path</b>, everything depends on it</td></tr>
-        <tr><td class="ours"><code>scripts/train_gru.py</code></td><td class="ours">Its training loop. <b>Critical path</b></td></tr>
+        <tr><td>the fine world model</td><td><b>Done.</b> Trained and scored. It lives inside the package rather than at the path the spec named, because a model outside it cannot be loaded by the evaluation script</td></tr>
+        <tr><td><code>scripts/train_gru.py</code></td><td><b>Done.</b> Resumes after a cluster time limit; saves a loadable checkpoint every epoch</td></tr>
         <tr><td><code>models/gru_coarse.py</code></td><td>The coarse model, one step per eight</td></tr>
         <tr><td><code>solver/hierarchical.py</code></td><td>The coarse-to-fine planner, our contribution itself</td></tr>
         <tr><td><code>scripts/sweep.py</code></td><td>Budget sweep driver for Experiment A</td></tr>
@@ -233,7 +234,7 @@ footer{
       </tbody>
     </table>
     <div class="callout">
-      <p><b>We cannot evaluate anything until the fine model trains.</b> We have to make it satisfy the repo's dynamics protocol, meaning it exposes an encode step and a rollout step, or the existing planner cannot call it at all.</p>
+      <p><b>The coarse model and the solver are now the critical path.</b> Both plug into the same two-method interface the fine model already satisfies, and the fine model&rsquo;s latent is the space the coarse one predicts in.</p>
     </div>
     <p>We then run Experiment C to prove our implementation is sound, then A for the claim, then B if compute allows.</p>
   </div>
@@ -271,8 +272,30 @@ footer{
   </div>
 </section>
 
+<section>
+  <div class="num">05</div>
+  <div class="body">
+    <h2>What we have to decide: the planning horizon</h2>
+    <p>Before the robot moves, the planner imagines what would happen if it took some sequence of actions. The horizon is how many steps ahead it imagines. We locked 40 because our method needs it: 40 steps split into 5 waypoints of 8 steps each. That number came from our design, not from testing how well anything plans with it.</p>
+    <p><b>It aims past the target.</b> In evaluation the planner is shown the state 25 steps ahead and told to reach it, and a plan is scored only on where it ends up on its last imagined step. At a horizon of 40 the planner is therefore working to be in the right place 15 steps after the goal. LeWM never had this problem: its horizon is exactly 25 steps.</p>
+    <p>Two further effects push the same way. The model&rsquo;s predictions drift the further ahead it imagines, and the planner searches a much larger space of action sequences with the same effort.</p>
+    <table>
+      <thead><tr><th>Horizon</th><th>5</th><th>10</th><th>15</th><th>20</th><th>25</th><th>40</th></tr></thead>
+      <tbody>
+        <tr><td>Success, one seed</td><td>50%</td><td class="ours">60%</td><td>40%</td><td>22%</td><td>24%</td><td>14%</td></tr>
+      </tbody>
+    </table>
+    <p>Over three seeds our model scores <b>15.3%</b> at the locked horizon and <b>60.0%</b> at 10. It is also far steadier at 10, a spread of 2.0 against 7.6 for LeWM, which matters because seed spread sets how large an effect Experiment A must produce before it can claim anything.</p>
+    <div class="callout">
+      <p><b>Experiment A is unfair in our own favour until we settle this.</b> If the flat planner is pinned at a horizon we have measured as bad, beating it proves little. A fair comparison puts the hierarchy against the best flat setting.</p>
+      <p>The encouraging reading is the opposite one: that collapse from 60% to 14% as the horizon grows is exactly the weakness the hierarchy claims to fix, and we have now measured it on our own model.</p>
+    </div>
+    <p>Three ways forward, cheapest first. Keep 40 for both rows and report the horizon-10 number beside it. Or re-pick the horizon and derive the stride from it, where 10 with a stride of 2 gives the same five waypoints. Or sweep the horizon as a second axis of Experiment A, which costs the most and tells us the most.</p>
+  </div>
+</section>
+
 <footer>
-  Status report, 13 September 2026, updated 17 September 2026 with the DINO-WM result. The repo manual is our source of truth for how to do anything; this says where we are. Built on stable-worldmodel at a pinned commit.
+  Status report, 13 September 2026, updated 18 September 2026 with the trained GRU and the planning-horizon decision. The repo manual is our source of truth for how to do anything; this says where we are. Built on stable-worldmodel at a pinned commit.
 </footer>
 
 </div>

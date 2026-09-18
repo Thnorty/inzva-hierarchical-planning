@@ -1036,6 +1036,11 @@ framing of "40 steps becomes 5 decisions":
 | `horizon` | 40 | 40 x 1 = 40 <= 50, satisfies the assertion |
 | `k` | 8 | 40 / 8 = 5 coarse waypoints |
 
+> **`horizon: 40` is contested by measurement (§13).** The evaluation goal is
+> 25 steps ahead, so a 40-step horizon aims past it. The trained GRU scores
+> 15.3% at 40 and 60.0% at 10. Nothing here has been changed; the team has to
+> decide. Read §13 before using this table.
+
 Two things to keep in mind about what this buys and costs:
 
 - **This deliberately makes flat CEM expensive.** At `action_block: 1` and
@@ -1232,11 +1237,17 @@ Done:
       (`scripts/adapt_dinowm.py`). Preflight 8/8, eval mean 87.3%
 - [x] **Cross-machine agreement measured on three GPUs** (§6.4): at most 2
       episodes of 150 differ, all three means within 0.6 points
+- [x] **Fine GRU written, trained and scored** (§10). 30 epochs, 7.5 h on an
+      A4000. 15.3% at the locked horizon, 60.0% at `horizon: 10`
 - [x] **DINO-WM scored: 84.0% over three seeds** (§11). The kotmul checkpoint
       runs after three fixes and is our Experiment B reference. We do not
       train DINO-WM ourselves
 
 Open, in the order they block things:
+
+- [ ] **Decide the planning horizon** (§13). The locked 40 scores 15.3% and 10
+      scores 60.0%. Experiment A is unfair to the hierarchy's favour until this
+      is settled, and `k` is derived from whatever is chosen
 
 - [ ] A **teammate** runs the five commands in §9. Done twice here already, in
       a fresh Windows clone and cold on Ubuntu under WSL2, catching five
@@ -1375,13 +1386,30 @@ the document trying to follow it.
 
 ---
 
-## 10. Next task: the fine GRU
+## 10. The fine GRU: built, trained and scored
 
-Everything else waits on this. Both the baseline row and our own method need the
-fine GRU, and neither the coarse model nor the hierarchical solver can be tested
-without it.
+**Done.** Trained 30 epochs on an RTX A4000 in 7.5 hours; predicts the latent
+24x better than assuming nothing moves. Scores 15.3% over three seeds under the
+locked config and 60.0% at `horizon: 10` (§13).
 
-**Files:** `models/gru_wm.py` and `scripts/train_gru.py`.
+**Files:** `stable_worldmodel/wm/gru/gru_wm.py`, `scripts/train_gru.py`,
+`scripts/train/config/gru.yaml`, `tests/wm/test_gru_wm.py`.
+
+Train it, or continue an interrupted run, with:
+
+```bash
+python scripts/train_gru.py                      # 30 epochs, ~7.5 h on an A4000
+python scripts/train_gru.py train.precision=fp16 # V100/P100 have no bf16
+```
+
+It writes `weights.pt` for `policy=gru_fine`, a loadable snapshot per epoch under
+`epochs/`, and resumes from `train_state.ckpt` if a cluster time limit kills it.
+
+The model is **not** at `models/gru_wm.py` as the spec table says. A script run
+from the repo root cannot import a root-level package, so `eval_wm.py` could
+never load a checkpoint of a model defined there. It lives in the package
+instead, beside `lewm`. The rest of this section is the contract the coarse
+model has to satisfy too.
 
 ### The contract is two methods
 
@@ -1777,3 +1805,79 @@ re-deriving it.
 `arf-ui1` is shared and limited. Loading the DINO-WM checkpoint there segfaults
 after the DINOv2 backbone downloads. Small checks are fine; anything that builds
 a model belongs in a job, per the cluster's own guidance.
+
+## 13. The planning horizon: 40 is wrong for the fine GRU
+
+**This section describes an open decision, not a settled one.** The value it
+questions, `horizon: 40`, is locked in §6.5 and nothing has been changed.
+
+### What the horizon is
+
+Before the robot moves, the planner imagines what would happen if it took some
+sequence of actions. The horizon is how many steps ahead it imagines. A horizon
+of 40 plans 40 steps ahead; a horizon of 10 plans 10 steps ahead.
+
+We locked 40 because the hierarchy needs it: 40 steps split into 5 waypoints of
+8 steps each (§6.5). That number came from the design of our method, not from
+testing how well anything plans with it.
+
+### The problem
+
+In evaluation, the planner is shown the state **25 environment steps ahead** and
+told to reach it (`eval.goal_offset_steps: 25`). `GoalMSE` scores a candidate
+plan on **one** thing: where it ends up on the *last* imagined step.
+
+So with `horizon: 40` the planner chooses actions that put the block in the right
+place at step 40, when the target was where things should be at step 25. It aims
+15 steps past the finish line. LeWM does not have this problem: its
+`horizon: 5` x `action_block: 5` is 25 environment steps, landing exactly on the
+goal.
+
+Two further effects pull the same way. Predictions drift the further ahead the
+model imagines, and the planner must search a much larger space of action
+sequences (40 choices instead of 10) with the same number of samples.
+
+### Measured
+
+Same trained model, same protocol, only `plan_config.horizon` changed. Seed 0:
+
+| Horizon | 5 | 10 | 15 | 20 | 25 | 40 |
+|---------|---|----|----|----|----|----|
+| Success | 50% | **60%** | 40% | 22% | 24% | 14% |
+
+At three seeds:
+
+| Configuration | Mean | Spread | Record |
+|---|---|---|---|
+| Locked, `horizon: 40` | 15.3% | 6.1 | `notes/results/inzva_gru_results.md` |
+| `horizon: 10` | **60.0%** | **2.0** | `notes/results/gru_h10_results.md` |
+
+Horizon 10 is also far steadier across seeds than anything else we have measured
+here: a spread of 2.0, against 7.6 for LeWM and 5.3 for DINO-WM. That matters
+beyond this table, because seed spread sets how large an effect Experiment A
+has to produce before it can claim anything (§6.1b).
+
+`horizon` must stay at or above `receding_horizon` (5). A run at 3 fails.
+
+### What has to be decided
+
+Experiment A compares flat CEM against our coarse-to-fine solver. If the flat
+baseline is pinned at `horizon: 40`, we would be comparing against a setting we
+have already measured as bad, and beating it would prove little. **A fair
+Experiment A compares the hierarchy against the best flat configuration.**
+
+The options, in the order they cost us:
+
+1. **Keep `horizon: 40` for both rows and report the horizon-10 flat number
+   alongside.** Nothing changes in the method. The write-up has to state plainly
+   that a shorter horizon beats both, if it does.
+2. **Re-pick the horizon and derive `k` from it.** A horizon of 10 with `k = 2`
+   gives 5 waypoints, the same "5 decisions" the spec asks for. This keeps the
+   comparison fair and the hierarchy intact, at the cost of reopening §6.5.
+3. **Sweep the horizon as a second axis of Experiment A.** The most informative
+   and the most compute. The collapse from 60% to 14% as the horizon grows is
+   precisely the weakness the hierarchy claims to fix, so measuring both planners
+   across horizons is arguably the experiment we actually want.
+
+Whatever is chosen, it has to be chosen once and written into
+`scripts/plan/config/inzva_gru.yaml`, like every other shared setting.
