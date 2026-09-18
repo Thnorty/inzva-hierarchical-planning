@@ -1039,7 +1039,7 @@ framing of "40 steps becomes 5 decisions":
 > **Changed 2026-09-18, from `horizon: 40` and `k: 8`.** Those were derived from
 > the method's shape, not measured. The evaluation goal is 25 steps ahead and
 > `GoalMSE` scores only the last predicted step, so a 40-step horizon aims 15
-> steps past the goal: the trained GRU scores 15.3% at 40 against 60.0% at 10.
+> steps past the goal: the trained GRU scores 15.3% at 40 against 62.0% at 10.
 > The waypoint count is unchanged at 5. Full reasoning and the sweep are in §13.
 
 Two things to keep in mind about what this buys and costs:
@@ -1239,7 +1239,7 @@ Done:
 - [x] **Cross-machine agreement measured on three GPUs** (§6.4): at most 2
       episodes of 150 differ, all three means within 0.6 points
 - [x] **Fine GRU written, trained and scored** (§10). 30 epochs, 7.5 h on an
-      A4000. **60.0% over three seeds**, spread 2.0: the Experiment A baseline
+      A4000. **62.0%** over two three-seed runs: the Experiment A baseline
 - [x] **Planning horizon decided** (§13): `horizon: 10`, `k: 2`, still 5
       waypoints. The old 40 scored 15.3% because it aims past the goal
 - [x] **DINO-WM scored: 84.0% over three seeds** (§11). The kotmul checkpoint
@@ -1388,9 +1388,9 @@ the document trying to follow it.
 ## 10. The fine GRU: built, trained and scored
 
 **Done.** Trained 30 epochs on an RTX A4000 in 7.5 hours; predicts the latent
-24x better than assuming nothing moves. **Scores 60.0% over three seeds**
-(spread 2.0) under the locked config, which is the baseline Experiment A has to
-beat. It scored 15.3% before the horizon was fixed (§13).
+24x better than assuming nothing moves. **Scores 62.0%** under the locked config,
+pooled over two three-seed runs, which is the baseline Experiment A has to beat.
+It scored 15.3% before the horizon was fixed (§13).
 
 **Files:** `stable_worldmodel/wm/gru/gru_wm.py`, `scripts/train_gru.py`,
 `scripts/train/config/gru.yaml`, `tests/wm/test_gru_wm.py`.
@@ -1847,15 +1847,23 @@ Same trained model, same protocol, only `plan_config.horizon` changed. Seed 0:
 
 At three seeds:
 
-| Configuration | Mean | Spread | Record |
+| Configuration | Seeds 0, 1, 2 | Mean | Record |
 |---|---|---|---|
-| Locked, `horizon: 40` | 15.3% | 6.1 | `notes/results/inzva_gru_results.md` |
-| `horizon: 10` | **60.0%** | **2.0** | `notes/results/gru_h10_results.md` |
+| `horizon: 40` | 10%, 22%, 14% | 15.3% | `notes/results/gru_horizon40_results.md` |
+| `horizon: 10`, first run | 58%, 62%, 60% | 60.0% | superseded, see below |
+| `horizon: 10`, locked config | 64%, 70%, 58% | 64.0% | `notes/results/inzva_gru_results.md` |
 
-Horizon 10 is also far steadier across seeds than anything else we have measured
-here: a spread of 2.0, against 7.6 for LeWM and 5.3 for DINO-WM. That matters
-beyond this table, because seed spread sets how large an effect Experiment A
-has to produce before it can claim anything (§6.1b).
+**Pooled over both horizon-10 runs: 62.0%, spread 4.6, range 58% to 70%.** Quote
+that, not either run alone.
+
+Those two runs are the same model, the same config and the same seeds, and they
+differ by 8 episodes of 150. That is much larger than the 1 to 2 episodes a LeWM
+rerun moves (§6.4), so **our GRU's planning is noisier run to run than the
+reference model's**. An early reading of the first run as "far steadier across
+seeds, spread 2.0" did not survive the second: that 2.0 was one lucky draw, and
+the honest seed spread here is around 5 points, in the same range as LeWM's 7.6
+and DINO-WM's 5.3. It matters because seed spread sets how large an effect
+Experiment A has to produce before it can claim anything (§6.1b).
 
 `horizon` must stay at or above `receding_horizon` (5). A run at 3 fails.
 
@@ -1872,8 +1880,9 @@ about the method: the coarse model still plans 5 strided steps and the fine
 model still fills the gaps. Only the size of the gaps changed, from 8 steps to
 2.
 
-**The baseline of record for Experiment A is 60.0%**, spread 2.0, in
-`notes/results/inzva_gru_results.md`. The earlier 15.3% run is kept as
+**The baseline of record for Experiment A is 62.0%**, pooled over the two
+horizon-10 runs above. `notes/results/inzva_gru_results.md` is the canonical
+record, reproducible with the documented command. The 15.3% run is kept as
 `notes/results/gru_horizon40_results.md`: it is what the old config produced
 and is the evidence for this section, not a number to quote.
 

@@ -1,8 +1,8 @@
 {
-  "generated": "2026-09-18T05:09:43.311952+00:00",
+  "generated": "2026-09-18T08:36:51.757557+00:00",
   "source": "$STABLEWM_HOME/checkpoints/inzva_gru_results.txt",
   "environment": {
-    "commit": "2c9ff91",
+    "commit": "29b854c",
     "torch": "2.11.0+cu130",
     "transformers": "5.16.1",
     "stable_pretraining": "0.1.8",
@@ -16,14 +16,14 @@
       "num_eval": 50,
       "eval_budget": 50,
       "history_len": 1,
-      "horizon": 40,
+      "horizon": 10,
       "action_block": 1,
       "num_samples": 300,
       "n_steps": 30,
-      "success_rate": 10.0,
-      "successes": 5,
+      "success_rate": 64.0,
+      "successes": 32,
       "episodes": 50,
-      "seconds": 61.77050256729126
+      "seconds": 23.043766260147095
     },
     {
       "seed": 1,
@@ -31,14 +31,14 @@
       "num_eval": 50,
       "eval_budget": 50,
       "history_len": 1,
-      "horizon": 40,
+      "horizon": 10,
       "action_block": 1,
       "num_samples": 300,
       "n_steps": 30,
-      "success_rate": 22.0,
-      "successes": 11,
+      "success_rate": 70.0,
+      "successes": 35,
       "episodes": 50,
-      "seconds": 62.056233644485474
+      "seconds": 21.77526354789734
     },
     {
       "seed": 2,
@@ -46,14 +46,14 @@
       "num_eval": 50,
       "eval_budget": 50,
       "history_len": 1,
-      "horizon": 40,
+      "horizon": 10,
       "action_block": 1,
       "num_samples": 300,
       "n_steps": 30,
-      "success_rate": 14.000000000000002,
-      "successes": 7,
+      "success_rate": 57.99999999999999,
+      "successes": 29,
       "episodes": 50,
-      "seconds": 61.81199932098389
+      "seconds": 23.15727138519287
     }
   ]
 }

@@ -1,9 +1,9 @@
 # Eval results
 
-Generated 2026-09-18 08:36 UTC by `scripts/collect_results.py`.
+Generated 2026-09-18 08:34 UTC by `scripts/collect_results.py`.
 Do not edit by hand; rerun the script instead.
 
-Source: `$STABLEWM_HOME/checkpoints/inzva_gru_results.txt`
+Source: `$STABLEWM_HOME/checkpoints/gru_horizon40_results.txt`
 
 ## Environment
 
@@ -19,9 +19,9 @@ Source: `$STABLEWM_HOME/checkpoints/inzva_gru_results.txt`
 
 | Policy | Seed | Horizon | Block | Episodes | Samples | CEM steps | Success | Seconds |
 |--------|------|---------|-------|----------|---------|-----------|---------|---------|
-| `gru_fine` | 0 | 10 | 1 | 50 | 300 | 30 | 32/50 = 64% | 23 |
-| `gru_fine` | 1 | 10 | 1 | 50 | 300 | 30 | 35/50 = 70% | 22 |
-| `gru_fine` | 2 | 10 | 1 | 50 | 300 | 30 | 29/50 = 58% | 23 |
+| `gru_fine` | 0 | 40 | 1 | 50 | 300 | 30 | 5/50 = 10% | 62 |
+| `gru_fine` | 1 | 40 | 1 | 50 | 300 | 30 | 11/50 = 22% | 62 |
+| `gru_fine` | 2 | 40 | 1 | 50 | 300 | 30 | 7/50 = 14% | 62 |
 
 ## Full-protocol summary
 
@@ -29,10 +29,10 @@ Source: `$STABLEWM_HOME/checkpoints/inzva_gru_results.txt`
 
 | | |
 |---|---|
-| Mean | 64.0% |
-| Std | 6.0 |
-| Range | 58% to 70% |
-| Pooled | 96/150 = 64.0% |
+| Mean | 15.3% |
+| Std | 6.1 |
+| Range | 10% to 22% |
+| Pooled | 23/150 = 15.3% |
 
 ## Commands
 

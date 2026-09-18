@@ -160,7 +160,7 @@ footer{
     <div><dt>Baseline of record</dt><dd>87.3% over 3 seeds</dd></div>
     <div><dt>Machines verified</dt><dd>3</dd></div>
     <div><dt>DINO-WM reference</dt><dd>84.0% over 3 seeds</dd></div>
-    <div><dt>Our GRU</dt><dd>60.0% at horizon 10</dd></div>
+    <div><dt>Our GRU</dt><dd>62.0% at horizon 10</dd></div>
     <div><dt>Experiments run</dt><dd class="blank">None</dd></div>
   </dl>
 </header>
@@ -275,7 +275,7 @@ footer{
 <section>
   <div class="num">05</div>
   <div class="body">
-    <h2>What we have to decide: the planning horizon</h2>
+    <h2>What we decided: the planning horizon</h2>
     <p>Before the robot moves, the planner imagines what would happen if it took some sequence of actions. The horizon is how many steps ahead it imagines. We locked 40 because our method needs it: 40 steps split into 5 waypoints of 8 steps each. That number came from our design, not from testing how well anything plans with it.</p>
     <p><b>It aims past the target.</b> In evaluation the planner is shown the state 25 steps ahead and told to reach it, and a plan is scored only on where it ends up on its last imagined step. At a horizon of 40 the planner is therefore working to be in the right place 15 steps after the goal. LeWM never had this problem: its horizon is exactly 25 steps.</p>
     <p>Two further effects push the same way. The model&rsquo;s predictions drift the further ahead it imagines, and the planner searches a much larger space of action sequences with the same effort.</p>
@@ -285,12 +285,13 @@ footer{
         <tr><td>Success, one seed</td><td>50%</td><td class="ours">60%</td><td>40%</td><td>22%</td><td>24%</td><td>14%</td></tr>
       </tbody>
     </table>
-    <p>Over three seeds our model scores <b>15.3%</b> at the locked horizon and <b>60.0%</b> at 10. It is also far steadier at 10, a spread of 2.0 against 7.6 for LeWM, which matters because seed spread sets how large an effect Experiment A must produce before it can claim anything.</p>
+    <p>Over three seeds our model scores <b>15.3%</b> at a horizon of 40 and <b>62.0%</b> at 10, the latter pooled over two runs of three seeds (58, 62, 60 and 64, 70, 58).</p>
+    <p>Those two runs used the same model, config and seeds, and differ by 8 episodes in 150, where a LeWM rerun moves by 1 or 2. So our planner is noisier run to run than the reference, and a single three-seed run here is worth less than it looks. We briefly read the first run as unusually steady; the second run showed that was luck.</p>
     <div class="callout">
       <p><b>Experiment A is unfair in our own favour until we settle this.</b> If the flat planner is pinned at a horizon we have measured as bad, beating it proves little. A fair comparison puts the hierarchy against the best flat setting.</p>
       <p>The encouraging reading is the opposite one: that collapse from 60% to 14% as the horizon grows is exactly the weakness the hierarchy claims to fix, and we have now measured it on our own model.</p>
     </div>
-    <p>Three ways forward, cheapest first. Keep 40 for both rows and report the horizon-10 number beside it. Or re-pick the horizon and derive the stride from it, where 10 with a stride of 2 gives the same five waypoints. Or sweep the horizon as a second axis of Experiment A, which costs the most and tells us the most.</p>
+    <p><b>Decided: horizon 10, stride 2, still five waypoints.</b> The method is unchanged; only the gaps between waypoints shrink, from 8 steps to 2. We rejected sweeping the horizon as a second axis of Experiment A on compute rather than on merit, and it remains the most informative version if the budget allows.</p>
   </div>
 </section>
 
