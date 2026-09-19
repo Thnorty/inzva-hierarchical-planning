@@ -224,7 +224,9 @@ class HierarchicalSolver:
         }
         if 'callbacks' in coarse_out:
             outputs['callbacks'] = coarse_out['callbacks']
-        print(f'Hierarchical solve time: {time.time() - start_time:.4f} seconds')
+        print(
+            f'Hierarchical solve time: {time.time() - start_time:.4f} seconds'
+        )
         return outputs
 
     # -- internals
@@ -251,9 +253,7 @@ class HierarchicalSolver:
                 if value.is_floating_point():
                     value = value.to(self.coarse_solver.dtype)
                 single[key] = value.unsqueeze(1)  # one candidate
-        rolled = self.coarse_model.rollout(
-            single, coarse_actions.unsqueeze(1)
-        )
+        rolled = self.coarse_model.rollout(single, coarse_actions.unsqueeze(1))
         emb = rolled['predicted_emb'][:, 0]  # (B, H + W, D)
         return emb[:, -self.n_waypoints :], emb[:, -self.n_waypoints - 1]
 

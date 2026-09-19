@@ -128,9 +128,7 @@ def test_refinement_never_worsens_its_own_cost(monkeypatch):
     target = solver._advance(z, seed_actions)
 
     refined = solver._refine(z, target, seed_actions)
-    seed_cost = (
-        (solver._advance(z, seed_actions) - target).pow(2).sum(-1)
-    )
+    seed_cost = (solver._advance(z, seed_actions) - target).pow(2).sum(-1)
     refined_cost = (solver._advance(z, refined) - target).pow(2).sum(-1)
     assert torch.all(refined_cost <= seed_cost + 1e-6)
 
