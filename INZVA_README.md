@@ -1246,7 +1246,8 @@ Done:
 - [x] **Planning horizon decided** (§13): `horizon: 10`, `k: 2`, still 5
       waypoints. The old 40 scored 15.3% because it aims past the goal
 - [x] **Coarse model trained** (§10). Stride 2 on the fine model's frozen
-      latent, 2.5 h. 74.7% planned alone, `notes/results/inzva_gru_coarse_results.md`
+      latent, 2.5 h. **76.0%** planned alone under the locked config,
+      `notes/results/inzva_gru_coarse_results.md`
 - [x] **Replanning interval decided** (§13): **10 environment steps** for both
       our planners, measured rather than inherited. Worth up to 16 points
 - [x] **Coarse beats fine at matched settings** by ~5 points (§13), which is
@@ -1261,9 +1262,9 @@ Open, in the order they block things:
       a fresh Windows clone and cold on Ubuntu under WSL2, catching five
       documentation bugs between them (§9). What neither could change is macOS,
       a different GPU, and a reader who did not write the document.
-- [ ] **Six files assigned to five people** (`models/gru_wm.py`,
-      `models/gru_coarse.py`, `solver/hierarchical.py`, `scripts/train_gru.py`,
-      `scripts/sweep.py`, `README.md`)
+- [ ] **Remaining files assigned** (`solver/hierarchical.py`, `scripts/sweep.py`,
+      `README.md`). Both world models and their trainer are done (§10); the
+      solver is the only unwritten piece of the method itself
 - [ ] How many seeds the compute allows (3 is the floor)
 - [ ] Experiment C (`k = 1`) scores like the GRU + CEM baseline — run this
       before A and B
