@@ -1035,11 +1035,12 @@ five coarse decisions, at the horizon the flat planner actually handles (§13):
 | `action_block` | 1 | ours to choose; the constraint came from someone else's checkpoint |
 | `horizon` | 10 | measured best for the flat planner (§13); 10 x 1 = 10 <= 50 |
 | `k` | 2 | 10 / 2 = 5 coarse waypoints, the spec's "5 decisions" |
+| replan interval | **10 env steps** | measured (§13); set as `receding_horizon: 10` for the fine planner and `5` for the coarse one, whose steps are 2 env steps each |
 
 > **Changed 2026-09-18, from `horizon: 40` and `k: 8`.** Those were derived from
 > the method's shape, not measured. The evaluation goal is 25 steps ahead and
 > `GoalMSE` scores only the last predicted step, so a 40-step horizon aims 15
-> steps past the goal: the trained GRU scores 15.3% at 40 against 62.0% at 10.
+> steps past the goal: the trained GRU scores 15.3% at 40 against 69.3% at 10.
 > The waypoint count is unchanged at 5. Full reasoning and the sweep are in §13.
 
 Two things to keep in mind about what this buys and costs:
@@ -1053,7 +1054,7 @@ Two things to keep in mind about what this buys and costs:
   close at every budget, that is a negative result and we report it (§0). The
   horizon sweep in §13 is the other axis worth having if compute allows.
 - **Long rollouts compound model error.** This is measured now: the same model
-  scores 62.0% at `horizon: 10` and 15.3% at 40 (§13). Both our planners meet at
+  scores 69.3% at `horizon: 10` and 15.3% at 40 (§13). Both our planners meet at
   the same horizon, so the handicap is shared and cancels in Experiment A.
 
 `k` is the natural thing to sweep. Try at least `{4, 8}`, and remember `k = 1` is
@@ -1241,23 +1242,20 @@ Done:
 - [x] **Cross-machine agreement measured on three GPUs** (§6.4): at most 2
       episodes of 150 differ, all three means within 0.6 points
 - [x] **Fine GRU written, trained and scored** (§10). 30 epochs, 7.5 h on an
-      A4000. **62.0%** over two three-seed runs: the Experiment A baseline
+      A4000. **69.3%** under the locked config: the Experiment A baseline
 - [x] **Planning horizon decided** (§13): `horizon: 10`, `k: 2`, still 5
       waypoints. The old 40 scored 15.3% because it aims past the goal
 - [x] **Coarse model trained** (§10). Stride 2 on the fine model's frozen
       latent, 2.5 h. 74.7% planned alone, `notes/results/inzva_gru_coarse_results.md`
-- [x] **Replanning interval measured** (§13): worth up to 16 points, and the
-      coarse model's apparent lead over the fine one is mostly this
+- [x] **Replanning interval decided** (§13): **10 environment steps** for both
+      our planners, measured rather than inherited. Worth up to 16 points
+- [x] **Coarse beats fine at matched settings** by ~5 points (§13), which is
+      the bar the hierarchy has to clear, not the flat 69.3%
 - [x] **DINO-WM scored: 84.0% over three seeds** (§11). The kotmul checkpoint
       runs after three fixes and is our Experiment B reference. We do not
       train DINO-WM ourselves
 
 Open, in the order they block things:
-
-- [ ] **Decide the replanning interval for our rows** (§13). The locked 5 was
-      copied from upstream and never measured; 10 scores ~9 points higher for
-      both our models. Whatever is chosen, flat and hierarchical planners must
-      match in *environment* steps, or the hierarchy gets a free 10 points
 
 - [ ] A **teammate** runs the five commands in §9. Done twice here already, in
       a fresh Windows clone and cold on Ubuntu under WSL2, catching five
@@ -1399,9 +1397,10 @@ the document trying to follow it.
 ## 10. The fine GRU: built, trained and scored
 
 **Done.** Trained 30 epochs on an RTX A4000 in 7.5 hours; predicts the latent
-24x better than assuming nothing moves. **Scores 62.0%** under the locked config,
-pooled over two three-seed runs, which is the baseline Experiment A has to beat.
-It scored 15.3% before the horizon was fixed (§13).
+24x better than assuming nothing moves. **Scores 69.3%** under the locked
+config (72%, 74%, 62%), the flat baseline for Experiment A. It scored 15.3%
+before the horizon was fixed and 62.0% before the replanning interval was
+(§13).
 
 **Files:** `stable_worldmodel/wm/gru/gru_wm.py`, `scripts/train_gru.py`,
 `scripts/train/config/gru.yaml`, `tests/wm/test_gru_wm.py`.
@@ -1409,8 +1408,9 @@ It scored 15.3% before the horizon was fixed (§13).
 **The coarse model is done too** (`scripts/train/config/gru_coarse.yaml`): the
 same architecture at stride 2 over the fine model's frozen latent, 2.5 h to
 train because a frozen encoder needs no backward pass. Planned on its own with
-plain CEM it scores 74.7%, but read §13 before comparing that with the fine
-model's 62.0%: most of the gap is the replanning interval, not the stride.
+plain CEM it scores **76.0%** against the fine model's 69.3%, at matched
+settings. Read §13 before reading much into that gap: an earlier version of
+it was mostly an artefact of unmatched replanning.
 
 ```bash
 python scripts/train_gru.py --config-name gru_coarse   # needs gru_fine first
@@ -1874,8 +1874,9 @@ At three seeds:
 | `horizon: 10`, first run | 58%, 62%, 60% | 60.0% | superseded, see below |
 | `horizon: 10`, locked config | 64%, 70%, 58% | 64.0% | `notes/results/inzva_gru_results.md` |
 
-**Pooled over both horizon-10 runs: 62.0%, spread 4.6, range 58% to 70%.** Quote
-that, not either run alone.
+**Pooled over both horizon-10 runs: 62.0%, spread 4.6, range 58% to 70%.**
+Those runs predate the replanning decision below; the locked config scores
+69.3%.
 
 Those two runs are the same model, the same config and the same seeds, and they
 differ by 8 episodes of 150. That is much larger than the 1 to 2 episodes a LeWM
@@ -1901,11 +1902,11 @@ about the method: the coarse model still plans 5 strided steps and the fine
 model still fills the gaps. Only the size of the gaps changed, from 8 steps to
 2.
 
-**The baseline of record for Experiment A is 62.0%**, pooled over the two
-horizon-10 runs above. `notes/results/inzva_gru_results.md` is the canonical
-record, reproducible with the documented command. The 15.3% run is kept as
-`notes/results/gru_horizon40_results.md`: it is what the old config produced
-and is the evidence for this section, not a number to quote.
+**The baseline of record for Experiment A is 69.3%**, the locked config in
+`notes/results/inzva_gru_results.md`, reproducible with the documented
+command. The 15.3% run is kept as `notes/results/gru_horizon40_results.md`:
+it is what the old config produced and is the evidence for this section, not
+a number to quote.
 
 Two consequences worth carrying forward:
 
@@ -1933,18 +1934,42 @@ helps. Three seeds each:
 | Fine model, `horizon: 10` | — | 62.0% | 64.7% | **71.3%** |
 | Coarse model, `horizon: 5`, `k = 2` | 58.7% | — | 68.0% | **74.7%** |
 
-Read the columns, not the rows: the two models are close at every matched
-cadence. The coarse model's headline 74.7% comes mostly from executing 10
-environment steps per plan, not from temporal abstraction. Its default
-`receding_horizon: 5` means 5 coarse steps, which is 10 environment steps,
-while the fine model's 5 means 5.
+**Decided 2026-09-19: 10 environment steps per plan for both our planners.**
+`receding_horizon: 10` in `inzva_gru.yaml` and `5` in `inzva_gru_coarse.yaml`,
+because the coarse model's steps are 2 environment steps each. Both now execute
+a whole plan before replanning.
 
-**This matters for Experiment A more than the raw numbers do.** Any comparison
-between the flat planner and the hierarchy has to hold the replanning interval
-fixed *in environment steps*, or the hierarchy inherits a 10-point advantage
-that has nothing to do with the method. A coarse or hierarchical planner that
-keeps `receding_horizon: 5` in its own step units is silently replanning half as
-often as the flat baseline.
+The coarse model's headline 74.7% was measured while it replanned half as often
+as the fine model: `receding_horizon: 5` means 5 coarse steps, which is 10
+environment steps, while the fine model's 5 meant 5. **Any comparison between
+the flat planner and the hierarchy has to hold this fixed in environment steps**,
+or the hierarchy collects roughly 10 points that have nothing to do with the
+method.
+
+### Matched properly, the coarse model is still ahead
+
+Two independent three-seed runs of each, all at 10 environment steps per plan
+and 10 environment steps of lookahead:
+
+| | Run A | Run B | Pooled |
+|---|---|---|---|
+| Fine, `horizon: 10` | 72, 80, 62 | 72, 74, 62 | **70.3%** (211/300) |
+| Coarse, `k = 2` | 76, 74, 74 | 78, 76, 74 | **75.3%** (226/300) |
+
+A 5-point gap, in the same direction in both runs, with the coarse model ahead
+in five of the six seed pairings. **An earlier note here called the two
+indistinguishable at matched cadence; that was based on the first run alone,
+where the fine model's spread was 9 points. With twice the data the gap looks
+real, though 15 episodes in 300 is close to the rerun noise measured in §6.4.**
+
+This is the project's own hypothesis showing up before the hierarchy exists:
+halving the search dimension, 5 decisions instead of 10 over the same 10
+environment steps, buys about 5 points at a fixed sample budget.
+
+**It also raises the bar for Experiment A.** The hierarchy has to beat 75.3%,
+not the flat planner's 70.3%. If coarse-then-refine cannot beat coarse alone,
+the refinement is not earning its keep, and that is a reportable negative
+result (§0).
 
 Why longer intervals win is not established. A plausible reading is that CEM
 re-solves from scratch each time, so frequent replanning resamples a noisy

@@ -1,8 +1,8 @@
 {
-  "generated": "2026-09-18T15:03:28.578777+00:00",
+  "generated": "2026-09-19T14:50:00.002391+00:00",
   "source": "$STABLEWM_HOME/checkpoints/inzva_gru_coarse_results.txt",
   "environment": {
-    "commit": "e072ba3",
+    "commit": "40e11f2",
     "torch": "2.11.0+cu130",
     "transformers": "5.16.1",
     "stable_pretraining": "0.1.8",
@@ -21,10 +21,10 @@
       "action_block": 2,
       "num_samples": 300,
       "n_steps": 30,
-      "success_rate": 76.0,
-      "successes": 38,
+      "success_rate": 78.0,
+      "successes": 39,
       "episodes": 50,
-      "seconds": 14.440494060516357
+      "seconds": 14.078294038772583
     },
     {
       "seed": 1,
@@ -37,10 +37,10 @@
       "action_block": 2,
       "num_samples": 300,
       "n_steps": 30,
-      "success_rate": 74.0,
-      "successes": 37,
+      "success_rate": 76.0,
+      "successes": 38,
       "episodes": 50,
-      "seconds": 14.198089122772217
+      "seconds": 14.072845697402954
     },
     {
       "seed": 2,
@@ -56,7 +56,7 @@
       "success_rate": 74.0,
       "successes": 37,
       "episodes": 50,
-      "seconds": 14.392900228500366
+      "seconds": 14.264186143875122
     }
   ]
 }

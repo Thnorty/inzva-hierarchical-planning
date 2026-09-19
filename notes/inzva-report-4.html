@@ -160,7 +160,8 @@ footer{
     <div><dt>Baseline of record</dt><dd>87.3% over 3 seeds</dd></div>
     <div><dt>Machines verified</dt><dd>3</dd></div>
     <div><dt>DINO-WM reference</dt><dd>84.0% over 3 seeds</dd></div>
-    <div><dt>Our GRU</dt><dd>62.0% at horizon 10</dd></div>
+    <div><dt>Our GRU, flat</dt><dd>69.3%</dd></div>
+    <div><dt>Our GRU, coarse</dt><dd>76.0%</dd></div>
     <div><dt>Experiments run</dt><dd class="blank">None</dd></div>
   </dl>
 </header>
@@ -285,7 +286,7 @@ footer{
         <tr><td>Success, one seed</td><td>50%</td><td class="ours">60%</td><td>40%</td><td>22%</td><td>24%</td><td>14%</td></tr>
       </tbody>
     </table>
-    <p>Over three seeds our model scores <b>15.3%</b> at a horizon of 40 and <b>62.0%</b> at 10, the latter pooled over two runs of three seeds (58, 62, 60 and 64, 70, 58).</p>
+    <p>Over three seeds our model scores <b>15.3%</b> at a horizon of 40 and <b>62.0%</b> at 10, the latter pooled over two runs of three seeds (58, 62, 60 and 64, 70, 58). Fixing a second setting, how often the planner replans, later took it to <b>69.3%</b>.</p>
     <p>Those two runs used the same model, config and seeds, and differ by 8 episodes in 150, where a LeWM rerun moves by 1 or 2. So our planner is noisier run to run than the reference, and a single three-seed run here is worth less than it looks. We briefly read the first run as unusually steady; the second run showed that was luck.</p>
     <div class="callout">
       <p><b>Experiment A is unfair in our own favour until we settle this.</b> If the flat planner is pinned at a horizon we have measured as bad, beating it proves little. A fair comparison puts the hierarchy against the best flat setting.</p>

@@ -1,6 +1,6 @@
 # Eval results
 
-Generated 2026-09-18 08:36 UTC by `scripts/collect_results.py`.
+Generated 2026-09-19 14:48 UTC by `scripts/collect_results.py`.
 Do not edit by hand; rerun the script instead.
 
 Source: `$STABLEWM_HOME/checkpoints/inzva_gru_results.txt`
@@ -9,7 +9,7 @@ Source: `$STABLEWM_HOME/checkpoints/inzva_gru_results.txt`
 
 | | |
 |---|---|
-| commit (at collection) | `29b854c` |
+| commit (at collection) | `40e11f2` |
 | torch | `2.11.0+cu130` |
 | cuda | `13.0` |
 | gpu | `NVIDIA RTX A4000` |
@@ -17,11 +17,11 @@ Source: `$STABLEWM_HOME/checkpoints/inzva_gru_results.txt`
 
 ## Runs
 
-| Policy | Seed | Horizon | Block | Episodes | Samples | CEM steps | Success | Seconds |
-|--------|------|---------|-------|----------|---------|-----------|---------|---------|
-| `gru_fine` | 0 | 10 | 1 | 50 | 300 | 30 | 32/50 = 64% | 23 |
-| `gru_fine` | 1 | 10 | 1 | 50 | 300 | 30 | 35/50 = 70% | 22 |
-| `gru_fine` | 2 | 10 | 1 | 50 | 300 | 30 | 29/50 = 58% | 23 |
+| Policy | Seed | Horizon | Block | Recede | Episodes | Samples | CEM steps | Success | Seconds |
+|--------|------|---------|-------|--------|----------|---------|-----------|---------|---------|
+| `gru_fine` | 0 | 10 | 1 | 10 | 50 | 300 | 30 | 36/50 = 72% | 15 |
+| `gru_fine` | 1 | 10 | 1 | 10 | 50 | 300 | 30 | 37/50 = 74% | 16 |
+| `gru_fine` | 2 | 10 | 1 | 10 | 50 | 300 | 30 | 31/50 = 62% | 17 |
 
 ## Full-protocol summary
 
@@ -29,10 +29,10 @@ Source: `$STABLEWM_HOME/checkpoints/inzva_gru_results.txt`
 
 | | |
 |---|---|
-| Mean | 64.0% |
-| Std | 6.0 |
-| Range | 58% to 70% |
-| Pooled | 96/150 = 64.0% |
+| Mean | 69.3% |
+| Std | 6.4 |
+| Range | 62% to 74% |
+| Pooled | 104/150 = 69.3% |
 
 ## Commands
 
