@@ -32,5 +32,10 @@ plan_config:
   action_block: 2
   horizon: 5
 
+  # 5 coarse steps = 10 environment steps per plan, matching inzva_gru.yaml.
+  # Inheriting its 10 would replan every 20 env steps and quietly collect the
+  # advantage section 13 warns about.
+  receding_horizon: 5
+
 output:
   filename: inzva_gru_coarse_results.txt

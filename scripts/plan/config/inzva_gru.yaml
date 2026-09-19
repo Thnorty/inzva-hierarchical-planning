@@ -37,8 +37,17 @@ plan_config:
   action_block: 1
   horizon: 10
 
-  # Replan every 5 env steps, so a 50-step episode replans 10 times.
-  receding_horizon: 5
+  # Replan every 10 env steps, so a 50-step episode replans 5 times. Measured,
+  # not inherited: 62.0% at 5 env steps per plan, 64.7% at 7, 71.3% at 10
+  # (INZVA_README.md section 13). Upstream's 5 was copied from a config written
+  # for a different model.
+  #
+  # This equals `horizon`, so the planner executes a whole plan before
+  # replanning. **The unit is solver steps.** Any planner compared against this
+  # one must match it in ENVIRONMENT steps: the coarse config uses 5, because
+  # its steps are 2 env steps each. Getting that wrong hands the hierarchy about
+  # 10 points that have nothing to do with the method.
+  receding_horizon: 10
 
   # Our GRU is Markovian in its latent state, so it does not need the 3-frame
   # context the LeWM predictor was trained with. Revisit if the model turns out
