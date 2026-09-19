@@ -1,0 +1,25 @@
+# Experiment A, row 3: our coarse-to-fine solver on our two GRU models.
+#
+#   python scripts/plan/eval_wm.py --config-name inzva_gru_hier -m \
+#       policy=gru_fine seed=0,1,2
+#
+# `policy` is the FINE model. The coarse one is named in solver/hierarchical.yaml.
+#
+# Everything about the protocol is inherited from inzva_gru.yaml, the flat
+# baseline this is compared against: same horizon in environment steps, same
+# replanning interval, same episodes, budget, goal offset and seeds. The only
+# difference is the solver. That is the point of the comparison.
+#
+# Experiment C is this config with k = 1 and the fine model in both roles:
+#
+#   python scripts/plan/eval_wm.py --config-name inzva_gru_hier -m \
+#       policy=gru_fine seed=0,1,2 solver.k=1 solver.coarse_policy=gru_fine
+#
+# It must land on the flat baseline in notes/results/inzva_gru_results.md.
+defaults:
+  - inzva_gru
+  - override solver: hierarchical
+  - _self_
+
+output:
+  filename: inzva_gru_hier_results.txt

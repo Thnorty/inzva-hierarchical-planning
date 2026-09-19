@@ -1,6 +1,7 @@
 from .categorical_cem import CategoricalCEMSolver
 from .cem import CEMSolver
 from .gd import GradientSolver
+from .hierarchical import HierarchicalSolver
 from .icem import ICEMSolver
 from .lagrangian import LagrangianSolver
 from .mppi import MPPISolver
@@ -13,6 +14,7 @@ __all__ = [
     'GradientSolver',
     'CEMSolver',
     'CategoricalCEMSolver',
+    'HierarchicalSolver',
     'ICEMSolver',
     'PGDSolver',
     'MPPISolver',

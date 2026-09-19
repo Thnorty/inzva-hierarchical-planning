@@ -175,7 +175,9 @@ class GRUWorldModel(nn.Module):
 
         Args:
             info: Planner state. ``pixels`` holds ``H`` context frames of shape
-                ``(B, S, H, C, h, w)``. With ``history_len: 1``, the setting
+                ``(B, S, H, C, h, w)``, or ``emb`` holds their latents
+                directly, ``(B, S, H, D)``, for a caller that is already in
+                latent space. With ``history_len: 1``, the setting
                 this model is designed for, ``H`` is 1. Larger ``H`` is
                 accepted: every context frame is encoded and returned, but only
                 the last one seeds the rollout, because the dynamics are
@@ -186,13 +188,19 @@ class GRUWorldModel(nn.Module):
             ``info`` with ``predicted_emb`` of shape ``(B, S, H + T, D)``, whose
             first ``H`` entries are the encoded context frames.
         """
-        assert 'pixels' in info, 'pixels not in info_dict'
         B, S, T = action_sequence.shape[:3]
 
         # The observation is identical across the S candidates, so encode it
         # once and share it. The solver passes the same info_dict across its
         # iterations, so the cached 'emb' also saves re-encoding every step.
+        #
+        # A caller may supply 'emb' and no pixels at all. The hierarchical
+        # solver does exactly that: it plans each gap forward from a latent
+        # waypoint, which has no image behind it.
         if 'emb' not in info:
+            assert 'pixels' in info, (
+                'rollout needs pixels, or a precomputed emb to start from'
+            )
             first = {
                 k: v[:, 0]
                 for k, v in info.items()

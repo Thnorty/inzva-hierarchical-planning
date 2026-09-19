@@ -1,0 +1,31 @@
+# Coarse-to-fine solver: the project's contribution. See INZVA_README.md §14.
+#
+# The harness builds `cost` around the policy named on the command line, which
+# must be the FINE model: the actions this solver returns are fine-grained.
+# The coarse model is named here and loaded by the solver.
+_target_: stable_worldmodel.planning.solver.HierarchicalSolver
+cost: ???
+coarse_policy: gru_coarse
+
+# Environment steps per coarse step. Must match the coarse checkpoint's own
+# stride, which the solver checks on construction, and divide the horizon.
+k: 2
+
+# Coarse stage: identical settings to solver/cem.yaml, so the coarse search is
+# scored and sized exactly like the flat baseline it is compared against.
+batch_size: 1
+num_samples: 300
+var_scale: 1.0
+n_steps: 30
+topk: 30
+
+# Fine stage, per gap. Each gap is a k-step problem (4 dimensions at k = 2)
+# seeded with the coarse plan, so it needs far less search than the coarse
+# stage. These are the knobs Experiment A sweeps alongside the coarse budget.
+fine_num_samples: 64
+fine_n_steps: 6
+fine_topk: 8
+fine_var_scale: 0.3
+
+device: "cuda"
+seed: ${seed}
