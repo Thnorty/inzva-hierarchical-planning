@@ -3,8 +3,30 @@
 Hierarchical coarse-to-fine planning on PushT, built on the
 [stable-worldmodel](https://github.com/galilai-group/stable-worldmodel) harness.
 
-This file covers environment setup, data, and baseline reproduction. Experiment
-configs and results live elsewhere in the repo.
+The manual: setup, data, every decision we measured, and how to run each
+planner. Results live in `notes/results/`, and where the project stands lives
+in `notes/inzva-report-4.html`.
+
+---
+
+## Start here
+
+Three documents, in reading order. Do not start with this one.
+
+| If you want | Read | Length |
+|---|---|---|
+| **What the project is testing and why** | `notes/inzva-project-spec.html` | 10 min |
+| **Where we are, what we decided, what is left** | `notes/inzva-report-4.html` | 5 min |
+| **How to run anything** | this file | reference, not prose |
+| **A number someone quoted** | `notes/results/*.md` | one file per run |
+
+Open both HTML files in a browser; they are self-contained pages.
+
+This file is the manual. It is long because it records *why* each setting is
+what it is, so nobody re-litigates a decision that was already measured. Read
+the section you need, not the whole thing. Sections 13 and 14 are the ones that
+will surprise you: two planner settings copied from upstream were quietly worth
+45 and 16 points.
 
 ---
 
@@ -1201,74 +1223,13 @@ the pull landed before submitting, not after.
 
 ## 8. Status
 
-Done:
+**Where we are lives in `notes/inzva-report-4.html`**, which is the page the
+team reads and the one that carries the current numbers. This section is only
+the open list, so the two cannot disagree.
 
-- [x] Repo cloned, venv created, `uv sync` completed
-- [x] `STABLEWM_HOME` set, persistent, inside the clone at `.stable-wm/` (§3)
-- [x] `swm envs` and `swm fovs` verified
-- [x] Commit SHA pinned and written into this file
-- [x] CUDA torch verified on at least one machine (`2.11.0+cu128`, RTX 3060)
-- [x] PushT expert dataset downloaded, decompressed, and **verified** (§5.1)
-- [x] Dataset provenance recorded, and the `galilai-group` Lance copy identified (§5.2)
-- [x] LeWM checkpoint loads — needed the transformers v5 loader patch (§7)
-- [x] Planning pipeline runs end to end; four seeds average 87.5% (§6.1)
-- [x] Action-space question resolved: do not clip, anywhere (§5.3)
-- [x] Dataset confirmed as upstream's own source of record (§5.1)
-- [x] Shared eval config written: `scripts/plan/config/inzva_pusht.yaml` (§6.1)
-- [x] Train/val split defined and deterministic (§6.2)
-- [x] **Image resolution decided: 224 everywhere** (§6.1)
-- [x] **Shared encoder decided: share and freeze**, with the cap it implies
-      and the cost of reversing it written down (§6.5)
-- [x] **`k` = 8, horizon = 40, action_block = 1 locked** into
-      `scripts/plan/config/inzva_gru.yaml` (§6.5)
-- [x] Eval results saved to a tracked location, with versions (§6.3)
-- [x] `uv.lock` tracked, so dependencies are pinned as well as the commit (§0)
-- [x] `15a8bb4` tested as the cause of the gap and ruled out (§6.1)
-- [x] Published protocol recovered from git; identical to ours except dataset
-      format and the old history API (§6.1)
-- [x] Success criterion, block scale and env geometry all ruled out (§6.1)
-- [x] Run-to-run determinism measured: the eval is **not** reproducible
-      bit-for-bit even on one machine (§6.4)
-- [x] Lance copy downloaded and compared: same row order, bit-identical
-      `action`/`proprio`/`state`, identical episode selection, lossy JPEG
-      pixels (§5.2)
-- [x] Clone test run here: fresh clone reproduces 87.3%, and fixed two bugs
-      it exposed in the install instructions (§9)
-- [x] Cold-start Linux test on Ubuntu 24.04 under WSL2: 88.0%, 1 episode in 150
-      differing from Windows, and three more documentation bugs fixed (§9)
-- [x] `.gitattributes` added; a Windows checkout is now pure LF, so Linux and
-      macOS teammates see no phantom diffs
-- [x] Pushed to `Thnorty/inzva-hierarchical-planning` (public)
-- [x] **Reproduction closed** (§6.1b). 96% not reproducible; every mechanical
-      explanation tested and eliminated; baseline of record is 87.3% ± 7.6
-- [x] **TRUBA set up and verified** (§12): checkout, venv, dataset, and both
-      checkpoints in place. Dataset fingerprint matches this file exactly.
-      torch has to be the cu126 build there or it has no kernels for the GPUs
-- [x] CPU preflight passes 8/8 on TRUBA (§12.2b), including headless
-      rendering and the DINO-WM checkpoint, which needs a compute node
-- [x] **Third machine tested cold** (Ubuntu 22.04, RTX A4000): found the
-      `swig` build failure (§2.0b) and that the DINO-WM fix needed scripting
-      (`scripts/adapt_dinowm.py`). Preflight 8/8, eval mean 87.3%
-- [x] **Cross-machine agreement measured on three GPUs** (§6.4): at most 2
-      episodes of 150 differ, all three means within 0.6 points
-- [x] **Fine GRU written, trained and scored** (§10). 30 epochs, 7.5 h on an
-      A4000. **69.3%** under the locked config: the Experiment A baseline
-- [x] **Planning horizon decided** (§13): `horizon: 10`, `k: 2`, still 5
-      waypoints. The old 40 scored 15.3% because it aims past the goal
-- [x] **Coarse model trained** (§10). Stride 2 on the fine model's frozen
-      latent, 2.5 h. **76.0%** planned alone under the locked config,
-      `notes/results/inzva_gru_coarse_results.md`
-- [x] **Replanning interval decided** (§13): **10 environment steps** for both
-      our planners, measured rather than inherited. Worth up to 16 points
-- [x] **Coarse beats fine at matched settings** by ~5 points (§13), which is
-      the bar the hierarchy has to clear, not the flat 69.3%
-- [x] **Hierarchical solver written** (`planning/solver/hierarchical.py`) with
-      the contract tests C depends on
-- [x] **Experiment C passed** (§14): `k = 1` scores 70.0% against the flat
-      baseline's 69.3%, 4 episodes of 150 apart
-- [x] **DINO-WM scored: 84.0% over three seeds** (§11). The kotmul checkpoint
-      runs after three fixes and is our Experiment B reference. We do not
-      train DINO-WM ourselves
+Done, in one line: both world models trained, the coarse-to-fine solver
+written, Experiment C passed, and every planner setting measured rather than
+inherited. Sections 10, 13 and 14 have the detail and the evidence.
 
 Open, in the order they block things:
 
@@ -1285,10 +1246,11 @@ Open, in the order they block things:
       the refinement contributes
 - [ ] How many seeds the compute allows (3 is the floor)
 
-Two things worth deciding early because they are cheap now and expensive later:
+One thing that is cheap to honour now and expensive to fix later:
 
 - **Three seeds is a floor, not a nicety** (§6.1). Measured spread on PushT at
-  50 episodes is 82% to 96%. A single-seed number here carries no information.
+  50 episodes is 82% to 96%, and two identical reruns of our own planner moved
+  by 8 episodes in 150 (§13). A single-seed number here carries no information.
 
 ---
 
@@ -1305,6 +1267,16 @@ Everything below is ours. The rest of the tree is upstream at `6f1e499`.
 | `scripts/inzva_split.py` | Deterministic episode-level train/val split, with a fingerprint | §6.2 |
 | `scripts/collect_results.py` | Turns eval output into a tracked record with versions attached | §6.3 |
 | `notes/results/` | The tracked records themselves | §6.3 |
+| `stable_worldmodel/wm/gru/` | Both world models: one class, stride 1 for fine and 2 for coarse | §10 |
+| `scripts/train_gru.py` | Trains either of them; resumes after a cluster time limit | §10 |
+| `scripts/train/config/gru.yaml`, `gru_coarse.yaml` | Their training configs | §10 |
+| `stable_worldmodel/planning/solver/hierarchical.py` | The coarse-to-fine solver, our contribution | §14 |
+| `scripts/plan/config/inzva_gru.yaml`, `inzva_gru_coarse.yaml`, `inzva_gru_hier.yaml` | Eval configs for the three planners we compare | §13, §14 |
+| `scripts/plan/config/solver/hierarchical.yaml` | Solver settings, including `k` | §14 |
+| `scripts/preflight.py` | Checks a machine can run the experiments, without a GPU | §12.2b |
+| `scripts/adapt_dinowm.py` | Prepares the published DINO-WM checkpoint so it loads | §11 |
+| `slurm/` | Cluster job scripts and the submit wrapper | §12 |
+| `tests/wm/test_gru_wm.py`, `tests/planning/solver/test_hierarchical.py` | Contract tests for the model and the solver | §10, §14 |
 
 Two upstream files carry local edits, both deliberate and both documented:
 
