@@ -1454,6 +1454,11 @@ def rollout(self, info_dict: dict, action_candidates: torch.Tensor) -> dict:
     whose first H entries are the encoded context frames."""
 ```
 
+`rollout` also accepts a precomputed `emb` instead of `pixels`, which is how
+the hierarchical solver plans a gap forward from a waypoint latent: a waypoint
+has no image behind it. Any future model has to support that path or it cannot
+be the fine half of the hierarchy.
+
 It is a `runtime_checkable` `Protocol`, so there is nothing to subclass and
 nothing to register. If you find yourself needing to modify the solver or
 `WorldModelPolicy` to make your model fit, stop: that means the model is wrong,
@@ -2002,8 +2007,14 @@ must then score like the flat baseline. If it does not, the hierarchy has a bug
 or an unfair advantage.
 
 ```bash
+# Experiment C, the control
 python scripts/plan/eval_wm.py --config-name inzva_gru_hier -m \
     policy=gru_fine seed=0,1,2 solver.k=1 solver.coarse_policy=gru_fine
+
+# The hierarchy itself, Experiment A row 3. `policy` is the FINE model;
+# the coarse one is named in scripts/plan/config/solver/hierarchical.yaml.
+python scripts/plan/eval_wm.py --config-name inzva_gru_hier -m \
+    policy=gru_fine seed=0,1,2
 ```
 
 | | Seeds 0, 1, 2 | Mean | Record |
@@ -2014,8 +2025,11 @@ python scripts/plan/eval_wm.py --config-name inzva_gru_hier -m \
 **Passed.** 0.7 points apart, 4 episodes of 150, well inside the rerun noise of
 §6.4. Seed 0 lands on the same number.
 
-Two implementation choices are what make this work, both in
-`stable_worldmodel/planning/solver/hierarchical.py`: each gap search starts from
+The solver is at `stable_worldmodel/planning/solver/hierarchical.py`, not
+`solver/hierarchical.py` as the spec table says, for the same reason the models
+moved (§10): `eval_wm.py` cannot import a package sitting at the repo root.
+
+Two implementation choices are what make this work, both in that file: each gap search starts from
 the coarse plan's own actions, and it returns the best plan it evaluated rather
 than the mean of its elites the way plain CEM does. Without the second, the
 refinement can hand back something worse than the coarse plan it was given, and

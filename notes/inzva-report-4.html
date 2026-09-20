@@ -162,7 +162,7 @@ footer{
     <div><dt>DINO-WM reference</dt><dd>84.0% over 3 seeds</dd></div>
     <div><dt>Our GRU, flat</dt><dd>69.3%</dd></div>
     <div><dt>Our GRU, coarse</dt><dd>76.0%</dd></div>
-    <div><dt>Experiments run</dt><dd class="blank">None</dd></div>
+    <div><dt>Experiment C</dt><dd>passed</dd></div>
   </dl>
 </header>
 
@@ -229,13 +229,13 @@ footer{
         <tr><td>the fine world model</td><td><b>Done.</b> Trained and scored. It lives inside the package rather than at the path the spec named, because a model outside it cannot be loaded by the evaluation script</td></tr>
         <tr><td><code>scripts/train_gru.py</code></td><td><b>Done.</b> Resumes after a cluster time limit; saves a loadable checkpoint every epoch</td></tr>
         <tr><td><code>models/gru_coarse.py</code></td><td>The coarse model, one step per eight</td></tr>
-        <tr><td><code>solver/hierarchical.py</code></td><td>The coarse-to-fine planner, our contribution itself</td></tr>
+        <tr><td>the coarse-to-fine planner</td><td><b>Done.</b> Our contribution. Experiment C confirms it reduces to the standard planner when the abstraction is removed</td></tr>
         <tr><td><code>scripts/sweep.py</code></td><td>Budget sweep driver for Experiment A</td></tr>
         <tr><td><code>README.md</code></td><td>Write-up</td></tr>
       </tbody>
     </table>
     <div class="callout">
-      <p><b>The coarse model and the solver are now the critical path.</b> Both plug into the same two-method interface the fine model already satisfies, and the fine model&rsquo;s latent is the space the coarse one predicts in.</p>
+      <p><b>The budget sweep is now the critical path.</b> Both models and the solver exist and pass their checks; what is missing is the script that runs Experiment A across compute budgets, which is where our claim is actually settled.</p>
     </div>
     <p>We then run Experiment C to prove our implementation is sound, then A for the claim, then B if compute allows.</p>
   </div>
@@ -293,6 +293,30 @@ footer{
       <p>The encouraging reading is the opposite one: that collapse from 60% to 14% as the horizon grows is exactly the weakness the hierarchy claims to fix, and we have now measured it on our own model.</p>
     </div>
     <p><b>Decided: horizon 10, stride 2, still five waypoints.</b> The method is unchanged; only the gaps between waypoints shrink, from 8 steps to 2. We rejected sweeping the horizon as a second axis of Experiment A on compute rather than on merit, and it remains the most informative version if the budget allows.</p>
+  </div>
+</section>
+
+<section>
+  <div class="num">06</div>
+  <div class="body">
+    <h2>Experiment C passed, and a first look at A</h2>
+    <p>Experiment C is the control the spec calls mandatory. Set the stride to one, so our planner has no abstraction left to exploit, and it must score like the ordinary planner. It does: <b>70.0%</b> against <b>69.3%</b>, four episodes apart out of 150 and inside our measured rerun noise. Our contribution is not winning through a bug or an unfair advantage.</p>
+    <p>With that cleared, here is one point of Experiment A, at the default compute budget. All four use the same protocol, the same lookahead and the same replanning interval.</p>
+    <table>
+      <thead><tr><th>Planner</th><th>Seeds</th><th>Mean</th></tr></thead>
+      <tbody>
+        <tr><td>Ordinary planner, fine model</td><td>72, 74, 62</td><td>69.3%</td></tr>
+        <tr><td>Ours with the stride set to one (the control)</td><td>72, 78, 60</td><td>70.0%</td></tr>
+        <tr><td>Coarse model alone</td><td>78, 76, 74</td><td>76.0%</td></tr>
+        <tr><td class="ours">Ours, stride two</td><td class="ours">78, 82, 68</td><td class="ours">76.0%</td></tr>
+      </tbody>
+    </table>
+    <p><b>We beat the ordinary planner by about 7 points</b>, and the control says that gap is real.</p>
+    <div class="callout">
+      <p><b>We do not beat planning coarsely and never refining.</b> Both land on exactly 76.0%. At this budget our whole gain comes from searching 5 coarse decisions instead of 10 fine ones, and the refinement stage adds nothing we can measure.</p>
+      <p>If that survives the budget sweep, our honest headline is that time abstraction helps and refinement does not. That is a result worth reporting, and it is why coarse-only planning now belongs in Experiment A as a row of its own.</p>
+    </div>
+    <p>What this is not: the claim we are testing is about <em>small</em> budgets, and 300 samples over a 20-dimensional search does not starve the ordinary planner. One point is not a curve. The sweep is where this gets settled, and it is the last thing we have to build.</p>
   </div>
 </section>
 
