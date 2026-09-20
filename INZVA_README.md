@@ -1252,6 +1252,10 @@ Done:
       our planners, measured rather than inherited. Worth up to 16 points
 - [x] **Coarse beats fine at matched settings** by ~5 points (§13), which is
       the bar the hierarchy has to clear, not the flat 69.3%
+- [x] **Hierarchical solver written** (`planning/solver/hierarchical.py`) with
+      the contract tests C depends on
+- [x] **Experiment C passed** (§14): `k = 1` scores 70.0% against the flat
+      baseline's 69.3%, 4 episodes of 150 apart
 - [x] **DINO-WM scored: 84.0% over three seeds** (§11). The kotmul checkpoint
       runs after three fixes and is our Experiment B reference. We do not
       train DINO-WM ourselves
@@ -1262,12 +1266,14 @@ Open, in the order they block things:
       a fresh Windows clone and cold on Ubuntu under WSL2, catching five
       documentation bugs between them (§9). What neither could change is macOS,
       a different GPU, and a reader who did not write the document.
-- [ ] **Remaining files assigned** (`solver/hierarchical.py`, `scripts/sweep.py`,
-      `README.md`). Both world models and their trainer are done (§10); the
-      solver is the only unwritten piece of the method itself
+- [ ] **Run Experiment A**: sweep the sample budget (50, 100, 300, 600) over
+      flat CEM, coarse-only and the hierarchy. `scripts/sweep.py` is the last
+      unwritten file. At 300 samples the hierarchy ties coarse-only exactly
+      (§14), so the sweep is where the claim is settled
+- [ ] **Add coarse-only as a row in Experiment A** (§14). It matches the
+      hierarchy at the default budget, so leaving it out would overstate what
+      the refinement contributes
 - [ ] How many seeds the compute allows (3 is the floor)
-- [ ] Experiment C (`k = 1`) scores like the GRU + CEM baseline — run this
-      before A and B
 
 Two things worth deciding early because they are cheap now and expensive later:
 
@@ -1984,3 +1990,65 @@ with the environment. That is a hypothesis, not a measurement.
 Experiment A sweeps the sample budget anyway. Nobody has checked whether our
 models want a different CEM budget than LeWM did. Expect the same pattern:
 settings picked for someone else's model are not automatically right for ours.
+
+## 14. Experiment C: passed, and a first look at A
+
+### C: the solver collapses to CEM at k = 1
+
+The control the spec calls mandatory. Set `k = 1` and put the fine model in
+both roles: the coarse stage becomes plain CEM over the full horizon, every
+waypoint is one step away, and the refinement has nothing to fix. The solver
+must then score like the flat baseline. If it does not, the hierarchy has a bug
+or an unfair advantage.
+
+```bash
+python scripts/plan/eval_wm.py --config-name inzva_gru_hier -m \
+    policy=gru_fine seed=0,1,2 solver.k=1 solver.coarse_policy=gru_fine
+```
+
+| | Seeds 0, 1, 2 | Mean | Record |
+|---|---|---|---|
+| Flat CEM | 72, 74, 62 | 69.3% | `notes/results/inzva_gru_results.md` |
+| Ours at `k = 1` | 72, 78, 60 | **70.0%** | `notes/results/expC_results.md` |
+
+**Passed.** 0.7 points apart, 4 episodes of 150, well inside the rerun noise of
+§6.4. Seed 0 lands on the same number.
+
+Two implementation choices are what make this work, both in
+`stable_worldmodel/planning/solver/hierarchical.py`: each gap search starts from
+the coarse plan's own actions, and it returns the best plan it evaluated rather
+than the mean of its elites the way plain CEM does. Without the second, the
+refinement can hand back something worse than the coarse plan it was given, and
+C fails for a reason that has nothing to do with the hierarchy. A test pins it
+(`tests/planning/solver/test_hierarchical.py`).
+
+### A first look at Experiment A, at one budget
+
+Not Experiment A: that sweeps the sample budget, and this is a single point at
+the default 300 samples and 30 CEM iterations. All four use the same protocol,
+the same 10 environment steps of lookahead and the same 10-step replanning
+interval.
+
+| Planner | Seeds 0, 1, 2 | Mean | Spread |
+|---|---|---|---|
+| Flat CEM on the fine model | 72, 74, 62 | 69.3% | 6.4 |
+| Ours at `k = 1` (the control) | 72, 78, 60 | 70.0% | 9.2 |
+| Coarse model alone, plain CEM | 78, 76, 74 | **76.0%** | 2.0 |
+| **Ours at `k = 2`** | 78, 82, 68 | **76.0%** | 7.2 |
+
+Two things to take from it, and one not to.
+
+**The hierarchy beats flat CEM by ~7 points** at this budget, and the control
+says that gap is real rather than an artefact of the solver.
+
+**It does not beat coarse-only planning.** Both land on 76.0%. At this budget
+the gain comes entirely from searching 5 coarse decisions instead of 10 fine
+ones; the refinement stage adds nothing measurable. If that holds across the
+budget sweep, the honest headline is that **temporal abstraction helps and
+refinement does not**, which is a publishable negative result about our own
+contribution (§0) and the reason coarse-only belongs in Experiment A as a row.
+
+**What not to take from it:** this is one budget, and the claim under test is
+about *small* budgets. Flat CEM at 300 samples over 20 dimensions is not
+starved. The hierarchy is supposed to win when the budget is tight, so the
+sweep is where the claim lives, not here.

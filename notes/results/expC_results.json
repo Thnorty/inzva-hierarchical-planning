@@ -1,0 +1,62 @@
+{
+  "generated": "2026-09-20T05:37:37.950225+00:00",
+  "source": "$STABLEWM_HOME/checkpoints/expC_results.txt",
+  "environment": {
+    "commit": "0a88e1a",
+    "torch": "2.11.0+cu130",
+    "transformers": "5.16.1",
+    "stable_pretraining": "0.1.8",
+    "cuda": "13.0",
+    "gpu": "NVIDIA RTX A4000"
+  },
+  "runs": [
+    {
+      "seed": 0,
+      "policy": "gru_fine",
+      "num_eval": 50,
+      "eval_budget": 50,
+      "history_len": 1,
+      "horizon": 10,
+      "receding": 10,
+      "action_block": 1,
+      "num_samples": 300,
+      "n_steps": 30,
+      "success_rate": 72.0,
+      "successes": 36,
+      "episodes": 50,
+      "seconds": 15.887879371643066
+    },
+    {
+      "seed": 1,
+      "policy": "gru_fine",
+      "num_eval": 50,
+      "eval_budget": 50,
+      "history_len": 1,
+      "horizon": 10,
+      "receding": 10,
+      "action_block": 1,
+      "num_samples": 300,
+      "n_steps": 30,
+      "success_rate": 78.0,
+      "successes": 39,
+      "episodes": 50,
+      "seconds": 15.261076927185059
+    },
+    {
+      "seed": 2,
+      "policy": "gru_fine",
+      "num_eval": 50,
+      "eval_budget": 50,
+      "history_len": 1,
+      "horizon": 10,
+      "receding": 10,
+      "action_block": 1,
+      "num_samples": 300,
+      "n_steps": 30,
+      "success_rate": 60.0,
+      "successes": 30,
+      "episodes": 50,
+      "seconds": 17.040898323059082
+    }
+  ]
+}
