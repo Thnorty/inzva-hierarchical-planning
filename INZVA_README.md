@@ -77,9 +77,9 @@ will surprise you: two planner settings copied from upstream were quietly worth
    commit, header facts and date included. That page is what the team reads
    instead of the code, and it is the one that goes stale: this file and the
    result records stay current by themselves, because the work happens next
-   to them. Update `notes/inzva-project-spec.html` too when a decision it
-   describes changes. Label superseded numbers rather than deleting them;
-   §13 and §14 cite them as evidence.
+   to them. Label superseded numbers rather than deleting them; §13 and §14
+   cite them as evidence. **Never edit `notes/inzva-report-4.html`**: it is
+   the spec exactly as sent to the department, and its value is being that.
 
 ---
 
@@ -1683,7 +1683,7 @@ on an RTX A4000. Record: `notes/results/dinowm_romer_results.md`.
 The worry that an epoch-10 checkpoint might be undertrained did not bear out. It
 lands ten points above the 74% most often cited for this same protocol, inside
 the 84% to 92% band that independent reruns report (section 07 of
-`notes/inzva-project-spec.html`), and 3.3 points below our LeWM baseline, which
+`notes/inzva-report-4.html`), and 3.3 points below our LeWM baseline, which
 is inside seed noise at three seeds.
 
 **Decision: this checkpoint is the Experiment B reference, and we do not train
