@@ -43,6 +43,16 @@ configs and results live elsewhere in the repo.
 4. **Every reported number goes with the exact command that produced it.**
    `python scripts/collect_results.py` does this for you (§6.3).
 
+5. **The status page ships with the work, not after it.** A change that
+   alters a number, settles a decision, or finishes one of the method's
+   files is not done until `notes/inzva-report-4.html` says so in the same
+   commit, header facts and date included. That page is what the team reads
+   instead of the code, and it is the one that goes stale: this file and the
+   result records stay current by themselves, because the work happens next
+   to them. Update `notes/inzva-project-spec.html` too when a decision it
+   describes changes. Label superseded numbers rather than deleting them;
+   §13 and §14 cite them as evidence.
+
 ---
 
 ## 1. Prerequisites
