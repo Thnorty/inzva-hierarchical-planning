@@ -157,11 +157,11 @@ footer{
   <p class="lede">Both of our world models are trained and our coarse-to-fine planner is written, and it passes the control experiment that says it is not winning through a bug. It beats the ordinary planner by about 7 points. It does not yet beat planning coarsely and never refining, which is what the budget sweep has to settle.</p>
   <dl class="facts">
     <div><dt>Written</dt><dd>13 September 2026, updated 20 September</dd></div>
-    <div><dt>Baseline of record</dt><dd>87.3% over 3 seeds</dd></div>
+    <div><dt>LeWM, the reference model</dt><dd>87.3%</dd></div>
     <div><dt>Machines verified</dt><dd>3</dd></div>
-    <div><dt>DINO-WM reference</dt><dd>84.0% over 3 seeds</dd></div>
-    <div><dt>Our GRU, flat</dt><dd>69.3%</dd></div>
-    <div><dt>Our GRU, coarse</dt><dd>76.0%</dd></div>
+    <div><dt>DINO-WM, the other reference</dt><dd>84.0%</dd></div>
+    <div><dt>Our model, flat planner</dt><dd>69.3%</dd></div>
+    <div><dt>Our model, our planner</dt><dd>76.0%</dd></div>
     <div><dt>Experiment C</dt><dd>passed</dd></div>
   </dl>
 </header>
@@ -171,6 +171,7 @@ footer{
   <div class="body">
     <h2>What we are testing</h2>
     <p>We are testing whether planning at two time scales beats planning at one when the compute budget is small. A flat planner searches every step of the horizon. Ours plans five coarse waypoints at a stride of two, then fills in between them. If we are right, the hierarchy reaches the same success rate with far fewer model evaluations, and the gap widens as the budget shrinks.</p>
+    <p>The <b>flat planner</b> throughout this page means CEM, the standard planner already in the repo. It is what we compare against.</p>
     <p>We compare three systems under one evaluation protocol, holding everything else fixed.</p>
     <table>
       <thead><tr><th>Row</th><th>World model</th><th>Planner</th><th>Purpose</th></tr></thead>
@@ -180,6 +181,21 @@ footer{
         <tr><td class="ours">3</td><td class="ours">Our GRU</td><td class="ours">Coarse then fine</td><td class="ours">Our contribution</td></tr>
       </tbody>
     </table>
+
+    <h3>Which number is which</h3>
+    <p>Six success rates appear on this page, all on the same task, all meaning "what fraction of 50 episodes reached the goal". They are easy to confuse, so:</p>
+    <table>
+      <thead><tr><th>Number</th><th>What it is</th></tr></thead>
+      <tbody>
+        <tr><td>96%</td><td>Published for <b>LeWM</b>, someone else’s model, whose checkpoint we use to validate our setup. We could not reproduce it</td></tr>
+        <tr><td>87.3%</td><td><b>LeWM</b> as we measure it. Our evidence that the harness, data and protocol work</td></tr>
+        <tr><td>74%</td><td>Published for <b>DINO-WM</b>, the model Experiment B compares against</td></tr>
+        <tr><td>84.0%</td><td><b>DINO-WM</b> as we measure it, using a community checkpoint</td></tr>
+        <tr><td>69.3%</td><td><b>Our own model</b>, planned with the flat planner. The baseline our method has to beat</td></tr>
+        <tr><td class="ours">76.0%</td><td class="ours"><b>Our own model, planned with our own method.</b> The result this project exists to produce</td></tr>
+      </tbody>
+    </table>
+    <p>The first four are other people’s models and exist only to show our setup is sound. Our own numbers are lower than theirs, which is expected: LeWM and DINO-WM are tuned published models, and ours is a small recurrent model trained in an afternoon. Experiment A compares our two planners on our own model, so a shared handicap cancels out.</p>
 
     <div class="exp">
       <h4>Experiment C, which we run first</h4>
@@ -201,7 +217,7 @@ footer{
   <div class="body">
     <h2>What we have done</h2>
     <p><b>We locked the protocol.</b> One shared config fixes episode count, budget, goal offset, resolution and seeds. Changing it silently invalidates every comparison we report, so we agreed that nobody edits it alone.</p>
-    <p><b>We closed the reproduction question.</b> We could not reproduce the published 96%, and we tested and eliminated every mechanical explanation for it: the solver's sampling change, the success criterion, the block geometry, the environment itself, every numeric planning parameter, and the dataset format. We settled on 87.3% with a spread of 7.6 points over three seeds as our baseline of record.</p>
+    <p><b>We closed the reproduction question.</b> LeWM is a published model whose trained checkpoint we planned with, to prove our evaluation setup produces sensible numbers before trusting it on our own model. Its published score is 96%. <b>We could not reproduce that</b>, and we tested and eliminated every mechanical explanation: the solver's sampling change, the success criterion, the block geometry, the environment itself, every numeric planning parameter, and the dataset format. We settled on 87.3% with a spread of 7.6 points over three seeds as what LeWM scores here, and moved on.</p>
     <p><b>We ran the same three seeds on three machines</b>, spanning three GPU generations, three CUDA builds and two operating systems.</p>
     <table>
       <thead><tr><th>Seed</th><th>Windows, RTX 3060</th><th>Cluster, V100</th><th>Ubuntu, RTX A4000</th></tr></thead>
@@ -214,7 +230,7 @@ footer{
     </table>
     <p>No pair disagrees by more than two episodes in 150, and all three means land within 0.6 points. We had predicted that per-seed rates would drift further apart on different hardware, and we were wrong: <b>the three-seed mean is portable.</b></p>
     <p><b>We got the cluster working.</b> We wrote job scripts and a shared environment file, and added a processor-only preflight that catches a broken setup in about a minute instead of after a half-day queue.</p>
-    <p><b>We locked the model decisions:</b> a stride of 8, a horizon of 40, one action per planning step, 224 pixels everywhere, and a single encoder shared between the coarse and fine models, then frozen.</p>
+    <p><b>We locked the model decisions:</b> 224 pixels everywhere, and a single encoder shared between the coarse and fine models, then frozen. The planner settings we first locked, a horizon of 40 and a stride of 8, turned out to be badly wrong when measured; section 05 is that story, and they are now 10 and 2.</p>
   </div>
 </section>
 
@@ -222,13 +238,13 @@ footer{
   <div class="num">03</div>
   <div class="body">
     <h2>What we still have to build</h2>
-    <p>Two of the six files exist and are merged. The fine world model trained for 7.5 hours on an RTX A4000 and predicts the latent 24 times better than assuming nothing moves. The four that remain are the hierarchy itself.</p>
+    <p>Four of the six files exist and are merged: both world models, the trainer, and the planner that is our contribution. The fine model trained for 7.5 hours on an RTX A4000, and predicts where the scene will be 24 times more accurately than assuming nothing moves. What remains is the script that runs Experiment A, and the write-up.</p>
     <table>
       <thead><tr><th>File</th><th>What it is</th></tr></thead>
       <tbody>
         <tr><td>the fine world model</td><td><b>Done.</b> Trained and scored. It lives inside the package rather than at the path the spec named, because a model outside it cannot be loaded by the evaluation script</td></tr>
         <tr><td><code>scripts/train_gru.py</code></td><td><b>Done.</b> Resumes after a cluster time limit; saves a loadable checkpoint every epoch</td></tr>
-        <tr><td><code>models/gru_coarse.py</code></td><td>The coarse model, one step per eight</td></tr>
+        <tr><td>the coarse world model</td><td><b>Done.</b> The same model with a longer stride, predicting 2 environment steps at a time over the fine model’s frozen latent. 2.5 hours to train</td></tr>
         <tr><td>the coarse-to-fine planner</td><td><b>Done.</b> Our contribution. Experiment C confirms it reduces to the standard planner when the abstraction is removed</td></tr>
         <tr><td><code>scripts/sweep.py</code></td><td>Budget sweep driver for Experiment A</td></tr>
         <tr><td><code>README.md</code></td><td>Write-up</td></tr>
@@ -237,7 +253,7 @@ footer{
     <div class="callout">
       <p><b>The budget sweep is now the critical path.</b> Both models and the solver exist and pass their checks; what is missing is the script that runs Experiment A across compute budgets, which is where our claim is actually settled.</p>
     </div>
-    <p>We then run Experiment C to prove our implementation is sound, then A for the claim, then B if compute allows.</p>
+    <p>Experiment C has since passed (section 06). What is left is A, the claim itself, and then B if compute allows.</p>
   </div>
 </section>
 
@@ -256,7 +272,7 @@ footer{
         <tr><td><b>Mean</b></td><td><b>84.0%, spread 5.3</b></td></tr>
       </tbody>
     </table>
-    <p>That is ten points above the 74% most often cited for this same protocol, and inside the 84% to 92% band that independent reruns report. Against our LeWM baseline of 87.3% it is 3.3 points lower, which at three seeds sits inside seed noise, so we treat the two as indistinguishable.</p>
+    <p>That is ten points above the 74% most often cited for DINO-WM under this same protocol, and inside the 84% to 92% band that other teams report when they rerun DINO-WM themselves rather than quoting it. Against our LeWM baseline of 87.3% it is 3.3 points lower, which at three seeds sits inside seed noise, so we treat the two as indistinguishable.</p>
     <div class="callout">
       <p><b>We decided to use this checkpoint as our Experiment B reference, and not to train DINO-WM ourselves.</b> One caveat travels with the number: the checkpoint comes from a fork of the harness and is marked epoch 10, so we report it as this checkpoint rather than as DINO-WM in general.</p>
     </div>
@@ -277,7 +293,7 @@ footer{
   <div class="num">05</div>
   <div class="body">
     <h2>What we decided: the planning horizon</h2>
-    <p>Before the robot moves, the planner imagines what would happen if it took some sequence of actions. The horizon is how many steps ahead it imagines. We locked 40 because our method needs it: 40 steps split into 5 waypoints of 8 steps each. That number came from our design, not from testing how well anything plans with it.</p>
+    <p>Before the robot moves, the planner imagines what would happen if it took some sequence of actions. The horizon is how many steps ahead it imagines. We originally locked it at 40, because our method divides it into 5 waypoints and 40 splits neatly into 5 steps of 8. That number came from our design, not from testing how well anything plans with it. It was wrong, and finding out why changed two settings.</p>
     <p><b>It aims past the target.</b> In evaluation the planner is shown the state 25 steps ahead and told to reach it, and a plan is scored only on where it ends up on its last imagined step. At a horizon of 40 the planner is therefore working to be in the right place 15 steps after the goal. LeWM never had this problem: its horizon is exactly 25 steps.</p>
     <p>Two further effects push the same way. The model&rsquo;s predictions drift the further ahead it imagines, and the planner searches a much larger space of action sequences with the same effort.</p>
     <table>
@@ -289,7 +305,7 @@ footer{
     <p>Over three seeds our model scores <b>15.3%</b> at a horizon of 40 and <b>62.0%</b> at 10, the latter pooled over two runs of three seeds (58, 62, 60 and 64, 70, 58). Fixing a second setting, how often the planner replans, later took it to <b>69.3%</b>.</p>
     <p>Those two runs used the same model, config and seeds, and differ by 8 episodes in 150, where a LeWM rerun moves by 1 or 2. So our planner is noisier run to run than the reference, and a single three-seed run here is worth less than it looks. We briefly read the first run as unusually steady; the second run showed that was luck.</p>
     <div class="callout">
-      <p><b>Experiment A is unfair in our own favour until we settle this.</b> If the flat planner is pinned at a horizon we have measured as bad, beating it proves little. A fair comparison puts the hierarchy against the best flat setting.</p>
+      <p><b>Left alone, this would have made Experiment A unfair in our own favour.</b> If the flat planner is pinned at a horizon we have measured as bad, beating it proves little. A fair comparison puts our method against the best flat setting, which is why we changed it.</p>
       <p>The encouraging reading is the opposite one: that collapse from 60% to 14% as the horizon grows is exactly the weakness the hierarchy claims to fix, and we have now measured it on our own model.</p>
     </div>
     <p><b>Decided: horizon 10, stride 2, still five waypoints.</b> The method is unchanged; only the gaps between waypoints shrink, from 8 steps to 2. We rejected sweeping the horizon as a second axis of Experiment A on compute rather than on merit, and it remains the most informative version if the budget allows.</p>
