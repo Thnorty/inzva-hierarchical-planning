@@ -33,6 +33,16 @@ repos:
       - id: ruff-format
         types_or: [python, pyi]
 
+  # Ours: the status page must not claim a date older than the commit editing it.
+  - repo: local
+    hooks:
+      - id: status-page-date
+        name: status page date is current
+        entry: python scripts/check_report_date.py
+        language: system
+        files: ^notes/inzva-report-4\.html$
+        pass_filenames: true
+
   # Shell scripts linter
   - repo: https://github.com/shellcheck-py/shellcheck-py
     rev: v0.11.0.1

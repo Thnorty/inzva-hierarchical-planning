@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Status report: hierarchical planning on PushT</title>
-<meta name="description" content="Where the project stands on 13 September 2026: protocol locked, baseline measured at 87.3 percent, three machines agreeing, and the hierarchical method still unwritten.">
+<meta name="description" content="Where the project stands: both world models trained, the coarse-to-fine solver written and its control experiment passed, and the budget sweep left to run.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -153,10 +153,10 @@ footer{
 <div class="wrap">
 
 <header>
-  <h1 class="question">The instrument is built. Our first <em>model</em> runs.</h1>
-  <p class="lede">We have everything we need to run a result and trust it, and we have checked it agrees across three machines. We locked the protocol, measured the baseline, scored the DINO-WM reference, and got the cluster working. We have now trained the first of our own models. The hierarchy itself is still unwritten.</p>
+  <h1 class="question">The method runs. The <em>refinement</em> has yet to earn its keep.</h1>
+  <p class="lede">Both of our world models are trained and our coarse-to-fine planner is written, and it passes the control experiment that says it is not winning through a bug. It beats the ordinary planner by about 7 points. It does not yet beat planning coarsely and never refining, which is what the budget sweep has to settle.</p>
   <dl class="facts">
-    <div><dt>Written</dt><dd>13 September 2026, updated 18 September</dd></div>
+    <div><dt>Written</dt><dd>13 September 2026, updated 20 September</dd></div>
     <div><dt>Baseline of record</dt><dd>87.3% over 3 seeds</dd></div>
     <div><dt>Machines verified</dt><dd>3</dd></div>
     <div><dt>DINO-WM reference</dt><dd>84.0% over 3 seeds</dd></div>
@@ -338,7 +338,7 @@ footer{
 </section>
 
 <footer>
-  Status report, 13 September 2026, updated 18 September 2026 with the trained GRU and the planning-horizon decision. The repo manual is our source of truth for how to do anything; this says where we are. Built on stable-worldmodel at a pinned commit.
+  Status report, 13 September 2026, last updated 20 September 2026. The repo manual is our source of truth for how to do anything; this says where we are. Built on stable-worldmodel at a pinned commit.
 </footer>
 
 </div>
