@@ -9,7 +9,7 @@ This runs as a pre-commit hook. It only complains when the page is actually
 being committed, so a full-repo run on an untouched file passes and CI stays
 green on days nobody edits it.
 
-    python scripts/check_report_date.py notes/inzva-report-4.html
+    python scripts/check_report_date.py notes/inzva-progress.html
 """
 
 import re

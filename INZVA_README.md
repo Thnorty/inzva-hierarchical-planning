@@ -5,7 +5,7 @@ Hierarchical coarse-to-fine planning on PushT, built on the
 
 The manual: setup, data, every decision we measured, and how to run each
 planner. Results live in `notes/results/`, and where the project stands lives
-in `notes/inzva-report-4.html`.
+in `notes/inzva-progress.html`.
 
 ---
 
@@ -16,7 +16,7 @@ Three documents, in reading order. Do not start with this one.
 | If you want | Read | Length |
 |---|---|---|
 | **What the project is testing and why** | `notes/inzva-project-spec.html` | 10 min |
-| **Where we are, what we decided, what is left** | `notes/inzva-report-4.html` | 5 min |
+| **Where we are, what we decided, what is left** | `notes/inzva-progress.html` | 5 min |
 | **How to run anything** | this file | reference, not prose |
 | **A number someone quoted** | `notes/results/*.md` | one file per run |
 
@@ -67,7 +67,7 @@ will surprise you: two planner settings copied from upstream were quietly worth
 
 5. **The status page ships with the work, not after it.** A change that
    alters a number, settles a decision, or finishes one of the method's
-   files is not done until `notes/inzva-report-4.html` says so in the same
+   files is not done until `notes/inzva-progress.html` says so in the same
    commit, header facts and date included. That page is what the team reads
    instead of the code, and it is the one that goes stale: this file and the
    result records stay current by themselves, because the work happens next
@@ -1223,7 +1223,7 @@ the pull landed before submitting, not after.
 
 ## 8. Status
 
-**Where we are lives in `notes/inzva-report-4.html`**, which is the page the
+**Where we are lives in `notes/inzva-progress.html`**, which is the page the
 team reads and the one that carries the current numbers. This section is only
 the open list, so the two cannot disagree.
 

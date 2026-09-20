@@ -40,7 +40,7 @@ repos:
         name: status page date is current
         entry: python scripts/check_report_date.py
         language: system
-        files: ^notes/inzva-report-4\.html$
+        files: ^notes/inzva-progress\.html$
         pass_filenames: true
 
   # Shell scripts linter
