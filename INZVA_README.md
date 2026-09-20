@@ -19,6 +19,7 @@ Three documents, in reading order. Do not start with this one.
 | **Where we are, what we decided, what is left** | `notes/inzva-progress.html` | 5 min |
 | **How to run anything** | this file | reference, not prose |
 | **A number someone quoted** | `notes/results/*.md` | one file per run |
+| **What we sent upstairs** | `notes/inzva-report-4.html` | archive, do not edit |
 
 Open both HTML files in a browser; they are self-contained pages.
 
@@ -1267,6 +1268,7 @@ Everything below is ours. The rest of the tree is upstream at `6f1e499`.
 | `scripts/inzva_split.py` | Deterministic episode-level train/val split, with a fingerprint | §6.2 |
 | `scripts/collect_results.py` | Turns eval output into a tracked record with versions attached | §6.3 |
 | `notes/results/` | The tracked records themselves | §6.3 |
+| `notes/inzva-report-4.html` | Frozen copy of the spec as shared with the department before presentation 4. Byte-identical to the spec at commit `7752c44`, so it still says `k = 8` and a 40-step horizon. **Do not edit or cite it**: it records what was sent, not what is true | — |
 | `stable_worldmodel/wm/gru/` | Both world models: one class, stride 1 for fine and 2 for coarse | §10 |
 | `scripts/train_gru.py` | Trains either of them; resumes after a cluster time limit | §10 |
 | `scripts/train/config/gru.yaml`, `gru_coarse.yaml` | Their training configs | §10 |
