@@ -15,13 +15,18 @@ Three documents, in reading order. Do not start with this one.
 
 | If you want | Read | Length |
 |---|---|---|
-| **What the project is testing and why** | `notes/inzva-project-spec.html` | 10 min |
+| **What the project is testing and why** | `notes/inzva-report-4.html` | 10 min |
 | **Where we are, what we decided, what is left** | `notes/inzva-progress.html` | 5 min |
 | **How to run anything** | this file | reference, not prose |
 | **A number someone quoted** | `notes/results/*.md` | one file per run |
-| **What we sent upstairs** | `notes/inzva-report-4.html` | archive, do not edit |
 
 Open both HTML files in a browser; they are self-contained pages.
+
+`inzva-report-4.html` is the spec exactly as sent to the department before
+presentation 4, and it is not edited. **Two settings in it are out of date**:
+it says a 40-step horizon and a coarse stride of 8, which measurement replaced
+with 10 and 2 the next day (§13). Read it for what the project is and why; read
+§13 and the progress page for what the numbers actually are now.
 
 This file is the manual. It is long because it records *why* each setting is
 what it is, so nobody re-litigates a decision that was already measured. Read
@@ -1268,7 +1273,7 @@ Everything below is ours. The rest of the tree is upstream at `6f1e499`.
 | `scripts/inzva_split.py` | Deterministic episode-level train/val split, with a fingerprint | §6.2 |
 | `scripts/collect_results.py` | Turns eval output into a tracked record with versions attached | §6.3 |
 | `notes/results/` | The tracked records themselves | §6.3 |
-| `notes/inzva-report-4.html` | Frozen copy of the spec as shared with the department before presentation 4. Byte-identical to the spec at commit `7752c44`, so it still says `k = 8` and a 40-step horizon. **Do not edit or cite it**: it records what was sent, not what is true | — |
+| `notes/inzva-report-4.html` | The project spec, frozen as sent to the department before presentation 4 and left unedited. Still says `k = 8` and a 40-step horizon; §13 has the measurements that replaced them. A live copy carrying those corrections existed until 2026-09-20 and was removed as duplication: everything unique to it lives in §6, §11 and §13 | — |
 | `stable_worldmodel/wm/gru/` | Both world models: one class, stride 1 for fine and 2 for coarse | §10 |
 | `scripts/train_gru.py` | Trains either of them; resumes after a cluster time limit | §10 |
 | `scripts/train/config/gru.yaml`, `gru_coarse.yaml` | Their training configs | §10 |
