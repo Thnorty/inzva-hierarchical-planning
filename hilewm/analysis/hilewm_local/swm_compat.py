@@ -38,7 +38,11 @@ from types import ModuleType
 
 __all__ = ["lewm_module", "cem_solver_class", "swm_submodule", "cache_dir", "clear_cache"]
 
-_PYPI_JSON = "https://pypi.org/pypi/stable-worldmodel/json"
+# Pinned (2026-10-05): the unversioned endpoint serves whatever release is newest,
+# so a future stable-worldmodel would have silently replaced the 0.1.1 that every
+# number in docs/FINDINGS.md was measured against.
+_SWM_VERSION = "0.1.1"
+_PYPI_JSON = f"https://pypi.org/pypi/stable-worldmodel/{_SWM_VERSION}/json"
 _ROOT_PACKAGE = "stable_worldmodel"
 _ANALYSIS_ROOT = Path(__file__).resolve().parents[1]
 
