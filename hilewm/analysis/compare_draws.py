@@ -12,10 +12,15 @@ Two questions:
    exploitation? For each pair, count the draws where A exploits more than B, and
    report an exact two-sided sign test.
 2. **Across budgets for one variant** — did doubling the high-level iterations
-   (20 -> 40) change the result? The 20-iteration run predates JSON recording,
-   so its per-draw values are parsed from the backfilled text log and are
-   **rounded to one decimal**; exact ties at that precision are reported as ties
-   and dropped from the sign test, which is the conservative choice.
+   (20 -> 40) change the result? The original 20-iteration run predated JSON
+   recording and survived only as a 1-decimal text log, so the test compared
+   both sides at one decimal and dropped exact ties. That log was lost with the
+   old working tree; the run was regenerated on 2026-10-05 as a full record, so
+   the test now also runs at full precision. Both are printed.
+
+Records are found by content, not by timestamp (changed 2026-10-05, when every
+record was regenerated under a new name): the newest record whose file name
+matches the run and whose resolved budget is the one the comparison needs.
 
 Reads only files under `results/`; runs no model.
 
@@ -26,7 +31,6 @@ Usage:
 from __future__ import annotations
 
 import json
-import re
 from itertools import combinations
 from math import comb
 from pathlib import Path
@@ -42,21 +46,33 @@ except Exception:  # noqa: BLE001
         pass
 
 _REPO = Path(__file__).resolve().parents[1]
-RECORDS_40 = [
-    "results/audit_dimensionality/20260921-175756_draws_vq16_vq128_d50.json",
-    "results/audit_dimensionality/20260921-194945_draws_d32_d8_d50.json",
-]
-LOG_20 = "results/backfill/2026-09-19_session/audit__draw_intervals_exploitation_and_support.txt"
+_AUDIT = _REPO / "results" / "audit_dimensionality"
+
+
+def _find(*patterns: str, n_steps: int | None = 40) -> str:
+    """Newest audit record matching one of `patterns` at the given high-level budget."""
+    hits = []
+    for pattern in patterns:
+        for path in _AUDIT.glob(pattern):
+            if n_steps is not None:
+                budget = json.loads(path.read_text(encoding="utf-8"))["metrics"].get("budget", {})
+                if budget.get("resolved", {}).get("n_steps") != n_steps:
+                    continue
+            hits.append(path)
+    if not hits:
+        raise SystemExit(f"no audit record matches {patterns} at n_steps={n_steps}; "
+                         "regenerate it with audit_dimensionality.py (docs/RECONSTRUCTION.md)")
+    return max(hits, key=lambda p: p.name).relative_to(_REPO).as_posix()
+
+
+RECORDS_40 = [_find("*_draws_vq16_vq128_d50.json"), _find("*_draws_d32_d8_d50.json")]
+RECORD_20 = _find("*_draws_d32_d8_d50.json", n_steps=20)
 # Hi-LeWM-C run, which also re-ran d32 with the extended metrics (1-NN, first-waypoint error).
-RECORD_HILEWM_C = "results/audit_dimensionality/20260922-001913_draws_hilewm_c_d32_d50.json"
+RECORD_HILEWM_C = _find("*_draws_hilewm_c_d32_lam0.1_d50.json", "*_draws_hilewm_c_d32_d50.json")
 # lambda_res sweep, 6 draws each (seeds 2000-2005). lambda_res 0.1 comes from RECORD_HILEWM_C.
-RECORD_SPECTRUM = "results/audit_dimensionality/20260922-114829_spectrum_estimators_d32_d8_fs32_d50.json"
-RECORD_FS32 = "results/audit_dimensionality/20260922-114851_draws_fs32_d50.json"
-RECORDS_LAMBDA = {
-    0.05: "results/audit_dimensionality/20260922-021211_draws_hilewm_c_lam0.05_d50.json",
-    0.3: "results/audit_dimensionality/20260922-024825_draws_hilewm_c_lam0.3_d50.json",
-    1.0: "results/audit_dimensionality/20260922-031835_draws_hilewm_c_lam1_d50.json",
-}
+RECORD_SPECTRUM = _find("*_spectrum_estimators_d32_d8_fs32_d50.json", n_steps=None)
+RECORD_FS32 = _find("*_draws_fs32_d50.json")
+RECORDS_LAMBDA = {lam: _find(f"*_draws_hilewm_c_lam{lam:g}_d50.json") for lam in (0.05, 0.3, 1.0)}
 ORDER = ["d32", "d8", "vq128", "vq16"]  # least to most restricted search
 
 
@@ -82,14 +98,11 @@ def load_40() -> dict[str, dict[str, list[float]]]:
 
 
 def load_20() -> dict[str, list[float]]:
-    """Per-draw exploitation from the 20-iteration text log (1-decimal precision)."""
-    text = (_REPO / LOG_20).read_text()
-    out: dict[str, list[float]] = {}
-    for tag in ("d32", "d8"):
-        block = re.search(rf"--- {tag}\s.*?(?=\n\s*support ratio)", text, re.S).group(0)
-        rows = re.findall(r"^\s*\d+\s+\S+\s+\S+\s+\S+x\s+\S+\s+\S+\s+([\d.]+)x", block, re.M)
-        out[tag] = [float(r) for r in rows]
-        assert len(out[tag]) == 10, (tag, len(out[tag]))
+    """Per-draw exploitation at 20 high-level iterations, at full precision."""
+    metrics = json.loads((_REPO / RECORD_20).read_text(encoding="utf-8"))["metrics"]
+    out = {tag: metrics[f"draws_{tag}"]["exploitation"] for tag in ("d32", "d8")}
+    for tag, values in out.items():
+        assert len(values) == 10, (tag, len(values))
     return out
 
 
@@ -127,17 +140,28 @@ def main() -> int:
         print(f"{a:>7} vs {b:<7} {w:>4} {l:>4} {t:>4}  {p:>13.4f}  x{ratio:.2f}{flag}")
 
     print("\nBUDGET EFFECT: 20 -> 40 high-level iterations, same segments")
-    print("(20-iteration values parsed from the text log, 1-decimal precision)")
+    print("(both sides rounded to 1 decimal, as the original comparison had to be)")
     print(f"{'variant':>7}  {'at 20':<28} {'at 40':<28} {'40>20':>6} {'40<20':>6} {'tie':>4}  {'p':>7}")
+    budget = {}
     for tag in ("d32", "d8"):
-        # Compare at matched precision: the 20-iteration values only exist to one
-        # decimal, so round the 40-iteration ones the same way before pairing.
-        # Comparing full precision against rounded would count 2.235 vs 2.2 as a
-        # win when the log cannot distinguish it from a tie.
+        # Compare at matched precision: the original 20-iteration values only
+        # existed to one decimal, so both sides are rounded the same way before
+        # pairing. This reproduces the comparison FINDINGS reports.
         at40 = [round(v, 1) for v in d40[tag]["exploitation"]]
-        w, l, t, p = paired(at40, d20[tag])
+        at20 = [round(v, 1) for v in d20[tag]]
+        w, l, t, p = paired(at40, at20)
         print(f"{tag:>7}  {describe(d20[tag]):<28} {describe(d40[tag]['exploitation']):<28} "
               f"{w:>6} {l:>6} {t:>4}  {p:>7.4f}{'  *' if p < 0.05 else ''}")
+        budget[f"{tag}_1_decimal"] = {"wins_40": w, "wins_20": l, "ties": t, "p": p}
+    print("(full precision, possible since the 20-iteration run was regenerated as a record)")
+    for tag in ("d32", "d8"):
+        w, l, t, p = paired(d40[tag]["exploitation"], d20[tag])
+        print(f"{tag:>7}  {'':<28} {'':<28} {w:>6} {l:>6} {t:>4}  {p:>7.4f}{'  *' if p < 0.05 else ''}")
+        budget[f"{tag}_full_precision"] = {"wins_40": w, "wins_20": l, "ties": t, "p": p}
+    record(budget_effect=budget, records={"paper_budget": RECORDS_40, "iterations_20": RECORD_20,
+                                          "hilewm_c": RECORD_HILEWM_C, "spectrum": RECORD_SPECTRUM,
+                                          "fs32": RECORD_FS32,
+                                          "lambda": {str(k): v for k, v in RECORDS_LAMBDA.items()}})
     compare_hilewm_c(d40)
     compare_lambda_sweep()
     compare_geometry()
