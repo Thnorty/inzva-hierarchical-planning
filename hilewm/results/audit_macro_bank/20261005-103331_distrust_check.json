@@ -1,0 +1,47 @@
+{
+  "script": "audit_macro_bank",
+  "tag": "distrust_check",
+  "timestamp": "2026-10-05T10:33:31",
+  "git_commit": "49a33de",
+  "git_dirty": false,
+  "git_commit_at_end": "49a33de",
+  "argv": [
+    "analysis/audit_macro_bank.py",
+    "--dataset",
+    "../.stable-wm/datasets/pusht_expert_train.h5"
+  ],
+  "args": {
+    "dataset": "../.stable-wm/datasets/pusht_expert_train.h5",
+    "checkpoint": "checkpoints/pusht/main/pusht_hi_lewm_epoch15_weights.ckpt",
+    "num_sequences": 256,
+    "chunk_len": 5,
+    "high_horizon": 2,
+    "seed": 42
+  },
+  "headline": "bank max abs diff 2.9e-06; 256/256 in-episode; 256/256 contiguous",
+  "metrics": {
+    "passed": true,
+    "max_abs_diff": 2.86102294921875e-06,
+    "mean_abs_latent": 1.9867527484893799,
+    "mean_latent_norm": 13.682992935180664,
+    "spans_in_episode": 256,
+    "spans_contiguous": 256,
+    "n_sequences": 256,
+    "span_lengths": [
+      50
+    ],
+    "goal_offset": 50,
+    "action_shape": [
+      2336736,
+      2
+    ],
+    "action_nan_rows": 0,
+    "action_range": [
+      -1.4947075843811035,
+      2.0426697731018066
+    ],
+    "primitive_per_model_action": 5,
+    "primitive_per_token": 25
+  },
+  "stdout": "continuous  d_l=32  d_z=192  high_ctx=4  low_ctx=3  macro_layers=2  encoder=yes\n\naction column: shape (2336736, 2), NaN rows 0, range [-1.495, 2.043]\nbank: 256 sequences x 2 tokens x 32 dims\ngrouping: 5 primitive actions per model action (10 / 2), 25 primitive steps per macro token\n\ncheck                                          result\nbank vs independent encoding, max abs diff     2.9e-06  (mean |latent| 1.99, mean latent norm 13.68)\nspans inside a single episode                  256 / 256\nspans strictly contiguous (step_idx + 1)       256 / 256\nspan length vs goal offset                     [50] primitive steps vs d = 50\naction column                                  (2336736, 2), 0 NaN rows, range [-1.495, 2.043]\n\nverdict: the bank is the expert contiguous actions\n"
+}

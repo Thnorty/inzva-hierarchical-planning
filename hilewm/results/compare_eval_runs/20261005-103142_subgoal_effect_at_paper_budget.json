@@ -1,0 +1,58 @@
+{
+  "script": "compare_eval_runs",
+  "tag": "subgoal_effect_at_paper_budget",
+  "timestamp": "2026-10-05T10:31:42",
+  "git_commit": "49a33de",
+  "git_dirty": false,
+  "git_commit_at_end": "49a33de",
+  "argv": [
+    "analysis/compare_eval_runs.py",
+    "results/colab/manifests/generated_subgoal_acting_d50_hh2_lh2_budget100_seed42_episodes.tsv",
+    "results/colab/manifests/oracle_subgoal_acting_d50_hh2_lh2_budget100_seed42_episodes.tsv",
+    "--name-a",
+    "generated_staged",
+    "--name-b",
+    "oracle_staged",
+    "--tag",
+    "subgoal_effect_at_paper_budget"
+  ],
+  "args": {
+    "a": "results/colab/manifests/generated_subgoal_acting_d50_hh2_lh2_budget100_seed42_episodes.tsv",
+    "b": "results/colab/manifests/oracle_subgoal_acting_d50_hh2_lh2_budget100_seed42_episodes.tsv",
+    "tag": "subgoal_effect_at_paper_budget",
+    "name_a": "generated_staged",
+    "name_b": "oracle_staged",
+    "unpaired": false
+  },
+  "headline": "generated_staged -> oracle_staged: +22.0, 17:6, McNemar p=0.0347",
+  "metrics": {
+    "paired": true,
+    "table": {
+      "both_pass": 18,
+      "b_only": 17,
+      "a_only": 6,
+      "both_fail": 9
+    },
+    "paired_difference_points": 22.0,
+    "wald_95_points": [
+      4.217174152900033,
+      39.782825847099964
+    ],
+    "mcnemar_exact_p": 0.03468966484069824,
+    "a": {
+      "manifest": "results\\colab\\manifests\\generated_subgoal_acting_d50_hh2_lh2_budget100_seed42_episodes.tsv",
+      "sha256_16": "d4c02043b021d959",
+      "passed": 24,
+      "n": 50
+    },
+    "b": {
+      "manifest": "results\\colab\\manifests\\oracle_subgoal_acting_d50_hh2_lh2_budget100_seed42_episodes.tsv",
+      "sha256_16": "67552ca7714ca2b3",
+      "passed": 35,
+      "n": 50
+    },
+    "unpaired_difference_points": 21.999999999999996,
+    "fisher_exact_p": 0.041429237300194766
+  },
+  "stdout": "A  generated_staged: 24/50 = 48.0 %\nB  oracle_staged: 35/50 = 70.0 %\n   A Wilson 95 %: 34.8 - 61.5\n   B Wilson 95 %: 56.2 - 80.9\n\nunpaired: difference +22.0 points, Fisher exact p = 0.0414\n\npaired on 50 identical episodes:\n                B pass  B fail\n        A pass      18       6\n        A fail      17       9\n\npaired difference +22.0 points (95 % Wald +4.2 to +39.8)\ndiscordant 17 : 6 (B only : A only), McNemar exact p = 0.0347\n"
+}

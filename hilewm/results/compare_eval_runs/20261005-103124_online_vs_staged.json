@@ -1,0 +1,58 @@
+{
+  "script": "compare_eval_runs",
+  "tag": "online_vs_staged",
+  "timestamp": "2026-10-05T10:31:24",
+  "git_commit": "49a33de",
+  "git_dirty": false,
+  "git_commit_at_end": "49a33de",
+  "argv": [
+    "analysis/compare_eval_runs.py",
+    "results/colab/manifests/hi_online_d50_seed42_n50__hi_pusht_d50_seed42_episodes.tsv",
+    "results/colab/manifests/generated_subgoal_acting_d50_hh2_lh2_seed42_episodes.tsv",
+    "--name-a",
+    "plain_online_100",
+    "--name-b",
+    "generated_staged_50",
+    "--tag",
+    "online_vs_staged"
+  ],
+  "args": {
+    "a": "results/colab/manifests/hi_online_d50_seed42_n50__hi_pusht_d50_seed42_episodes.tsv",
+    "b": "results/colab/manifests/generated_subgoal_acting_d50_hh2_lh2_seed42_episodes.tsv",
+    "tag": "online_vs_staged",
+    "name_a": "plain_online_100",
+    "name_b": "generated_staged_50",
+    "unpaired": false
+  },
+  "headline": "plain_online_100 -> generated_staged_50: +8.0, 10:6, McNemar p=0.4545",
+  "metrics": {
+    "paired": true,
+    "table": {
+      "both_pass": 12,
+      "b_only": 10,
+      "a_only": 6,
+      "both_fail": 22
+    },
+    "paired_difference_points": 8.0,
+    "wald_95_points": [
+      -7.522122955152917,
+      23.52212295515292
+    ],
+    "mcnemar_exact_p": 0.454498291015625,
+    "a": {
+      "manifest": "results\\colab\\manifests\\hi_online_d50_seed42_n50__hi_pusht_d50_seed42_episodes.tsv",
+      "sha256_16": "7a3330addd0e8eea",
+      "passed": 18,
+      "n": 50
+    },
+    "b": {
+      "manifest": "results\\colab\\manifests\\generated_subgoal_acting_d50_hh2_lh2_seed42_episodes.tsv",
+      "sha256_16": "64296177baee4f26",
+      "passed": 22,
+      "n": 50
+    },
+    "unpaired_difference_points": 8.000000000000002,
+    "fisher_exact_p": 0.5405671396259132
+  },
+  "stdout": "A  plain_online_100: 18/50 = 36.0 %\nB  generated_staged_50: 22/50 = 44.0 %\n   A Wilson 95 %: 24.1 - 49.9\n   B Wilson 95 %: 31.2 - 57.7\n\nunpaired: difference +8.0 points, Fisher exact p = 0.5406\n\npaired on 50 identical episodes:\n                B pass  B fail\n        A pass      12       6\n        A fail      10      22\n\npaired difference +8.0 points (95 % Wald -7.5 to +23.5)\ndiscordant 10 : 6 (B only : A only), McNemar exact p = 0.4545\n"
+}

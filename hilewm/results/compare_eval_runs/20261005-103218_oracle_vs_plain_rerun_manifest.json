@@ -1,0 +1,47 @@
+{
+  "script": "compare_eval_runs",
+  "tag": "oracle_vs_plain_rerun_manifest",
+  "timestamp": "2026-10-05T10:32:18",
+  "git_commit": "49a33de",
+  "git_dirty": false,
+  "git_commit_at_end": "49a33de",
+  "argv": [
+    "analysis/compare_eval_runs.py",
+    "results/colab/manifests/hi_online_d50_seed42_n50__hi_pusht_d50_seed42_episodes.tsv",
+    "results/colab/manifests/oracle_subgoal_acting_d50_hh2_lh2_budget50_seed42_episodes.tsv",
+    "--name-a",
+    "plain_cem",
+    "--name-b",
+    "oracle_50_rerun",
+    "--unpaired",
+    "--tag",
+    "oracle_vs_plain_rerun_manifest"
+  ],
+  "args": {
+    "a": "results/colab/manifests/hi_online_d50_seed42_n50__hi_pusht_d50_seed42_episodes.tsv",
+    "b": "results/colab/manifests/oracle_subgoal_acting_d50_hh2_lh2_budget50_seed42_episodes.tsv",
+    "tag": "oracle_vs_plain_rerun_manifest",
+    "name_a": "plain_cem",
+    "name_b": "oracle_50_rerun",
+    "unpaired": true
+  },
+  "headline": "plain_cem -> oracle_50_rerun: +22.0 unpaired, Fisher p=0.0446",
+  "metrics": {
+    "paired": false,
+    "a": {
+      "manifest": "results\\colab\\manifests\\hi_online_d50_seed42_n50__hi_pusht_d50_seed42_episodes.tsv",
+      "sha256_16": "7a3330addd0e8eea",
+      "passed": 18,
+      "n": 50
+    },
+    "b": {
+      "manifest": "results\\colab\\manifests\\oracle_subgoal_acting_d50_hh2_lh2_budget50_seed42_episodes.tsv",
+      "sha256_16": "3010306febee5fac",
+      "passed": 29,
+      "n": 50
+    },
+    "unpaired_difference_points": 21.999999999999996,
+    "fisher_exact_p": 0.04457195006376596
+  },
+  "stdout": "A  plain_cem: 18/50 = 36.0 %\nB  oracle_50_rerun: 29/50 = 58.0 %\n   A Wilson 95 %: 24.1 - 49.9\n   B Wilson 95 %: 44.2 - 70.6\n\nunpaired: difference +22.0 points, Fisher exact p = 0.0446\n"
+}

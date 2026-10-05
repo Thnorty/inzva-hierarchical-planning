@@ -1,0 +1,58 @@
+{
+  "script": "compare_eval_runs",
+  "tag": "d50_seed42",
+  "timestamp": "2026-10-05T10:31:15",
+  "git_commit": "49a33de",
+  "git_dirty": false,
+  "git_commit_at_end": "49a33de",
+  "argv": [
+    "analysis/compare_eval_runs.py",
+    "results/colab/manifests/hi_online_d50_seed42_n50__hi_pusht_d50_seed42_episodes.tsv",
+    "results/colab/manifests/hi_c_seed42_d50_seed42_n50__hi_pusht_d50_seed42_episodes.tsv",
+    "--name-a",
+    "plain_cem",
+    "--name-b",
+    "hi_lewm_c",
+    "--tag",
+    "d50_seed42"
+  ],
+  "args": {
+    "a": "results/colab/manifests/hi_online_d50_seed42_n50__hi_pusht_d50_seed42_episodes.tsv",
+    "b": "results/colab/manifests/hi_c_seed42_d50_seed42_n50__hi_pusht_d50_seed42_episodes.tsv",
+    "tag": "d50_seed42",
+    "name_a": "plain_cem",
+    "name_b": "hi_lewm_c",
+    "unpaired": false
+  },
+  "headline": "plain_cem -> hi_lewm_c: -2.0, 9:10, McNemar p=1.0000",
+  "metrics": {
+    "paired": true,
+    "table": {
+      "both_pass": 8,
+      "b_only": 9,
+      "a_only": 10,
+      "both_fail": 23
+    },
+    "paired_difference_points": -2.0,
+    "wald_95_points": [
+      -19.077574718559788,
+      15.077574718559788
+    ],
+    "mcnemar_exact_p": 1.0,
+    "a": {
+      "manifest": "results\\colab\\manifests\\hi_online_d50_seed42_n50__hi_pusht_d50_seed42_episodes.tsv",
+      "sha256_16": "7a3330addd0e8eea",
+      "passed": 18,
+      "n": 50
+    },
+    "b": {
+      "manifest": "results\\colab\\manifests\\hi_c_seed42_d50_seed42_n50__hi_pusht_d50_seed42_episodes.tsv",
+      "sha256_16": "eabf1062af9961da",
+      "passed": 17,
+      "n": 50
+    },
+    "unpaired_difference_points": -1.9999999999999962,
+    "fisher_exact_p": 1.0
+  },
+  "stdout": "A  plain_cem: 18/50 = 36.0 %\nB  hi_lewm_c: 17/50 = 34.0 %\n   A Wilson 95 %: 24.1 - 49.9\n   B Wilson 95 %: 22.4 - 47.8\n\nunpaired: difference -2.0 points, Fisher exact p = 1.0000\n\npaired on 50 identical episodes:\n                B pass  B fail\n        A pass       8      10\n        A fail       9      23\n\npaired difference -2.0 points (95 % Wald -19.1 to +15.1)\ndiscordant 9 : 10 (B only : A only), McNemar exact p = 1.0000\n"
+}
