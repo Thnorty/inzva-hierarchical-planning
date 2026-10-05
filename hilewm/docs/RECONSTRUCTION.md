@@ -84,7 +84,7 @@ whose per-episode manifest survived is fully recoverable without that.
 | `results/backfill/2026-09-19_session/audit__draw_intervals_exploitation_and_support.txt` | PENDING | the 20-iteration draws, which predated recording and survived only as 1-decimal text. Regenerated as a full JSON record, so `compare_draws.py` now reads exact values |
 | `results/compare_draws/` | PENDING | |
 | `results/inspect_empirical_residual/20260922-002009_d50_sequence.json` | PENDING | |
-| `results/measure_subgoal/` (horizon-2 check, seeds 2000-2003) | PENDING | |
+| `results/measure_subgoal/` (horizon-2 check, seeds 2000-2003) | **not regenerated**, by decision | four 64-segment runs, ~4 h of CPU, for a candidate explanation FINDINGS had already closed (Spearman +0.595, 4 of 4 draws). Skipped on 2026-10-05; the numbers in *The horizon-2 cost/subgoal mismatch is not real* rest on that text alone. Regenerate with `measure_subgoal.py --num-eval 64 --skip-reachability --seed 200k` before presenting them |
 | `results/measure_subgoal/` + `results/subgoal_sweep/20260923-194639_index.jsonl` (axis-2 sweep) | PENDING | |
 | `results/compare_subgoal_sweep/` | PENDING | |
 | `results/render_subgoals/`, `analysis/figures/` | PENDING | figures were gitignored and regenerated on demand by design |

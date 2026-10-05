@@ -1486,7 +1486,7 @@ significant.
 
 Measured at n=64, four draws, paper budget, d32
 (`analysis/measure_subgoal.py --num-eval 64 --skip-reachability`, seeds
-2000-2003; records in `results/measure_subgoal/`, commit `6f93f3c`):
+2000-2003; records in `results/measure_subgoal/`, commit `6f93f3c`) [records lost and, by decision, not regenerated on 2026-10-05: this table is text only; see `docs/RECONSTRUCTION.md`]:
 
 | draw | Spearman | Pearson | CEM ẑ_1 error | expert ẑ_1 error |
 | --- | --- | --- | --- | --- |
