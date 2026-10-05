@@ -1,41 +1,80 @@
-# Hi-LeWM Artifact
+# Hi-LeWM subgoal diagnosis
 
-This archive accompanies the paper "Mind the Gap: Promises and Pitfalls of
-Hierarchical Planning in LeWorldModel".
+Why does hierarchical planning in LeWorldModel pick bad subgoals? This project
+takes the released checkpoints of *"Mind the Gap: Promises and Pitfalls of
+Hierarchical Planning in LeWorldModel"* (Caselli et al., arXiv 2607.12547) and
+measures, rather than restates, the paper's explanation. It trains nothing.
+
+It is the inzva team's second project, separate from the coarse-to-fine solver
+at the root of this repository. The two share the PushT dataset and the
+`stable-worldmodel` library, but not code, environments or goal offsets (this
+one uses d=50; the root project uses 25), so **their success rates are not
+comparable**.
+
+## Reading order
+
+| if you want | read |
+| --- | --- |
+| where it stands, in five minutes | `STATUS.md` |
+| every measurement, with its caveats and corrections | `docs/FINDINGS.md` |
+| **which numbers to trust after the files were lost** | `docs/RECONSTRUCTION.md` |
+| how to run the analysis | `analysis/README.md` |
+| how to run evals on Colab | `docs/COLAB_PLAN.md` |
+| the paper, the plan and the working rules | `CLAUDE.md` |
+| the authors' own archive notes | `ARTIFACT_README.md`, `code/README.md`, `checkpoints/README.md` |
 
 ## Layout
 
 ```text
-code/         Hi-LeWM source code, configs, scripts, tests, environments
-checkpoints/  Hi-LeWM checkpoints and decoder probe weights
+analysis/     our code; imports the artifact, never edits it
+code/         the authors' artifact, as released (four empty __init__.py added)
+checkpoints/  configs in git; weights unzipped here from checkpoints.zip (gitignored)
+results/      every measurement, plus the irreplaceable Colab outputs
+docs/         FINDINGS, the Colab plan, the reconstruction ledger
 ```
 
-Start with:
+## Setup on this machine (Windows, CPU)
 
-- `code/README.md` for code setup and commands.
-- `checkpoints/README.md` for included checkpoints and staging.
-- `code/THIRD_PARTY_LEWM.md` for the external LeWorldModel source dependency.
-
-## Minimal Reproduction Flow
+The analysis runs on CPU in its own environment, never the root project's: it
+needs `stable-worldmodel` **0.1.1**, the root project pins its own fork.
 
 ```bash
-cd code
-conda env create -f environment-gpu.yml
-conda activate lewm-gpu
-export PYTHONPATH="$PWD:${PYTHONPATH:-}"
-export STABLEWM_HOME="$PWD/data/stablewm"
+cd hilewm
+uv venv .venv --python 3.11
+uv pip install --python .venv/Scripts/python.exe "torch==2.11.*" torchvision \
+    --index-url https://download.pytorch.org/whl/cpu
+uv pip install --python .venv/Scripts/python.exe einops "transformers<5.9" h5py \
+    hdf5plugin numpy scipy scikit-learn pyyaml omegaconf pillow matplotlib gymnasium loguru
 
-source scripts/setup_paper_datasets.sh --home "$STABLEWM_HOME"
-bash scripts/setup_baseline_checkpoints.sh fetch-baselines
-bash scripts/setup_checkpoints.sh \
-  --checkpoint hierarchical/pusht/default_epoch15="$PWD/../checkpoints/pusht/main/pusht_hi_lewm_epoch15_object.ckpt" \
-  --checkpoint hierarchical/cube/default_epoch15="$PWD/../checkpoints/cube/main/cube_hi_lewm_epoch15_object.ckpt" \
-  --checkpoint probe/pusht/phase_a="$PWD/../checkpoints/pusht/probes/phase_a/pusht_decoder_probe_phase_a.pt" \
-  --checkpoint probe/pusht/phase_b="$PWD/../checkpoints/pusht/probes/phase_b/pusht_decoder_probe_phase_b.pt"
+# put code/ and analysis/ on the path (PYTHONPATH breaks on the spaces in this path)
+SP=$(.venv/Scripts/python -c "import site; print(site.getsitepackages()[-1])")
+printf '%s\n%s\n' "$(cygpath -w "$PWD/code")" "$(cygpath -w "$PWD/analysis")" > "$SP/hilewm_paths.pth"
 
-bash scripts/validate_preflight.sh
-bash scripts/run_paper_reproduction.sh
+# the weights: 2.1 GB, from the checkpoints.zip the project arrived with
+unzip -n path/to/checkpoints.zip -x '__MACOSX/*' -d .
 ```
 
-The archive does not redistribute the upstream LeWorldModel source code. Fetch
-it separately as described in `code/THIRD_PARTY_LEWM.md`.
+Then, from `hilewm/`:
+
+```bash
+export PYTHONUTF8=1      # the scripts print ẑ, ², —; Windows' console codec cannot
+.venv/Scripts/python analysis/audit_dimensionality.py \
+    --dataset ../.stable-wm/datasets/pusht_expert_train.h5 --checks draws --variants d32
+```
+
+The dataset is the root project's copy (`INZVA_README.md` §5), byte-identical to
+the one this project was measured on. The first run downloads the
+`stable-worldmodel` 0.1.1 wheel into `analysis/.cache/` and extracts it; nothing
+is installed.
+
+Linux and macOS: the same, with `bin/` for `Scripts/` and
+`export PYTHONPATH="$PWD/code:$PWD/analysis"` instead of the `.pth` file.
+
+Evaluations and acting diagnostics need the environment and a GPU, and run on
+Colab: `docs/COLAB_PLAN.md`.
+
+## The upstream LeWM source
+
+Not redistributed; fetch it into `code/third_party/lewm` when a baseline path
+needs it (`code/THIRD_PARTY_LEWM.md`). The commit this project used is
+`8edfeb336732b5f3ce7b8b210d0ba370a09e2cac`.

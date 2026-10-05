@@ -111,76 +111,53 @@ Run on **PushT** (Cube is less diagnostic: its flat baseline doesn't collapse wi
 
 Then evaluate **Hi-LeWM (plain CEM)**, **Hi-LeWM-C (empirical-macro)**, **VQ-128**, **VQ-16** with the _same metrics_, not only success rate. Key question: do the two fixes work by the same mechanism (keeping selected macro-actions in-support)?
 
-## Verified by reading the code (2026-09-19, no runs yet)
+## Findings live in docs/FINDINGS.md, not here
 
-- **Both checkpoint formats bundle the frozen low-level weights.** `model.encoder.*`,
-  `model.action_encoder.*`, `model.low_predictor.*` are present alongside
-  `high_predictor` and `latent_action_encoder`. `*_weights.ckpt` is a plain state
-  dict; `*_object.ckpt` is a **pickled model object** referencing the old module
-  name `hi_jepa`. Plain `torch.load` on an object checkpoint fails with
-  `ModuleNotFoundError: No module named 'hi_jepa'` — import
-  `h_le_wm.train.hierarchical` first, which registers the aliases
-  (`h_le_wm/train/hierarchical.py:44-53`).
-- **VQ checkpoints are evaluable; there is no separate discrete planner.**
-  `rollout_high` quantizes inside the rollout (`h_le_wm/models/jepa.py:342`), so
-  high-level CEM still searches continuous R^32 and each candidate is snapped to
-  the nearest code. **Hypothesis to test:** with 16 codes many candidates collapse
-  to the same code and therefore the *same* cost, so CEM elites are picked among
-  ties. That is a mechanical explanation for VQ-128 > VQ-16 which does not involve
-  the 50-vs-15 epoch confound. Cheap to measure: count unique costs per CEM step.
-- **The empirical-macro bank is rebuilt at eval time, not shipped.**
-  `build_empirical_macro_action_bank` (`h_le_wm/planning/policies.py:138-240`)
-  encodes 4096 contiguous training action spans; `EmpiricalMacroActionSolver`
-  (same file, from line 243) adds the residual. Datasets must be staged first.
+The code-reading notes, the findings that changed the plan and the open questions
+that used to sit here were moved verbatim to `docs/FINDINGS.md` on 2026-09-21, and
+corrected there since. **This file's copy was a stale 2026-09-19 snapshot until
+2026-10-05**: it still asserted that the "unconstrained" CEM is box-bounded by data
+quantiles, which FINDINGS retracted the same day (the box is computed, but
+`CEMSolver` never reads it). Read FINDINGS for any claim about the code or the
+results, `STATUS.md` for where things stand, and `docs/RECONSTRUCTION.md` for which
+records were regenerated after the old working tree was lost.
 
-## Findings that change the diagnosis plan
+## Gotchas
 
-- **The "unconstrained" CEM is box-bounded by data quantiles.**
-  `calibrate_latent_prior` (`h_le_wm/planning/policies.py:437-644`) sets the
-  per-dimension search box to the 5th-95th percentile of 2048 encoded training
-  chunks, +5% margin, clamped to ±3. So the claim to test is **not** "it searches
-  anywhere" but "a per-dimension box does not capture the *shape* of the real
-  macro-action distribution" (a 32-d box is mostly empty corners). The
-  kNN / Mahalanobis measurement in diagnosis step 2 targets exactly this.
-- **Cost/subgoal mismatch — a second candidate explanation.** With `horizon: 2`,
-  `get_cost_high` scores the **last** predicted waypoint
-  (`h_le_wm/models/jepa.py:469-471`) but the subgoal handed to the low level is
-  the **first** (`h_le_wm/planning/policies.py:822`). Nothing forces the first
-  waypoint to be a good control target. This is independent of out-of-support
-  search and should be separated from it in the diagnosis.
-- **Bank anchors are re-drawn every CEM step.** Only the residual mean/std are
-  refit from elites (`h_le_wm/planning/policies.py:697-703`), so the empirical
-  search never concentrates on good anchors.
-- **Shipped eval config does NOT match paper Table 5.**
-  `config/eval/hi_pusht.yaml` ships high CEM 900 samples / 20 steps / topk **30**
-  and low 600 / 30 / topk **60**; Table 5 above says topk 10 / 150 and low 300
-  samples. Reconcile before comparing against the reference numbers.
-  `device: "cuda"` is hardcoded in the solver configs.
-
-## Things NOT yet verified — check before relying on them
-
-- Whether our reproduced numbers match the table above (within noise). Needs GPU.
-- Whether VQ checkpoints load and run end-to-end — the code path exists but has
-  not been executed.
-- Whether `stable_worldmodel`, dataset staging, and baseline fetching work on
-  Colab.
+- **Low-level horizon.** The shipped `config/eval/hi_pusht.yaml` says 5; the authors'
+  D50 matrix row and the diagnostics use 2; the difference is worth 34 points with
+  oracle subgoals. Every eval passes the D50 row explicitly (`colab_setup.ipynb`
+  cell 26). Set `planning.low.plan_config.horizon` in anything new.
+- **Shipped eval config is not Table 5.** Take budgets from
+  `analysis/hilewm_local/budgets.py`, keyed on the goal offset.
+- **Copy the episode manifest after every Colab run.** A run without one can be
+  quoted, never paired. Two have been lost this way.
+- **The acting diagnostics run exactly `goal_offset_steps` steps** unless
+  `run_diagnostics.py --max-steps` overrides it, which is half the paper's budget.
+  Record any override.
+- **The eval prints every episode outcome twice.** Deduplicate by `eval_index`.
+- **±1 episode is run-to-run noise** on the GPU even under strict determinism.
+- **Windows:** set `PYTHONUTF8=1`; the scripts print characters cp1252 cannot encode.
 
 ## Working rules for Claude Code
 
 - **Read the code before changing it.** Start by exploring `code/` and summarizing the planner, bank construction, and VQ paths; do not assume the descriptions above match the implementation exactly.
 - Do **not** retrain the high-level model. Do **not** edit the authors' original files in place; put our code in a separate directory (e.g. `analysis/`) and import from the artifact. If a change to their code is unavoidable, keep it minimal and note it.
-- Log **every evaluation run** in one results table (`results/runs.csv`): date, git commit, checkpoint, planner variant, d, seed, n_episodes, success rate, config path.
+- Log **every evaluation run** in one results table (`results/runs.csv`): date, git commit, checkpoint, planner variant, d, seed, n_episodes, success rate, config path. The table is regenerated from the Colab records by `analysis/rebuild_runs_csv.py`: add a new run's record under `results/colab/` and its entry to that script, never a hand-typed row.
 - Fix and record random seeds. Report mean ± std over ≥3 seeds where budget allows; remember the noise level at 50 episodes.
-- **Compute: Google Colab.** The local machine is an Intel Mac with no CUDA
-  (`torch.cuda.is_available()` is False), so no real evaluation runs here. Code
-  reading, checkpoint inspection, and analysis code are local; anything that
-  plans or rolls out goes to Colab.
+- **Compute.** Since 2026-10-05 this project lives in `hilewm/` of the inzva
+  `stable-worldmodel` repository, on a Windows machine. Every `analysis/` script runs
+  locally on CPU in `hilewm/.venv` (setup in `README.md`), and reproduces the
+  original Intel Mac numbers exactly. Anything that rolls out episodes needs the
+  environment and a GPU, and goes to Colab (`docs/COLAB_PLAN.md`).
 - Individual eval runs take ~5–58 min. **Ask before launching long or multi-seed GPU sweeps**; prefer a small smoke test first.
 - Keep large files (checkpoints, datasets, decoded frames) out of git.
 - Priorities if time is short: (1) diagnosis of unconstrained Hi-LeWM, (2) empirical-macro CEM comparison, (3) VQ comparison (can shrink to VQ-128 at d=75).
 - When reporting a finding, say what was measured, how many episodes/seeds, and how it compares with the paper's number.
 
 ## Timeline
+
+As planned on 2026-09-19. Where the work actually stands is `STATUS.md`.
 
 - **Now → next week:** environment running, checkpoints staged, one baseline eval, an interim presentation (paper story + our research questions + plan; ideally one decoded-subgoal slide).
 - **Weeks 1–2 after:** reproduction at d=50/75, build the diagnostics, oracle experiment.

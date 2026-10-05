@@ -85,6 +85,23 @@ Nothing is installed, and the cache is gitignored. Where a real
 | `run_eval.py` | the artifact's eval with our fixes applied; same Hydra arguments |
 | `sitecustomize.py` | applies the fixes to subprocesses, only when `HILEWM_PATCH_CEM=1` |
 | `build_colab_notebook.py` | generates and validates `colab_setup.ipynb`, the Colab session script (install, setup, timing probe, first eval). Edit the generator, never the notebook — the hand-written first version had six code cells whose lines Jupyter would have concatenated |
+| `run_diagnostics.py` | the artifact's acting diagnostics with our fixes; adds `--max-steps` |
+| `analyse_acting_npz.py` | per-episode anatomy of an acting run from its `.npz`; `--write-manifest` makes it pairable |
+| `compare_draws.py`, `compare_subgoal_sweep.py` | paired sign tests across the audit and sweep records; run no model |
+| `run_subgoal_sweep.py` | resumable driver for `measure_subgoal.py` over variants x draws |
+| `inspect_empirical_residual.py` | counts Hi-LeWM-C's pure-bank candidates per CEM iteration |
+| `compare_eval_runs.py` | **rebuilt 2026-10-05.** McNemar / Fisher comparison of two runs from their episode manifests; refuses to pair mismatched episodes |
+| `summarize_eval_runs.py` | **rebuilt 2026-10-05.** Wilson and Clopper-Pearson intervals for every row of `results/runs.csv`, against the paper's cell |
+| `audit_macro_bank.py` | **rebuilt 2026-10-05.** checks the Hi-LeWM-C bank is the expert's contiguous actions, against an independent encoding |
+| `rebuild_runs_csv.py` | **new 2026-10-05.** regenerates `results/runs.csv` from the surviving Colab records |
+
+The three rebuilt scripts replace originals deleted with the old working tree.
+Each was checked against the numbers FINDINGS quotes from its original; see
+`docs/RECONSTRUCTION.md`.
+
+**On Windows**, set `PYTHONUTF8=1` before running anything here: the scripts print
+`ẑ`, `²` and `—`, which the console's default codec cannot encode, and the run dies
+on its first print. Setup for this machine is in `../README.md`.
 
 `measure_high_cem.py` takes about 10 seconds per run on CPU at the paper's d=50
 budget (1500 samples x 20 steps):
