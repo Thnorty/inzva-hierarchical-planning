@@ -1,0 +1,138 @@
+{
+  "script": "audit_dimensionality",
+  "tag": "draws_hilewm_c_lam1_d50",
+  "timestamp": "2026-10-05T18:47:22",
+  "git_commit": "caeb69b",
+  "git_dirty": false,
+  "git_commit_at_end": "caeb69b",
+  "argv": [
+    "analysis/audit_dimensionality.py",
+    "--dataset",
+    "../.stable-wm/datasets/pusht_expert_train.h5",
+    "--checks",
+    "draws",
+    "--variants",
+    "hilewm_c",
+    "--draws",
+    "6",
+    "--residual-scale",
+    "1.0"
+  ],
+  "args": {
+    "dataset": "../.stable-wm/datasets/pusht_expert_train.h5",
+    "checks": "draws",
+    "n_reference": 4096,
+    "draws": 6,
+    "bootstrap": 300,
+    "seed": 42,
+    "variants": "hilewm_c",
+    "goal_offset": 50,
+    "num_samples": null,
+    "n_steps": null,
+    "topk": null,
+    "residual_scale": 1.0,
+    "bank_size": 4096,
+    "stage_sampling": "sequence"
+  },
+  "headline": "",
+  "metrics": {
+    "budget": {
+      "goal_offset": 50,
+      "source": "paper Table 5",
+      "resolved": {
+        "num_samples": 1500,
+        "n_steps": 40,
+        "topk": 10
+      },
+      "overridden": {},
+      "table_5_row": {
+        "high_samples": 1500,
+        "high_steps": 40,
+        "high_topk": 10,
+        "low_samples": 900,
+        "low_steps": 30,
+        "low_topk": 150,
+        "eval_budget": 100
+      }
+    },
+    "empirical_config_hilewm_c": {
+      "enabled": true,
+      "num_sequences": 4096,
+      "chunk_len": 5,
+      "residual_scale": 1.0,
+      "min_residual_std": 0.001,
+      "return_top_candidates": 8,
+      "encode_batch_size": 4096,
+      "stage_sampling": "sequence",
+      "seed": 42,
+      "lambda_res": 1.0,
+      "bank_shape": [
+        4096,
+        2,
+        32
+      ],
+      "raw_macro_len": 25,
+      "bank_build_seconds": 3.0,
+      "source": "shipped config/eval/hi_pusht.yaml defaults unless overridden"
+    },
+    "draws_hilewm_c": {
+      "support": [
+        228.00409235408767,
+        222.15151203843183,
+        228.46246652967184,
+        271.03407680429996,
+        391.9749158588154,
+        256.47399319898136
+      ],
+      "support_nn": [
+        2.645532481849484,
+        2.7201000044662282,
+        2.3113218351224596,
+        2.307732859843724,
+        3.2914280752659724,
+        2.6543931879122775
+      ],
+      "exploitation": [
+        5.336515661713873,
+        1.1347701909332437,
+        1.4384282191696631,
+        1.1344719275638577,
+        2.2688303748108436,
+        2.606516014709105
+      ],
+      "cem_wins": [
+        0.75,
+        0.5,
+        0.75,
+        0.625,
+        0.6875,
+        0.75
+      ],
+      "z1_error_expert": [
+        10.016772270202637,
+        7.715583801269531,
+        4.272281646728516,
+        6.121950149536133,
+        2.4493179321289062,
+        3.557291030883789
+      ],
+      "z1_error_cem": [
+        29.575496673583984,
+        42.71467208862305,
+        19.874813079833984,
+        37.062774658203125,
+        40.50746536254883,
+        17.302518844604492
+      ],
+      "solve_seconds": [
+        911.3505439758301,
+        935.4801952838898,
+        904.0373332500458,
+        949.5977566242218,
+        770.177708864212,
+        765.5995123386383
+      ]
+    }
+  },
+  "stdout": "budget     : d=50 -> paper Table 5: num_samples=1500, n_steps=40, topk=10\n\n==============================================================================\n5. DRAW INTERVALS FOR THE HEADLINE RATIOS (6 draws x 16 segments)\n==============================================================================\n\n  Hi-LeWM-C bank: 4096 sequences x 2 stages x 32 (raw_macro_len 25), lambda_res=1.0, stage_sampling=sequence\n\n--- hilewm_c  d_l=32  (EmpiricalMacroActionSolver) ---\ndraw  exp MD²   CEM MD²  supp x   NN x   exp cost  CEM cost  expl x  beats   ẑ1 exp  ẑ1 CEM  solve s\nEmpirical macro solve time: 911.3505 seconds\n   0    26.46    6032.2  228.0x   2.6x      27.47      5.15    5.3x    75%    10.02   29.58    911.4\nEmpirical macro solve time: 935.4802 seconds\n   1    30.00    6665.2  222.2x   2.7x      17.20     15.16    1.1x    50%     7.72   42.71    935.5\nEmpirical macro solve time: 904.0373 seconds\n   2    31.37    7165.8  228.5x   2.3x      11.65      8.10    1.4x    75%     4.27   19.87    904.0\nEmpirical macro solve time: 949.5978 seconds\n   3    26.20    7100.3  271.0x   2.3x      13.12     11.56    1.1x    62%     6.12   37.06    949.6\nEmpirical macro solve time: 770.1777 seconds\n   4    21.22    8316.8  392.0x   3.3x      12.57      5.54    2.3x    69%     2.45   40.51    770.2\nEmpirical macro solve time: 765.5995 seconds\n   5    28.59    7332.2  256.5x   2.7x      18.06      6.93    2.6x    75%     3.56   17.30    765.6\n  support ratio (MD²)    median   x242.5   range x222.2-x392.0\n  support ratio (1-NN)   median     x2.6   range x2.3-x3.3\n  exploitation ratio     median     x1.9   range x1.1-x5.3\n  segments CEM wins      median      72%   range 50%-75%\n  ẑ1 error, expert       median     5.20   range 2.45-10.02\n  ẑ1 error, CEM          median    33.32   range 17.30-42.71\n  solve time per draw    median 908s\n"
+}

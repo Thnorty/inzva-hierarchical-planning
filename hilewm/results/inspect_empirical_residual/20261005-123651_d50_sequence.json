@@ -1,0 +1,459 @@
+{
+  "script": "inspect_empirical_residual",
+  "tag": "d50_sequence",
+  "timestamp": "2026-10-05T12:36:51",
+  "git_commit": "caeb69b",
+  "git_dirty": false,
+  "git_commit_at_end": "caeb69b",
+  "argv": [
+    "analysis/inspect_empirical_residual.py",
+    "--dataset",
+    "../.stable-wm/datasets/pusht_expert_train.h5"
+  ],
+  "args": {
+    "dataset": "../.stable-wm/datasets/pusht_expert_train.h5",
+    "n_envs": 4,
+    "residual_scale": 0.1,
+    "bank_size": 4096,
+    "stage_sampling": "sequence",
+    "seed": 42,
+    "goal_offset": 50,
+    "num_samples": null,
+    "n_steps": null,
+    "topk": null
+  },
+  "headline": "1 pure-bank candidate per env per iteration of 1500",
+  "metrics": {
+    "budget": {
+      "goal_offset": 50,
+      "source": "paper Table 5",
+      "resolved": {
+        "num_samples": 1500,
+        "n_steps": 40,
+        "topk": 10
+      },
+      "overridden": {},
+      "table_5_row": {
+        "high_samples": 1500,
+        "high_steps": 40,
+        "high_topk": 10,
+        "low_samples": 900,
+        "low_steps": 30,
+        "low_topk": 150,
+        "eval_budget": 100
+      }
+    },
+    "per_iteration": [
+      {
+        "iter": 1,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.09996737539768219,
+        "abs_residual_mean": 0.002022920874878764
+      },
+      {
+        "iter": 2,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.0932094156742096,
+        "abs_residual_mean": 0.023926077410578728
+      },
+      {
+        "iter": 3,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.08777749538421631,
+        "abs_residual_mean": 0.03342686966061592
+      },
+      {
+        "iter": 4,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.07996650040149689,
+        "abs_residual_mean": 0.04324290528893471
+      },
+      {
+        "iter": 5,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.07417306303977966,
+        "abs_residual_mean": 0.04751437529921532
+      },
+      {
+        "iter": 6,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.06709013134241104,
+        "abs_residual_mean": 0.050175826996564865
+      },
+      {
+        "iter": 7,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.06217622384428978,
+        "abs_residual_mean": 0.052843160927295685
+      },
+      {
+        "iter": 8,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.05678550899028778,
+        "abs_residual_mean": 0.05657057836651802
+      },
+      {
+        "iter": 9,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.05221105366945267,
+        "abs_residual_mean": 0.05842358618974686
+      },
+      {
+        "iter": 10,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.0481269396841526,
+        "abs_residual_mean": 0.06079801917076111
+      },
+      {
+        "iter": 11,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.04487822204828262,
+        "abs_residual_mean": 0.06139186769723892
+      },
+      {
+        "iter": 12,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.04163116589188576,
+        "abs_residual_mean": 0.06377646327018738
+      },
+      {
+        "iter": 13,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.03850109502673149,
+        "abs_residual_mean": 0.0640760064125061
+      },
+      {
+        "iter": 14,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.03549288213253021,
+        "abs_residual_mean": 0.06386056542396545
+      },
+      {
+        "iter": 15,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.033587340265512466,
+        "abs_residual_mean": 0.06461691856384277
+      },
+      {
+        "iter": 16,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.031007876619696617,
+        "abs_residual_mean": 0.06509575247764587
+      },
+      {
+        "iter": 17,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.02941688895225525,
+        "abs_residual_mean": 0.06561241298913956
+      },
+      {
+        "iter": 18,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.02700531855225563,
+        "abs_residual_mean": 0.06631848216056824
+      },
+      {
+        "iter": 19,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.02505151927471161,
+        "abs_residual_mean": 0.06540592014789581
+      },
+      {
+        "iter": 20,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.02404031530022621,
+        "abs_residual_mean": 0.06539720296859741
+      },
+      {
+        "iter": 21,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.022971155121922493,
+        "abs_residual_mean": 0.06544456630945206
+      },
+      {
+        "iter": 22,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.021408922970294952,
+        "abs_residual_mean": 0.06563930958509445
+      },
+      {
+        "iter": 23,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.018824126571416855,
+        "abs_residual_mean": 0.06655377149581909
+      },
+      {
+        "iter": 24,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.01715688407421112,
+        "abs_residual_mean": 0.06681520491838455
+      },
+      {
+        "iter": 25,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.015932660549879074,
+        "abs_residual_mean": 0.06723407655954361
+      },
+      {
+        "iter": 26,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.01429503783583641,
+        "abs_residual_mean": 0.06765207648277283
+      },
+      {
+        "iter": 27,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.013049090281128883,
+        "abs_residual_mean": 0.06826415657997131
+      },
+      {
+        "iter": 28,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.01190685760229826,
+        "abs_residual_mean": 0.06825171411037445
+      },
+      {
+        "iter": 29,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.011146207340061665,
+        "abs_residual_mean": 0.06794670969247818
+      },
+      {
+        "iter": 30,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.010167415253818035,
+        "abs_residual_mean": 0.06866879761219025
+      },
+      {
+        "iter": 31,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.009369159117341042,
+        "abs_residual_mean": 0.06914294511079788
+      },
+      {
+        "iter": 32,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.008333226665854454,
+        "abs_residual_mean": 0.06945619732141495
+      },
+      {
+        "iter": 33,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.007613085675984621,
+        "abs_residual_mean": 0.06932312250137329
+      },
+      {
+        "iter": 34,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.00741482013836503,
+        "abs_residual_mean": 0.06952192634344101
+      },
+      {
+        "iter": 35,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.0067055318504571915,
+        "abs_residual_mean": 0.06929703801870346
+      },
+      {
+        "iter": 36,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.006022848188877106,
+        "abs_residual_mean": 0.06974973529577255
+      },
+      {
+        "iter": 37,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.005659828428179026,
+        "abs_residual_mean": 0.06986380368471146
+      },
+      {
+        "iter": 38,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.005073420703411102,
+        "abs_residual_mean": 0.0697774589061737
+      },
+      {
+        "iter": 39,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.004827071446925402,
+        "abs_residual_mean": 0.07005426287651062
+      },
+      {
+        "iter": 40,
+        "exact_zero": 4,
+        "below_1e-3": 4,
+        "below_1e-2": 4,
+        "noised": 5996,
+        "pure_in_topk": 0,
+        "residual_std": 0.004358124453574419,
+        "abs_residual_mean": 0.07006984949111938
+      }
+    ],
+    "total_pure": 160,
+    "total_candidates": 240000,
+    "returned_is_bank": [
+      false,
+      false,
+      false,
+      false
+    ],
+    "n_envs": 4
+  },
+  "stdout": "budget     : d=50 -> paper Table 5: num_samples=1500, n_steps=40, topk=10\nEmpirical macro solve time: 304.5676 seconds\n\n4 environments x 1500 candidates x 40 iterations, lambda_res=0.1, stage_sampling=sequence\niter  exactly 0  < 1e-3  < 1e-2  noised  pure in top-k  residual std |residual mean|\n   1          4       4       4    5996       0 / 40           0.1000          0.0020\n   2          4       4       4    5996       0 / 40           0.0932          0.0239\n   3          4       4       4    5996       0 / 40           0.0878          0.0334\n   4          4       4       4    5996       0 / 40           0.0800          0.0432\n   5          4       4       4    5996       0 / 40           0.0742          0.0475\n  10          4       4       4    5996       0 / 40           0.0481          0.0608\n  20          4       4       4    5996       0 / 40           0.0240          0.0654\n  30          4       4       4    5996       0 / 40           0.0102          0.0687\n  40          4       4       4    5996       0 / 40           0.0044          0.0701\n\npure bank candidates over the whole solve: 160 of 240000 (0.067%) — 1 per environment per iteration\nreturned action is an exact bank sequence: 0 of 4 environments\n"
+}

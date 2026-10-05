@@ -1,0 +1,228 @@
+{
+  "script": "audit_dimensionality",
+  "tag": "draws_vq16+vq128_d50",
+  "timestamp": "2026-10-05T10:21:40",
+  "git_commit": "8ccb86d",
+  "git_dirty": false,
+  "git_commit_at_end": "",
+  "argv": [
+    "analysis/audit_dimensionality.py",
+    "--dataset",
+    "../.stable-wm/datasets/pusht_expert_train.h5",
+    "--checks",
+    "draws",
+    "--variants",
+    "vq16,vq128"
+  ],
+  "args": {
+    "dataset": "../.stable-wm/datasets/pusht_expert_train.h5",
+    "checks": "draws",
+    "n_reference": 4096,
+    "draws": 10,
+    "bootstrap": 300,
+    "seed": 42,
+    "variants": "vq16,vq128",
+    "goal_offset": 50,
+    "num_samples": null,
+    "n_steps": null,
+    "topk": null,
+    "residual_scale": 0.1,
+    "bank_size": 4096,
+    "stage_sampling": "sequence"
+  },
+  "headline": "",
+  "metrics": {
+    "budget": {
+      "goal_offset": 50,
+      "source": "paper Table 5",
+      "resolved": {
+        "num_samples": 1500,
+        "n_steps": 40,
+        "topk": 10
+      },
+      "overridden": {},
+      "table_5_row": {
+        "high_samples": 1500,
+        "high_steps": 40,
+        "high_topk": 10,
+        "low_samples": 900,
+        "low_steps": 30,
+        "low_topk": 150,
+        "eval_budget": 100
+      }
+    },
+    "draws_vq16": {
+      "support": [
+        1.0,
+        0.7820040028226823,
+        0.7820040028226823,
+        1.0001008077836397,
+        0.6998843587665902,
+        1.2787658328991287,
+        0.7820040028226823,
+        1.0495223032426007,
+        0.7450664988131904,
+        1.4288074700830653
+      ],
+      "support_nn": [
+        Infinity,
+        Infinity,
+        Infinity,
+        Infinity,
+        Infinity,
+        Infinity,
+        Infinity,
+        Infinity,
+        Infinity,
+        Infinity
+      ],
+      "exploitation": [
+        2.5380265166931832,
+        2.2013941973174753,
+        2.9763926226828605,
+        1.9310067089663492,
+        1.653673069686607,
+        4.251974333603448,
+        2.171933109859635,
+        2.0712626989700884,
+        1.0924631240859017,
+        1.8795083368089962
+      ],
+      "cem_wins": [
+        0.9375,
+        0.9375,
+        0.875,
+        0.8125,
+        0.625,
+        0.9375,
+        0.875,
+        0.875,
+        0.8125,
+        0.875
+      ],
+      "z1_error_expert": [
+        73.6949462890625,
+        140.9708251953125,
+        71.41136932373047,
+        34.70924377441406,
+        20.305206298828125,
+        49.08145523071289,
+        49.98749923706055,
+        44.11221694946289,
+        60.14021301269531,
+        76.31568908691406
+      ],
+      "z1_error_cem": [
+        76.84656524658203,
+        111.77594757080078,
+        71.41136932373047,
+        50.97221374511719,
+        21.44838523864746,
+        59.2230110168457,
+        46.662986755371094,
+        46.498260498046875,
+        58.822208404541016,
+        77.58274841308594
+      ],
+      "solve_seconds": [
+        1145.3040430545807,
+        1121.9206204414368,
+        1133.5208525657654,
+        1077.9342229366302,
+        1069.6879580020905,
+        1116.4387726783752,
+        676.8082525730133,
+        698.3306841850281,
+        1161.485404253006,
+        1166.6302003860474
+      ]
+    },
+    "draws_vq128": {
+      "support": [
+        0.9035595913096963,
+        1.0,
+        0.6500432092078673,
+        0.7040824765630438,
+        0.6660038550214707,
+        0.9459173849526087,
+        1.0,
+        0.6931105700256086,
+        1.0,
+        0.8510222660892075
+      ],
+      "support_nn": [
+        Infinity,
+        Infinity,
+        Infinity,
+        Infinity,
+        Infinity,
+        Infinity,
+        Infinity,
+        Infinity,
+        Infinity,
+        Infinity
+      ],
+      "exploitation": [
+        3.6654909551759443,
+        2.2629907469522204,
+        5.828101429398111,
+        4.143437951697377,
+        3.169687047114586,
+        7.977477539127271,
+        3.8295160766560605,
+        3.728313217109823,
+        3.268167667498293,
+        2.9696781876884297
+      ],
+      "cem_wins": [
+        1.0,
+        0.875,
+        0.9375,
+        0.9375,
+        0.875,
+        0.9375,
+        1.0,
+        1.0,
+        0.9375,
+        1.0
+      ],
+      "z1_error_expert": [
+        66.4092025756836,
+        84.79718780517578,
+        55.29620361328125,
+        38.9808235168457,
+        27.726055145263672,
+        25.508197784423828,
+        29.8896484375,
+        27.427108764648438,
+        31.850461959838867,
+        28.909534454345703
+      ],
+      "z1_error_cem": [
+        62.09490203857422,
+        51.97396469116211,
+        37.48811340332031,
+        37.20156478881836,
+        44.6412239074707,
+        28.63251495361328,
+        36.03099822998047,
+        34.12370300292969,
+        49.49413299560547,
+        61.81053924560547
+      ],
+      "solve_seconds": [
+        1129.004295349121,
+        1143.0352745056152,
+        1166.672512769699,
+        1136.0023188591003,
+        1153.9735360145569,
+        1165.1610045433044,
+        1137.5128605365753,
+        1200.971111536026,
+        1147.7105400562286,
+        737.4596562385559
+      ]
+    }
+  },
+  "stdout": "budget     : d=50 -> paper Table 5: num_samples=1500, n_steps=40, topk=10\n\n==============================================================================\n5. DRAW INTERVALS FOR THE HEADLINE RATIOS (10 draws x 16 segments)\n==============================================================================\n\n--- vq16  d_l=16  (CEMSolver) ---\ndraw  exp MD²   CEM MD²  supp x   NN x   exp cost  CEM cost  expl x  beats   ẑ1 exp  ẑ1 CEM  solve s\nCEM solve time: 1145.3040 seconds\n   0     8.95       8.9    1.0x   infx      98.13     38.66    2.5x    94%    73.69   76.85   1145.3\nCEM solve time: 1121.9171 seconds\n   1    12.01       9.4    0.8x   infx     296.66    134.76    2.2x    94%   140.97  111.78   1121.9\nCEM solve time: 1133.5199 seconds\n   2    12.01       9.4    0.8x   infx     169.42     56.92    3.0x    88%    71.41   71.41   1133.5\nCEM solve time: 1077.9342 seconds\n   3     8.95       9.0    1.0x   infx     124.65     64.55    1.9x    81%    34.71   50.97   1077.9\nCEM solve time: 1069.6880 seconds\n   4     8.95       6.3    0.7x   infx      90.71     54.85    1.7x    62%    20.31   21.45   1069.7\nCEM solve time: 1116.4388 seconds\n   5     9.39      12.0    1.3x   infx     135.83     31.95    4.3x    94%    49.08   59.22   1116.4\nCEM solve time: 676.8083 seconds\n   6    12.01       9.4    0.8x   infx     116.02     53.42    2.2x    88%    49.99   46.66    676.8\nCEM solve time: 698.3307 seconds\n   7     8.95       9.4    1.0x   infx     117.67     56.81    2.1x    88%    44.11   46.50    698.3\nCEM solve time: 1161.4854 seconds\n   8    12.01       8.9    0.7x   infx      77.21     70.67    1.1x    81%    60.14   58.82   1161.5\nCEM solve time: 1166.6302 seconds\n   9     6.26       8.9    1.4x   infx     172.42     91.74    1.9x    88%    76.32   77.58   1166.6\n  support ratio (MD²)    median     x0.9   range x0.7-x1.4\n  support ratio (1-NN)   median     xinf   range xinf-xinf\n  exploitation ratio     median     x2.1   range x1.1-x4.3\n  segments CEM wins      median      88%   range 62%-94%\n  ẑ1 error, expert       median    55.06   range 20.31-140.97\n  ẑ1 error, CEM          median    59.02   range 21.45-111.78\n  solve time per draw    median 1119s\n\n--- vq128  d_l=16  (CEMSolver) ---\ndraw  exp MD²   CEM MD²  supp x   NN x   exp cost  CEM cost  expl x  beats   ẑ1 exp  ẑ1 CEM  solve s\nCEM solve time: 1129.0043 seconds\n   0    12.57      11.4    0.9x   infx     110.94     30.27    3.7x   100%    66.41   62.09   1129.0\nCEM solve time: 1143.0353 seconds\n   1    12.57      12.6    1.0x   infx     147.50     65.18    2.3x    88%    84.80   51.97   1143.0\nCEM solve time: 1166.6725 seconds\n   2    13.40       8.7    0.7x   infx     148.34     25.45    5.8x    94%    55.30   37.49   1166.7\nCEM solve time: 1136.0023 seconds\n   3    13.40       9.4    0.7x   infx     126.85     30.62    4.1x    94%    38.98   37.20   1136.0\nCEM solve time: 1153.9735 seconds\n   4    13.40       8.9    0.7x   infx      82.33     25.97    3.2x    88%    27.73   44.64   1154.0\nCEM solve time: 1165.1610 seconds\n   5     9.43       8.9    0.9x   infx     101.17     12.68    8.0x    94%    25.51   28.63   1165.2\nCEM solve time: 1137.5108 seconds\n   6    12.57      12.6    1.0x   infx     121.69     31.78    3.8x   100%    29.89   36.03   1137.5\nCEM solve time: 1200.9691 seconds\n   7    12.57       8.7    0.7x   infx      62.17     16.67    3.7x   100%    27.43   34.12   1201.0\nCEM solve time: 1147.7105 seconds\n   8    12.57      12.6    1.0x   infx      78.36     23.98    3.3x    94%    31.85   49.49   1147.7\nCEM solve time: 737.4597 seconds\n   9     9.43       8.0    0.9x   infx      90.73     30.55    3.0x   100%    28.91   61.81    737.5\n  support ratio (MD²)    median     x0.9   range x0.7-x1.0\n  support ratio (1-NN)   median     xinf   range xinf-xinf\n  exploitation ratio     median     x3.7   range x2.3-x8.0\n  segments CEM wins      median      94%   range 88%-100%\n  ẑ1 error, expert       median    30.87   range 25.51-84.80\n  ẑ1 error, CEM          median    41.06   range 28.63-62.09\n  solve time per draw    median 1145s\n"
+}

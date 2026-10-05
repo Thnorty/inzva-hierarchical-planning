@@ -1,0 +1,136 @@
+{
+  "script": "compare_draws",
+  "tag": "d50_paired",
+  "timestamp": "2026-10-05T22:51:22",
+  "git_commit": "f09e172",
+  "git_dirty": false,
+  "git_commit_at_end": "f09e172",
+  "argv": [
+    "analysis/compare_draws.py"
+  ],
+  "args": {},
+  "headline": "",
+  "metrics": {
+    "budget_effect": {
+      "d32_1_decimal": {
+        "wins_40": 9,
+        "wins_20": 1,
+        "ties": 0,
+        "p": 0.021484375
+      },
+      "d8_1_decimal": {
+        "wins_40": 6,
+        "wins_20": 2,
+        "ties": 2,
+        "p": 0.2890625
+      },
+      "d32_full_precision": {
+        "wins_40": 9,
+        "wins_20": 1,
+        "ties": 0,
+        "p": 0.021484375
+      },
+      "d8_full_precision": {
+        "wins_40": 7,
+        "wins_20": 3,
+        "ties": 0,
+        "p": 0.34375
+      }
+    },
+    "records": {
+      "paper_budget": [
+        "results/audit_dimensionality/20261005-102140_draws_vq16_vq128_d50.json",
+        "results/audit_dimensionality/20261005-102140_draws_d32_d8_d50.json"
+      ],
+      "iterations_20": "results/audit_dimensionality/20261005-162047_draws_d32_d8_d50.json",
+      "hilewm_c": "results/audit_dimensionality/20261005-102140_draws_hilewm_c_d32_lam0.1_d50.json",
+      "spectrum": "results/audit_dimensionality/20261005-155612_spectrum_estimators_d32_d8_fs32_d50.json",
+      "fs32": "results/audit_dimensionality/20261005-124219_draws_fs32_d50.json",
+      "lambda": {
+        "0.05": "results/audit_dimensionality/20261005-155705_draws_hilewm_c_lam0.05_d50.json",
+        "0.3": "results/audit_dimensionality/20261005-172113_draws_hilewm_c_lam0.3_d50.json",
+        "1.0": "results/audit_dimensionality/20261005-184722_draws_hilewm_c_lam1_d50.json"
+      }
+    },
+    "lambda_sweep": {
+      "lambda 0.05": {
+        "support": 1.6301814332469826,
+        "support_nn": 0.9740297517136598,
+        "exploitation": 0.7270913016290352,
+        "cem_wins": 0.46875,
+        "z1_error_expert": 5.197115898132324,
+        "z1_error_cem": 30.8579044342041,
+        "solve_seconds": 814.4115844964981
+      },
+      "lambda 0.1": {
+        "support": 3.7429089616853584,
+        "support_nn": 1.004475268977791,
+        "exploitation": 0.813233809417075,
+        "cem_wins": 0.5,
+        "z1_error_expert": 5.197115898132324,
+        "z1_error_cem": 30.427616119384766,
+        "solve_seconds": 1120.8808118104935
+      },
+      "lambda 0.3": {
+        "support": 22.502286352727715,
+        "support_nn": 1.3138152805155165,
+        "exploitation": 1.155992633251986,
+        "cem_wins": 0.625,
+        "z1_error_expert": 5.197115898132324,
+        "z1_error_cem": 26.782727241516113,
+        "solve_seconds": 907.8878877162933
+      },
+      "lambda 1": {
+        "support": 242.4682298643266,
+        "support_nn": 2.649962834880881,
+        "exploitation": 1.8536292969902535,
+        "cem_wins": 0.71875,
+        "z1_error_expert": 5.197115898132324,
+        "z1_error_cem": 33.319135665893555,
+        "solve_seconds": 907.6939386129379
+      },
+      "plain CEM": {
+        "support": 851.2947154014353,
+        "support_nn": 5.765053383384747,
+        "exploitation": 10.207147993336285,
+        "cem_wins": 0.78125,
+        "z1_error_expert": 5.197115898132324,
+        "z1_error_cem": 75.10447692871094,
+        "solve_seconds": 1153.0198203325272
+      }
+    },
+    "geometry": {
+      "d32": {
+        "gap_after_dim": 7,
+        "used_by_gap": 7,
+        "empty_by_gap": 25,
+        "tail_variance_by_gap": 0.006546619896573069,
+        "above_0.4": 8,
+        "below_0.4": 24,
+        "tail_variance_below_0.4": 0.0033659152560964116,
+        "condition_number": 70408.57128284144
+      },
+      "d8": {
+        "gap_after_dim": 7,
+        "used_by_gap": 7,
+        "empty_by_gap": 1,
+        "tail_variance_by_gap": 0.0037274298479316155,
+        "above_0.4": 7,
+        "below_0.4": 1,
+        "tail_variance_below_0.4": 0.0037274298479316155,
+        "condition_number": 87.99802301075292
+      },
+      "fs32": {
+        "gap_after_dim": 9,
+        "used_by_gap": 9,
+        "empty_by_gap": 23,
+        "tail_variance_by_gap": 0.001414875360968384,
+        "above_0.4": 9,
+        "below_0.4": 23,
+        "tail_variance_below_0.4": 0.001414875360968384,
+        "condition_number": 114776.27284078766
+      }
+    }
+  },
+  "stdout": "==============================================================================\nPAPER BUDGET (d=50: 1500 samples x 40 steps, topk 10), 10 paired draws\n==============================================================================\nvariant  exploitation                       support                        CEM wins\n    d32  median x  9.5   range x2.6-x24.7   median x793.5   range x576.6-x1034.0     81%\n     d8  median x  3.9   range x1.6-x10.7   median x  1.5   range x1.3-x2.1     75%\n  vq128  median x  3.7   range x2.3-x8.0    median x  0.9   range x0.7-x1.0     94%\n   vq16  median x  2.1   range x1.1-x4.3    median x  0.9   range x0.7-x1.4     88%\n\nPaired sign tests on exploitation — does A exploit more than B on the same segments?\n      A vs B        A>B  A<B  tie  p (two-sided)  median of A/B\n    d32 vs d8        10    0    0         0.0020  x2.45  *\n    d32 vs vq128      8    2    0         0.1094  x2.65\n    d32 vs vq16       9    1    0         0.0215  x4.24  *\n     d8 vs vq128      5    5    0         1.0000  x0.90\n     d8 vs vq16       8    2    0         0.1094  x1.68\n  vq128 vs vq16      10    0    0         0.0020  x1.84  *\n\nBUDGET EFFECT: 20 -> 40 high-level iterations, same segments\n(both sides rounded to 1 decimal, as the original comparison had to be)\nvariant  at 20                        at 40                         40>20  40<20  tie        p\n    d32  median x  5.4   range x0.7-x10.6 median x  9.5   range x2.6-x24.7      9      1    0   0.0215  *\n     d8  median x  4.3   range x1.8-x8.8 median x  3.9   range x1.6-x10.7      6      2    2   0.2891\n(full precision, possible since the 20-iteration run was regenerated as a record)\n    d32                                                                 9      1    0   0.0215  *\n     d8                                                                 7      3    0   0.3438\n\n==============================================================================\nHi-LeWM-C vs plain CEM — same d32 checkpoint, same segments, only the search differs\n==============================================================================\nHi-LeWM-C: lambda_res=0.1, bank [4096, 2, 32], stage_sampling=sequence (shipped config/eval/hi_pusht.yaml defaults unless overridden)\n  reproducibility, d32 support      : identical to the earlier record\n  reproducibility, d32 exploitation : identical to the earlier record\n  reproducibility, d32 cem_wins     : identical to the earlier record\n  pairing check, expert ẑ1 error identical across solvers: True\n\nmetric                                         Hi-LeWM-C   plain CEM   CEM > C        p\nsupport, Mahalanobis² ratio                        x3.64     x793.48   10/10    0.0020  *\nsupport, 1-NN ratio                                x0.95       x5.28   10/10    0.0020  *\nexploitation ratio                                 x0.83       x9.51   10/10    0.0020  *\nsegments where the solver beats the expert           50%         81%   10/10    0.0020  *\nfirst-waypoint error, solver                       22.13       76.37   10/10    0.0020  *\nfirst-waypoint error, expert                        4.54        4.54    0/10    1.0000\n\nHi-LeWM-C exploitation below x1 (predicted cost worse than the expert's): 7 of 10 draws\nfirst-waypoint error relative to the expert, median over draws: Hi-LeWM-C x5.7, plain CEM x18.4\nsolve time per draw, median: Hi-LeWM-C 1121s, plain CEM 1146s\n\n==============================================================================\nLAMBDA_RES SWEEP — Hi-LeWM-C on the d32 checkpoint, 6 paired draws (2000-2005)\n==============================================================================\npairing check: expert first-waypoint error identical in every condition — same segments\n\ncondition     support MD²  support 1-NN  exploitation  CEM wins  expl > 1  ẑ1 error\nlambda 0.05          x1.6         x0.97         x0.73      47%      1/6      30.86\nlambda 0.1           x3.7         x1.00         x0.81      50%      1/6      30.43\nlambda 0.3          x22.5         x1.31         x1.16      62%      5/6      26.78\nlambda 1           x242.5         x2.65         x1.85      72%      6/6      33.32\nplain CEM          x851.3         x5.77        x10.21      78%      6/6      75.10\nexpert                                                                         5.20\n\nAdjacent lambda values — does the larger lambda_res go further? (sign test, 6 draws)\npair                              support   exploitation       ẑ1 error\nlambda 0.1 > lambda 0.05      6/6 p=0.031    5/6 p=0.219    2/6 p=0.688\nlambda 0.3 > lambda 0.1       6/6 p=0.031    6/6 p=0.031    2/6 p=0.688\nlambda 1 > lambda 0.3         6/6 p=0.031    5/6 p=0.219    4/6 p=0.688\n\nEvery lambda value against plain CEM — does plain CEM go further? (sign test, 6 draws)\npair                              support   exploitation       ẑ1 error\nplain CEM > lambda 0.05       6/6 p=0.031    6/6 p=0.031    6/6 p=0.031\nplain CEM > lambda 0.1        6/6 p=0.031    6/6 p=0.031    6/6 p=0.031\nplain CEM > lambda 0.3        6/6 p=0.031    6/6 p=0.031    6/6 p=0.031\nplain CEM > lambda 1          6/6 p=0.031    6/6 p=0.031    6/6 p=0.031\n\n(the smallest p a 6-draw sign test can give is 0.031)\n\n==============================================================================\nGEOMETRY — used vs near-empty dimensions, two explicit definitions\n==============================================================================\nvariant  d_l  gap after   drop  before  after  tail var    >0.4  <=0.4  tail var    smallest\n    d32   32          7   8.3x       7     25    0.65%       8     24    0.34%     6.1e-04   cond 7.0e+04\n     d8    8          7   7.8x       7      1    0.37%       7      1    0.37%     3.3e-01   cond 8.8e+01\n   fs32   32          9  21.6x       9     23    0.14%       9     23    0.14%     4.7e-04   cond 1.1e+05\n\n==============================================================================\nfs32 — separating d_l from the waypoint strategy (10 paired draws, paper budget)\n==============================================================================\nmetric                                    d32       fs32         d8\nsupport, Mahalanobis² ratio           x793.48    x828.95      x1.47\nsupport, 1-NN ratio                     x5.28      x4.31      x2.83\nexploitation ratio                      x9.51      x6.43      x3.86\nsolver beats expert                       81%        88%        75%\nfirst-waypoint error, solver            76.37      82.44      58.34\nfirst-waypoint error, expert             4.54       5.68       5.24\n\nPaired sign tests (same segments):\ncomparison                                         support  exploitation          wins      ẑ1 error\nstrategy: d32 vs fs32  (both d_l=32)          3/10 p=0.344  8/10 p=0.109  3/10 p=0.727  4/10 p=0.754\nd_l:      fs32 vs d8   (both fixed stride)   10/10 p=0.002  8/10 p=0.109  8/10 p=0.039  9/10 p=0.021\n  (read each cell as: draws where the first-named variant is higher)\n"
+}
