@@ -78,6 +78,7 @@ the command that regenerates each. **Regenerate before quoting.**
 | 2026-10-01 | **Qualified before publishing:** the off-path / stopped-short / reached-the-end split is threshold-dependent. Generated and oracle failures are indistinguishable at a 0.10 cut and separate at 0.25 and 0.50; the low-horizon contrast survives all three. The reading now rests on the threshold-free `progress` and nearest-state distance | a sensitivity sweep caught it before it reached a slide; the script reports the split at three thresholds by default |
 | 2026-10-01 | **Withdrawn within the session:** a first version of the row above blamed a low-level horizon mismatch (eval config 5, diagnostics 2) and put 34 points on it. Wrong — `colab_hi.ipynb` cell 26 passes the authors' `D50` matrix row, which sets `planning.low.plan_config.horizon=2`, on every eval command, so all four runs were matched at 2 | the config file was read in place of the recorded command; FINDINGS' own provenance paragraph for the 36.0 % run already said "low horizon 2" |
 | 2026-10-05 | **Records regenerated after the working tree was lost.** Every comparison whose manifests survived reproduces to the digit. Five used the first 50-step oracle run (30/50), whose manifest is lost; regenerated from its 29/50 rerun they move by one discordant pair each (e.g. low horizon 5 -> 2: +34.0 / p = 0.0005 becomes **+32.0 / p = 0.0015**), and none loses significance | see `docs/RECONSTRUCTION.md`, *The first oracle run*. Quote the regenerated values, which a reader can check |
+| 2026-10-05 | **Qualified:** d32 exploits more than VQ-128 in **8 of 10** draws (p = 0.11) when the audit is regenerated on another platform, against 9 of 10 (p = 0.02) originally. Every continuous variant reproduces to the digit; the VQ draws shift slightly, consistent with tied costs broken differently. d32 > d8 and d32 > VQ-16 hold on both | see `docs/RECONSTRUCTION.md`, *VQ and cost ties* |
 | 2026-10-05 | **Staged Hi-LeWM-C written up: 46.0 %, against the paper's 64.0.** The run finished on 2026-10-01 and was logged, but never entered here | see *Staged Hi-LeWM-C: 46.0 %, not 64.0* |
 
 ## Contents
@@ -1340,7 +1341,9 @@ paper's Table 5 budget (1500 samples x 40 steps, topk 10), 10 draws x 16
 segments, for all four variants; paired analysis by `analysis/compare_draws.py`.
 Sources: `results/audit_dimensionality/20260921-175756_draws_vq16_vq128_d50.json`,
 `results/audit_dimensionality/20260921-194945_draws_d32_d8_d50.json`,
-`results/compare_draws/`. Both runs at commit `8e23bd2`, clean tree.
+`results/compare_draws/`. [Regenerated 2026-10-05 as `20261005-102140_draws_*` and
+`results/compare_draws/20261005-225122_d50_paired.json`; continuous variants identical, VQ
+slightly different -- `docs/RECONSTRUCTION.md`.] Both runs at commit `8e23bd2`, clean tree.
 
 | variant | exploitation (expert cost / CEM cost) | support (CEM / expert Mahalanobis²) | CEM beats expert |
 | --- | --- | --- | --- |
@@ -1360,7 +1363,7 @@ comparing overlapping ranges:
 | A vs B, same segments | draws where A exploits more | p (exact two-sided sign test) | median A/B |
 | --- | --- | --- | --- |
 | d32 vs d8 | **10 / 10** | **0.002** | x2.45 |
-| d32 vs VQ-128 | 9 / 10 | 0.02 | x2.56 |
+| d32 vs VQ-128 | 9 / 10 | 0.02 | x2.56 [regenerated 2026-10-05: 8 / 10, p = 0.11; `docs/RECONSTRUCTION.md`] |
 | d32 vs VQ-16 | 9 / 10 | 0.02 | x4.24 |
 | d8 vs VQ-128 | 5 / 10 | 1.0 | x0.94 |
 | d8 vs VQ-16 | 8 / 10 | 0.11 | x1.57 |
