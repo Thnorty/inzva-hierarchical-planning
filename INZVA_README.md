@@ -22,6 +22,10 @@ Three documents, in reading order. Do not start with this one.
 
 Open both HTML files in a browser; they are self-contained pages.
 
+`hilewm/` is a separate project, the team's diagnosis of the Hi-LeWM paper. It
+has its own environment, documents and goal offset, and its numbers are not
+comparable with ours; start at `hilewm/README.md` (§15).
+
 `inzva-report-4.html` is the spec exactly as sent to the department before
 presentation 4, and it is not edited. **Two settings in it are out of date**:
 it says a 40-step horizon and a coarse stride of 8, which measurement replaced
@@ -2055,3 +2059,30 @@ contribution (§0) and the reason coarse-only belongs in Experiment A as a row.
 about *small* budgets. Flat CEM at 300 samples over 20 dimensions is not
 starved. The hierarchy is supposed to win when the budget is tight, so the
 sweep is where the claim lives, not here.
+
+---
+
+## 15. `hilewm/`: the Hi-LeWM diagnosis project
+
+Merged on 2026-10-05. A teammate's project that measures why hierarchical
+planning in *"Mind the Gap"* (Hi-LeWM) picks bad subgoals, using the paper's
+released checkpoints. It shares the PushT dataset and the library with us and
+nothing else, so keep it apart:
+
+- **Its own environment.** `hilewm/.venv`, with `stable-worldmodel` **0.1.1** from
+  PyPI, never the pinned fork this repo is. Setup in `hilewm/README.md`. Its CPU
+  analyses reproduce the original machine's numbers to the digit here.
+- **Its own goal offset.** d=50 against our 25, and the paper's own models, so no
+  number in it is comparable with ours.
+- **Its own documents.** `hilewm/STATUS.md` is its status page and
+  `hilewm/docs/FINDINGS.md` its evidence log; team rule 5 applies to them the same
+  way, and the section about it in `notes/inzva-progress.html` must follow.
+- **Weights out of git.** 2.1 GB, unzipped into `hilewm/checkpoints/` from the
+  `checkpoints.zip` it arrived with; `hilewm/.gitignore` keeps them out.
+- **pytest skips it** (`norecursedirs` in `pyproject.toml`); its own tests need
+  the upstream LeWM checkout. Pre-commit skips it too, so its authors' formatting
+  stays as received.
+
+It arrived without its working tree. What was rebuilt, how each piece was
+checked, and what is lost for good is in `hilewm/docs/RECONSTRUCTION.md`. Read
+it before quoting anything from that project.
