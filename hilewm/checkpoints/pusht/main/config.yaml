@@ -1,0 +1,117 @@
+output_model_name: pusht_hi_lewm_epoch15
+subdir: runs/pusht_hi_lewm_epoch15
+num_workers: 6
+train_split: 0.9
+seed: 3072
+img_size: 224
+patch_size: 14
+encoder_scale: tiny
+dump_object: true
+trainer:
+  max_epochs: 15
+  devices: auto
+  accelerator: gpu
+  precision: bf16
+  gradient_clip_val: 1.0
+loader:
+  batch_size: 128
+  num_workers: ${num_workers}
+  persistent_workers: true
+  prefetch_factor: 3
+  pin_memory: true
+optimizer:
+  type: AdamW
+  lr: 5.0e-05
+  weight_decay: 0.001
+wandb:
+  enabled: false
+  config:
+    entity: null
+    project: hi_lewm
+    name: ${output_model_name}
+    id: pusht_hi_lewm_epoch15
+    resume: never
+    log_model: false
+wm:
+  type: hi_lewm
+  history_size: 3
+  num_preds: 1
+  embed_dim: 192
+  high_level:
+    enabled: true
+    latent_action_dim: 32
+    macro_to_condition_proj: auto
+    waypoints:
+      num: 5
+      strategy: random_sorted
+      min_stride: 1
+      max_span: 15
+      stride: -1
+      beta_alpha: 2.0
+      beta_beta: 2.0
+  action_dim: 2
+  proprio_dim: 4
+  state_dim: 7
+pretrained_low_level:
+  enabled: true
+  source_policy: lewm
+  checkpoint:
+    search_dir: null
+    path: data/stablewm/pusht/lewm_object.ckpt
+    selection_mode: explicit_path
+    epoch: 1
+  freeze:
+    encoder: true
+    low_level_predictor: true
+    low_level_action_encoder: true
+    projector: true
+    low_pred_proj: true
+    high_pred_proj: false
+training:
+  train_low_level: false
+latent_action_encoder:
+  model_dim: ${wm.embed_dim}
+  num_layers: 2
+  num_heads: 4
+  mlp_dim: 768
+  dropout: 0.1
+  max_seq_len: ${wm.high_level.waypoints.max_span}
+predictor:
+  depth: 6
+  heads: 16
+  mlp_dim: 2048
+  dim_head: 64
+  dropout: 0.1
+  emb_dropout: 0.0
+predictor_high:
+  depth: 6
+  heads: 16
+  mlp_dim: 2048
+  dim_head: 64
+  dropout: 0.1
+  emb_dropout: 0.0
+loss:
+  alpha: 0.0
+  beta: 1.0
+  sigreg:
+    weight: 0.0
+    kwargs:
+      knots: 17
+      num_proj: 1024
+checkpointing:
+  object_dump:
+    epoch_interval: 1
+data:
+  dataset:
+    num_steps: ${eval:'${wm.history_size} + ${wm.high_level.waypoints.max_span}'}
+    frameskip: 5
+    name: pusht_expert_train
+    keys_to_load:
+    - pixels
+    - action
+    - proprio
+    - state
+    keys_to_cache:
+    - action
+    - proprio
+    - state

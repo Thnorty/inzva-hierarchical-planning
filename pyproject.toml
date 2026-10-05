@@ -119,3 +119,8 @@ quote-style = "single"
 
 [tool.coverage.run]
 omit = ["stable_worldmodel/envs/*"]
+
+[tool.pytest.ini_options]
+# hilewm/ is the Hi-LeWM diagnosis project, with its own environment and its own
+# tests (hilewm/code/tests). Collecting them here fails on the missing upstream LeWM.
+norecursedirs = ["*.egg", ".*", "_darcs", "build", "CVS", "dist", "node_modules", "venv", "{arch}", "hilewm"]

@@ -1,0 +1,24 @@
+{
+  "script": "analyse_acting_npz",
+  "tag": "low_level_reality_gap_d50_hh2_lh2_seed42",
+  "timestamp": "2026-10-01T12:51:36",
+  "git_commit": "",
+  "git_dirty": false,
+  "git_commit_at_end": "",
+  "argv": [
+    "/content/drive/MyDrive/inzva-final/analysis/analyse_acting_npz.py",
+    "/content/drive/MyDrive/inzva-final/results/colab/acting/low_level_reality_gap_d50_hh2_lh2_seed42.npz",
+    "--tag",
+    "low_level_reality_gap_d50_hh2_lh2_seed42",
+    "--write-manifest",
+    "/content/drive/MyDrive/inzva-final/results/colab/manifests/low_level_reality_gap_d50_hh2_lh2_seed42_episodes.tsv"
+  ],
+  "args": {
+    "npz": "/content/drive/MyDrive/inzva-final/results/colab/acting/low_level_reality_gap_d50_hh2_lh2_seed42.npz",
+    "tag": "low_level_reality_gap_d50_hh2_lh2_seed42",
+    "write_manifest": "/content/drive/MyDrive/inzva-final/results/colab/manifests/low_level_reality_gap_d50_hh2_lh2_seed42_episodes.tsv"
+  },
+  "headline": "",
+  "metrics": {},
+  "stdout": "low_level_reality_gap_d50_hh2_lh2_seed42.npz\narrays: episodes_idx, future_latents, goal_latent, offset_2_episode_successes, offset_3_episode_successes, offset_5_episode_successes, sampled_indices, start_latent, start_steps\n\n"
+}

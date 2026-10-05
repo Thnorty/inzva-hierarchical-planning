@@ -1,0 +1,53 @@
+{
+  "run_name": "pusht_hierarchical_default",
+  "checkpoint_epoch": 15,
+  "policy": "runs/pusht_hierarchical_default/pusht_hierarchical_default_epoch_15",
+  "dataset_name": "pusht_expert_train",
+  "experiment_kind": "low_level_reality_gap",
+  "device": "cuda",
+  "seed": 42,
+  "goal_offset_steps": 50,
+  "eval_budget": 50,
+  "num_eval": 50,
+  "goal_tokens": 10,
+  "high_horizon": 2,
+  "low_horizon": 2,
+  "low_receding_horizon": 1,
+  "latent_action_dim": 32,
+  "macro_input_dim": 10,
+  "low_action_input_dim": 10,
+  "raw_action_dim": 2,
+  "group_factor": 5,
+  "result_status": "ok",
+  "offset_results": [
+    {
+      "offset_tokens": 2,
+      "duration_steps": 10,
+      "model_error_mean": 0.08264662697911263,
+      "actual_error_mean": 0.046055231243371964,
+      "reality_gap_mean": 0.007680129259824753,
+      "goal_progress_mean": 0.09992734342813492,
+      "success_rate": 2.0
+    },
+    {
+      "offset_tokens": 3,
+      "duration_steps": 15,
+      "model_error_mean": 0.12624857823053995,
+      "actual_error_mean": 0.05404050275683403,
+      "reality_gap_mean": 0.0033717425540089607,
+      "goal_progress_mean": 0.21212871372699738,
+      "success_rate": 2.0
+    },
+    {
+      "offset_tokens": 5,
+      "duration_steps": 25,
+      "model_error_mean": 0.248968768119812,
+      "actual_error_mean": 0.14186422526836395,
+      "reality_gap_mean": 0.028186582028865814,
+      "goal_progress_mean": 0.383706659078598,
+      "success_rate": 6.0
+    }
+  ],
+  "overall_reality_gap_mean": 0.013079484614233175,
+  "overall_actual_error_mean": 0.08065331975618999
+}

@@ -1,0 +1,49 @@
+{
+  "script": "analyse_acting_npz",
+  "tag": "oracle_subgoal_acting_d50_hh2_lh5_seed42_frac0.1",
+  "timestamp": "2026-10-01T12:56:02",
+  "git_commit": "",
+  "git_dirty": false,
+  "git_commit_at_end": "",
+  "argv": [
+    "/content/drive/MyDrive/inzva-final/analysis/analyse_acting_npz.py",
+    "/content/drive/MyDrive/inzva-final/results/colab/acting/oracle_subgoal_acting_d50_hh2_lh5_seed42.npz",
+    "--tag",
+    "oracle_subgoal_acting_d50_hh2_lh5_seed42_frac0.1",
+    "--on-path-frac",
+    "0.1"
+  ],
+  "args": {
+    "npz": "/content/drive/MyDrive/inzva-final/results/colab/acting/oracle_subgoal_acting_d50_hh2_lh5_seed42.npz",
+    "tag": "oracle_subgoal_acting_d50_hh2_lh5_seed42_frac0.1",
+    "write_manifest": null,
+    "on_path_frac": 0.1
+  },
+  "headline": "acting_npz_anatomy",
+  "metrics": {
+    "npz": "/content/drive/MyDrive/inzva-final/results/colab/acting/oracle_subgoal_acting_d50_hh2_lh5_seed42.npz",
+    "n_episodes": 50,
+    "successes": 13,
+    "success_rate": 26.0,
+    "future_horizon": 50,
+    "mse_to_goal_median": 0.36444252729415894,
+    "mse_to_goal_median_success": 0.12388994544744492,
+    "mse_to_goal_median_failure": 0.5717630982398987,
+    "progress_median": 0.7775733470916748,
+    "nearest_step_median": 45.0,
+    "nearest_step_median_success": 50.0,
+    "nearest_step_median_failure": 44.0,
+    "nearest_mse_median": 0.12674662470817566,
+    "nearest_mse_median_success": 0.11368799209594727,
+    "nearest_mse_median_failure": 0.13764925301074982,
+    "on_path_frac": 0.1,
+    "reached_last_step": 17,
+    "reached_and_failed": 9,
+    "stopped_short_and_failed": 28,
+    "failed_off_path": 16,
+    "failed_on_path_stopped_short": 16,
+    "failed_on_path_reached_end": 5,
+    "manifest": null
+  },
+  "stdout": "oracle_subgoal_acting_d50_hh2_lh5_seed42.npz\narrays: episode_successes, episodes_idx, final_latent, future_latents, goal_latent, oracle_stage_targets, sampled_indices, start_latent, start_steps\n\n50 episodes, 13 succeeded (26.0 %), future horizon 50 steps\n\ngroup        n  MSE to goal  progress  nearest step  MSE there\n--------------------------------------------------------------\nsucceeded   13        0.124      0.92          50.0      0.114\nfailed      37        0.572      0.67          44.0      0.138\nall         50        0.364      0.78          45.0      0.127\n\nMSE from the final latent to the last oracle stage target: median 0.364 (succeeded 0.124, failed 0.572)\n\nepisodes whose final state is nearest the last future step: 17/50\n   of those, succeeded: 8\n   of those, failed:    9\nfailed episodes that stopped short (nearest step < 49): 28\n\nfailures split by whether they stayed near the expert's path (nearest MSE <= 0.1 x the start-to-goal distance):\n   off the path altogether:       16\n   on the path, stopped short:    16\n   on the path, reached the end:   5\n\nReading: 'stopped short' points at the low-level planner, 'reached the end'\nat the success criterion or the final stage, and 'off the path' at the\nsubgoal -- the agent was steered somewhere the expert never went. Read the\nfirst group before the other two: a nearest step is reported for every\nepisode, including ones nowhere near the trajectory.\n"
+}

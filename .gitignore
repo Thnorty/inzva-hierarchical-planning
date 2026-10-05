@@ -258,3 +258,14 @@ uv.lock
 # Caveat: on Windows the CUDA torch wheel is installed out of band and is NOT
 # in the lock. See README section 2.1.
 !uv.lock
+
+# hilewm/ (the Hi-LeWM diagnosis project) is imported whole. The rules above
+# would hide its CLAUDE.md, shell scripts, run logs, checkpoint configs and every
+# result record; hilewm/.gitignore keeps its weights and environment out instead.
+!hilewm/CLAUDE.md
+!hilewm/**/*.sh
+!hilewm/code/outputs/
+!hilewm/checkpoints/
+!hilewm/results/
+!hilewm/code/outputs/**/*.log
+!hilewm/results/**/*.mp4

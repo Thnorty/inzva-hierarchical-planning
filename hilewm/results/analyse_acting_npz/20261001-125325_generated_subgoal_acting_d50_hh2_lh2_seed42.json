@@ -1,0 +1,49 @@
+{
+  "script": "analyse_acting_npz",
+  "tag": "generated_subgoal_acting_d50_hh2_lh2_seed42",
+  "timestamp": "2026-10-01T12:53:25",
+  "git_commit": "",
+  "git_dirty": false,
+  "git_commit_at_end": "",
+  "argv": [
+    "/content/drive/MyDrive/inzva-final/analysis/analyse_acting_npz.py",
+    "/content/drive/MyDrive/inzva-final/results/colab/acting/generated_subgoal_acting_d50_hh2_lh2_seed42.npz",
+    "--tag",
+    "generated_subgoal_acting_d50_hh2_lh2_seed42",
+    "--write-manifest",
+    "/content/drive/MyDrive/inzva-final/results/colab/manifests/generated_subgoal_acting_d50_hh2_lh2_seed42_episodes.tsv"
+  ],
+  "args": {
+    "npz": "/content/drive/MyDrive/inzva-final/results/colab/acting/generated_subgoal_acting_d50_hh2_lh2_seed42.npz",
+    "tag": "generated_subgoal_acting_d50_hh2_lh2_seed42",
+    "write_manifest": "/content/drive/MyDrive/inzva-final/results/colab/manifests/generated_subgoal_acting_d50_hh2_lh2_seed42_episodes.tsv",
+    "on_path_frac": 0.25
+  },
+  "headline": "acting_npz_anatomy",
+  "metrics": {
+    "npz": "/content/drive/MyDrive/inzva-final/results/colab/acting/generated_subgoal_acting_d50_hh2_lh2_seed42.npz",
+    "n_episodes": 50,
+    "successes": 22,
+    "success_rate": 44.0,
+    "future_horizon": 50,
+    "mse_to_goal_median": 0.31481289863586426,
+    "mse_to_goal_median_success": 0.09391865134239197,
+    "mse_to_goal_median_failure": 1.4733960628509521,
+    "progress_median": 0.7913296818733215,
+    "nearest_step_median": 48.5,
+    "nearest_step_median_success": 49.0,
+    "nearest_step_median_failure": 44.0,
+    "nearest_mse_median": 0.21038883924484253,
+    "nearest_mse_median_success": 0.08731845766305923,
+    "nearest_mse_median_failure": 0.7852022051811218,
+    "on_path_frac": 0.25,
+    "reached_last_step": 25,
+    "reached_and_failed": 12,
+    "stopped_short_and_failed": 16,
+    "failed_off_path": 20,
+    "failed_on_path_stopped_short": 2,
+    "failed_on_path_reached_end": 6,
+    "manifest": "/content/drive/MyDrive/inzva-final/results/colab/manifests/generated_subgoal_acting_d50_hh2_lh2_seed42_episodes.tsv"
+  },
+  "stdout": "generated_subgoal_acting_d50_hh2_lh2_seed42.npz\narrays: episode_successes, episodes_idx, final_latent, future_latents, generated_stage_targets, goal_latent, low_block_actual_latents, low_block_end_steps, low_block_predicted_latents, low_block_stage_indices, low_block_target_latents, sampled_indices, stage_end_actual_latents, start_latent, start_steps\n\n50 episodes, 22 succeeded (44.0 %), future horizon 50 steps\n\ngroup        n  MSE to goal  progress  nearest step  MSE there\n--------------------------------------------------------------\nsucceeded   22        0.094      0.93          49.0      0.087\nfailed      28        1.473      0.17          44.0      0.785\nall         50        0.315      0.79          48.5      0.210\n\nmanifest -> /content/drive/MyDrive/inzva-final/results/colab/manifests/generated_subgoal_acting_d50_hh2_lh2_seed42_episodes.tsv (50 episodes, 22 PASS)\n\nepisodes whose final state is nearest the last future step: 25/50\n   of those, succeeded: 13\n   of those, failed:    12\nfailed episodes that stopped short (nearest step < 49): 16\n\nfailures split by whether they stayed near the expert's path (nearest MSE <= 0.25 x the start-to-goal distance):\n   off the path altogether:       20\n   on the path, stopped short:     2\n   on the path, reached the end:   6\n\nReading: 'stopped short' points at the low-level planner, 'reached the end'\nat the success criterion or the final stage, and 'off the path' at the\nsubgoal -- the agent was steered somewhere the expert never went. Read the\nfirst group before the other two: a nearest step is reported for every\nepisode, including ones nowhere near the trajectory.\n"
+}

@@ -1,0 +1,112 @@
+
+==== CONFIG ====
+cache_dir: null
+world:
+  env_name: swm/PushT-v1
+  num_envs: ${eval.num_eval}
+  max_episode_steps: 20
+dataset:
+  stats: ${eval.dataset_name}
+  keys_to_cache:
+  - action
+  - proprio
+  - state
+seed: 42
+policy: runs/pusht_hierarchical_default/pusht_hierarchical_default_epoch_15
+planning:
+  mode: hierarchical
+  high:
+    replan_interval: 5
+    solver:
+      _target_: stable_worldmodel.solver.CEMSolver
+      model: ???
+      batch_size: 1
+      num_samples: 1500
+      var_scale: 1.0
+      n_steps: 40
+      topk: 10
+      device: cuda
+      seed: ${seed}
+    plan_config:
+      horizon: 2
+      receding_horizon: 1
+      action_block: 1
+    latent_prior:
+      enabled: true
+      num_chunks: 2048
+      min_chunks_for_stats: 64
+      chunk_len: 5
+      lower_q: 5.0
+      upper_q: 95.0
+      margin_ratio: 0.05
+      clamp_abs: 3.0
+      fallback_abs: 1.0
+    empirical_macro:
+      enabled: false
+      num_sequences: 4096
+      chunk_len: 5
+      residual_scale: 0.1
+      min_residual_std: 0.001
+      return_top_candidates: 8
+      encode_batch_size: 4096
+      stage_sampling: sequence
+      seed: ${seed}
+  low:
+    solver:
+      _target_: stable_worldmodel.solver.CEMSolver
+      model: ???
+      batch_size: 1
+      num_samples: 900
+      var_scale: 1.0
+      n_steps: 30
+      topk: 150
+      device: cuda
+      seed: ${seed}
+    plan_config:
+      horizon: 2
+      receding_horizon: 1
+      action_block: 5
+solver:
+  _target_: stable_worldmodel.solver.CEMSolver
+  model: ???
+  batch_size: 1
+  num_samples: 300
+  var_scale: 1.0
+  n_steps: 30
+  topk: 30
+  device: cuda
+  seed: ${seed}
+plan_config:
+  horizon: 1
+  receding_horizon: 1
+  action_block: 5
+eval:
+  num_eval: 4
+  goal_offset_steps: 50
+  eval_budget: 10
+  img_size: 224
+  dataset_name: pusht_expert_train
+  callables:
+  - method: _set_state
+    args:
+      state:
+        value: state
+  - method: _set_goal_state
+    args:
+      goal_state:
+        value: goal_state
+output:
+  filename: hi_pusht_d50_seed42.txt
+  subdir: null
+  root_dir: /content/stablewm/our_evals/probe_d50_seed42_n4
+
+==== DETERMINISM ====
+[determinism] seed=42, mode=strict, cuda_available=True, pythonhashseed=42, cublas_workspace_config=:4096:8, torch_deterministic_algorithms=True, cudnn_deterministic=True, cudnn_benchmark=False, cuda_tf32=False, cudnn_tf32=False
+==== RESULTS ====
+metrics: {'success_rate': 0.0, 'episode_successes': array([False, False, False, False]), 'seeds': None}
+evaluation_time: 15.36319899559021 seconds
+==== EPISODE OUTCOMES ====
+FAIL	eval_index=0	episode_id=1702	start_step=34	video_path=/content/stablewm/our_evals/probe_d50_seed42_n4/None/env_0.mp4
+FAIL	eval_index=1	episode_id=8338	start_step=84	video_path=/content/stablewm/our_evals/probe_d50_seed42_n4/None/env_1.mp4
+FAIL	eval_index=2	episode_id=12219	start_step=63	video_path=/content/stablewm/our_evals/probe_d50_seed42_n4/None/env_2.mp4
+FAIL	eval_index=3	episode_id=14250	start_step=17	video_path=/content/stablewm/our_evals/probe_d50_seed42_n4/None/env_3.mp4

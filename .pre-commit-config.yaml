@@ -2,6 +2,10 @@
 # Pre-commit hooks for stable-worldmodel
 # See https://pre-commit.com for more information
 
+# hilewm/ is an imported project kept in its authors' own formatting; the
+# large-file check would also reject its irreplaceable Colab .npz records.
+exclude: ^hilewm/
+
 default_language_version:
   python: python3
 

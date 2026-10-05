@@ -1,0 +1,5 @@
+[2026-09-26 17:31:46,703][datasets][INFO] - TensorFlow version 2.20.0 available.
+[2026-09-26 17:31:46,708][datasets][INFO] - JAX version 0.11.1 available.
+[2026-09-26 17:31:48,051][root][INFO] - Cached 'action' from '/content/stablewm/datasets/pusht_expert_train.h5'
+[2026-09-26 17:31:48,102][root][INFO] - Cached 'proprio' from '/content/stablewm/datasets/pusht_expert_train.h5'
+[2026-09-26 17:31:48,179][root][INFO] - Cached 'state' from '/content/stablewm/datasets/pusht_expert_train.h5'

@@ -1,0 +1,70 @@
+{
+  "script": "analyse_acting_npz",
+  "tag": "oracle_subgoal_acting_d50_hh2_lh5_seed42",
+  "timestamp": "2026-10-01T13:11:14",
+  "git_commit": "",
+  "git_dirty": false,
+  "git_commit_at_end": "",
+  "argv": [
+    "/content/drive/MyDrive/inzva-final/analysis/analyse_acting_npz.py",
+    "/content/drive/MyDrive/inzva-final/results/colab/acting/oracle_subgoal_acting_d50_hh2_lh5_seed42.npz",
+    "--tag",
+    "oracle_subgoal_acting_d50_hh2_lh5_seed42",
+    "--write-manifest",
+    "/content/drive/MyDrive/inzva-final/results/colab/manifests/oracle_subgoal_acting_d50_hh2_lh5_seed42_episodes.tsv"
+  ],
+  "args": {
+    "npz": "/content/drive/MyDrive/inzva-final/results/colab/acting/oracle_subgoal_acting_d50_hh2_lh5_seed42.npz",
+    "tag": "oracle_subgoal_acting_d50_hh2_lh5_seed42",
+    "write_manifest": "/content/drive/MyDrive/inzva-final/results/colab/manifests/oracle_subgoal_acting_d50_hh2_lh5_seed42_episodes.tsv",
+    "on_path_frac": 0.25
+  },
+  "headline": "acting_npz_anatomy",
+  "metrics": {
+    "npz": "/content/drive/MyDrive/inzva-final/results/colab/acting/oracle_subgoal_acting_d50_hh2_lh5_seed42.npz",
+    "n_episodes": 50,
+    "successes": 13,
+    "success_rate": 26.0,
+    "future_horizon": 50,
+    "mse_to_goal_median": 0.36444252729415894,
+    "mse_to_goal_median_success": 0.12388994544744492,
+    "mse_to_goal_median_failure": 0.5717630982398987,
+    "progress_median": 0.7775733470916748,
+    "progress_median_success": 0.9170314073562622,
+    "progress_median_failure": 0.6739133596420288,
+    "nearest_step_median": 45.0,
+    "nearest_step_median_success": 50.0,
+    "nearest_step_median_failure": 44.0,
+    "nearest_mse_median": 0.12674662470817566,
+    "nearest_mse_median_success": 0.11368799209594727,
+    "nearest_mse_median_failure": 0.13764925301074982,
+    "on_path_frac": 0.25,
+    "reached_last_step": 17,
+    "reached_and_failed": 9,
+    "stopped_short_and_failed": 28,
+    "failure_split_by_threshold": {
+      "0.1": {
+        "off_path": 16,
+        "stopped_short": 16,
+        "reached_end": 5
+      },
+      "0.25": {
+        "off_path": 9,
+        "stopped_short": 22,
+        "reached_end": 6
+      },
+      "0.5": {
+        "off_path": 3,
+        "stopped_short": 26,
+        "reached_end": 8
+      }
+    },
+    "last_stage_target_distance": {
+      "median": 0.36444252729415894,
+      "median_success": 0.12388994544744492,
+      "median_failure": 0.5717630982398987
+    },
+    "manifest": "/content/drive/MyDrive/inzva-final/results/colab/manifests/oracle_subgoal_acting_d50_hh2_lh5_seed42_episodes.tsv"
+  },
+  "stdout": "oracle_subgoal_acting_d50_hh2_lh5_seed42.npz\narrays: episode_successes, episodes_idx, final_latent, future_latents, goal_latent, oracle_stage_targets, sampled_indices, start_latent, start_steps\n\n50 episodes, 13 succeeded (26.0 %), future horizon 50 steps\n\ngroup        n  MSE to goal  progress  nearest step  MSE there\n--------------------------------------------------------------\nsucceeded   13        0.124      0.92          50.0      0.114\nfailed      37        0.572      0.67          44.0      0.138\nall         50        0.364      0.78          45.0      0.127\n\nMSE from the final latent to the last oracle stage target: median 0.364 (succeeded 0.124, failed 0.572)\n\nmanifest -> /content/drive/MyDrive/inzva-final/results/colab/manifests/oracle_subgoal_acting_d50_hh2_lh5_seed42_episodes.tsv (50 episodes, 13 PASS)\n\nepisodes whose final state is nearest the last future step: 17/50\n   of those, succeeded: 8\n   of those, failed:    9\nfailed episodes that stopped short (nearest step < 49): 28\n\nfailures split by whether they stayed near the expert's path, at several thresholds\n(threshold = fraction of the start-to-goal distance; the split is threshold-dependent,\n so read it as a sweep, not as three counts):\n\nthreshold  off the path  stopped short  reached the end\n-------------------------------------------------------\n     0.10            16             16                5\n     0.25             9             22                6  <- --on-path-frac\n     0.50             3             26                8\n\nReading: 'stopped short' points at the low-level planner, 'reached the end'\nat the success criterion or the final stage, and 'off the path' at the\nsubgoal -- the agent was steered somewhere the expert never went. Read the\n'MSE there' column above before any of them: a nearest step is reported for\nevery episode, including ones nowhere near the trajectory.\n"
+}

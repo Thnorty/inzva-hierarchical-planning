@@ -1,0 +1,34 @@
+name: diagnostics/pusht/acting
+kind: command
+operation: diagnostics
+outputs:
+  root_kind: repro
+  root_name: pusht_acting_diagnostics
+  completion_file: "{output_root}/COMPLETE"
+  expected_paths:
+    - "{output_root}/summary_oracle_subgoal_acting.tsv"
+    - "{output_root}/summary_low_level_reality_gap.tsv"
+    - "{output_root}/summary_generated_subgoal_acting.tsv"
+    - "{output_root}/summary_online_hierarchical_logging.tsv"
+    - "{output_root}/oracle_subgoal_acting_d50_hh2_lh2_lrh1.npz"
+    - "{output_root}/generated_subgoal_acting_d50_hh2_lh2_lrh1.npz"
+    - "{output_root}/online_hierarchical_logging_d50_hh2_lh2_lrh1.npz"
+requirements:
+  checkpoints:
+    - "{run_root}/pusht_hierarchical_default/pusht_hierarchical_default_epoch_15_object.ckpt"
+command:
+  argv:
+    - python
+    - -m
+    - h_le_wm.experiments.pusht_diagnostics
+    - acting
+    - --policy
+    - runs/pusht_hierarchical_default/pusht_hierarchical_default_epoch_15
+    - --output-root
+    - "{output_root}"
+    - --cache-dir
+    - "{stablewm_home}"
+    - --device
+    - cuda
+    - --seed
+    - "42"

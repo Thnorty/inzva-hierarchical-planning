@@ -1,0 +1,4 @@
+experiment_kind	policy	goal_offset_steps	high_horizon	low_horizon	low_receding_horizon	step1_stage_end_actual_error_mean	step1_offset_error_token_mean	step2_stage_end_actual_error_mean	step2_offset_error_token_mean	final_terminal_latent_error_mean	success_rate	result_status
+generated_subgoal_acting	runs/pusht_hierarchical_default/pusht_hierarchical_default_epoch_15	50	2	2	1	0.3894655406475067	-0.9920001029968262	0.6139132380485535	-0.48799991607666016	0.7984297871589661	44.0	ok
+generated_subgoal_acting	runs/pusht_hierarchical_default/pusht_hierarchical_default_epoch_15	50	1	2	1	0.5576444864273071	-2.4720001220703125			0.9032449126243591	34.0	ok
+generated_subgoal_acting	runs/pusht_hierarchical_default/pusht_hierarchical_default_epoch_15	50	2	2	1	0.390624076128006	-0.9920001029968262	0.6055083870887756	-0.48799991607666016	0.7915217280387878	48.0	ok

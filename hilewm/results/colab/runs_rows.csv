@@ -1,0 +1,4 @@
+date,git_commit,checkpoint,planner_variant,d,seed,n_episodes,success_rate,config_path
+2026-09-26,unknown,pusht/main/pusht_hi_lewm_epoch15_object.ckpt,hi_online_plain_cem,50,42,50,36.0,config/eval/hi_pusht.yaml+paper_table5_overrides
+2026-09-26,sha:bb14f7e89a2b,pusht/main/pusht_hi_lewm_epoch15_object.ckpt,hi_online_empirical_macro,50,42,50,34.0,config/eval/hi_pusht.yaml+paper_table5_overrides
+2026-10-01,sha:cda5c4b65f95,pusht/main/pusht_hi_lewm_epoch15_object.ckpt,hi_staged_empirical_macro,50,42,50,46.0,config/eval/hi_pusht.yaml+paper_table5_overrides

@@ -55,3 +55,7 @@
 
 # Generated: keep it out of diffs and language stats.
 uv.lock linguist-generated=true
+
+# Colab episode videos are binary
+*.mp4 binary
+*.npz binary

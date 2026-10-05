@@ -1,0 +1,163 @@
+
+==== CONFIG ====
+cache_dir: null
+world:
+  env_name: swm/PushT-v1
+  num_envs: ${eval.num_eval}
+  max_episode_steps: 200
+dataset:
+  stats: ${eval.dataset_name}
+  keys_to_cache:
+  - action
+  - proprio
+  - state
+seed: 42
+policy: runs/pusht_hierarchical_default/pusht_hierarchical_default_epoch_15
+planning:
+  mode: hierarchical_staged
+  high:
+    replan_interval: 5
+    solver:
+      _target_: stable_worldmodel.solver.CEMSolver
+      model: ???
+      batch_size: 1
+      num_samples: 1500
+      var_scale: 1.0
+      n_steps: 40
+      topk: 10
+      device: cuda
+      seed: ${seed}
+    plan_config:
+      horizon: 2
+      receding_horizon: 1
+      action_block: 1
+    latent_prior:
+      enabled: true
+      num_chunks: 2048
+      min_chunks_for_stats: 64
+      chunk_len: 5
+      lower_q: 5.0
+      upper_q: 95.0
+      margin_ratio: 0.05
+      clamp_abs: 3.0
+      fallback_abs: 1.0
+    empirical_macro:
+      enabled: true
+      num_sequences: 4096
+      chunk_len: 5
+      residual_scale: 0.1
+      min_residual_std: 0.001
+      return_top_candidates: 8
+      encode_batch_size: 4096
+      stage_sampling: sequence
+      seed: ${seed}
+  low:
+    solver:
+      _target_: stable_worldmodel.solver.CEMSolver
+      model: ???
+      batch_size: 1
+      num_samples: 900
+      var_scale: 1.0
+      n_steps: 30
+      topk: 150
+      device: cuda
+      seed: ${seed}
+    plan_config:
+      horizon: 2
+      receding_horizon: 1
+      action_block: 5
+solver:
+  _target_: stable_worldmodel.solver.CEMSolver
+  model: ???
+  batch_size: 1
+  num_samples: 300
+  var_scale: 1.0
+  n_steps: 30
+  topk: 30
+  device: cuda
+  seed: ${seed}
+plan_config:
+  horizon: 1
+  receding_horizon: 1
+  action_block: 5
+eval:
+  num_eval: 50
+  goal_offset_steps: 50
+  eval_budget: 100
+  img_size: 224
+  dataset_name: pusht_expert_train
+  callables:
+  - method: _set_state
+    args:
+      state:
+        value: state
+  - method: _set_goal_state
+    args:
+      goal_state:
+        value: goal_state
+output:
+  filename: hi_pusht_d50_seed42.txt
+  subdir: null
+  root_dir: /content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50
+
+==== DETERMINISM ====
+[determinism] seed=42, mode=strict, cuda_available=True, pythonhashseed=42, cublas_workspace_config=:4096:8, torch_deterministic_algorithms=True, cudnn_deterministic=True, cudnn_benchmark=False, cuda_tf32=False, cudnn_tf32=False
+==== RESULTS ====
+metrics: {'success_rate': 46.0, 'episode_successes': array([False, False, False, False, False,  True, False, False,  True,
+        True,  True,  True,  True,  True,  True,  True, False, False,
+       False, False,  True, False,  True,  True,  True, False,  True,
+       False, False, False, False, False, False,  True, False, False,
+        True,  True, False,  True,  True, False,  True,  True, False,
+       False, False,  True, False,  True]), 'seeds': None}
+evaluation_time: 724.4131968021393 seconds
+==== EPISODE OUTCOMES ====
+FAIL	eval_index=0	episode_id=1251	start_step=35	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_0.mp4
+FAIL	eval_index=1	episode_id=1328	start_step=1	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_1.mp4
+FAIL	eval_index=2	episode_id=1649	start_step=6	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_2.mp4
+FAIL	eval_index=3	episode_id=1702	start_step=30	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_3.mp4
+FAIL	eval_index=4	episode_id=1786	start_step=15	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_4.mp4
+PASS	eval_index=5	episode_id=1866	start_step=12	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_5.mp4
+FAIL	eval_index=6	episode_id=2702	start_step=60	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_6.mp4
+FAIL	eval_index=7	episode_id=3211	start_step=65	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_7.mp4
+PASS	eval_index=8	episode_id=3557	start_step=24	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_8.mp4
+PASS	eval_index=9	episode_id=3854	start_step=88	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_9.mp4
+PASS	eval_index=10	episode_id=4341	start_step=25	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_10.mp4
+PASS	eval_index=11	episode_id=5115	start_step=52	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_11.mp4
+PASS	eval_index=12	episode_id=6664	start_step=37	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_12.mp4
+PASS	eval_index=13	episode_id=7009	start_step=39	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_13.mp4
+PASS	eval_index=14	episode_id=7594	start_step=13	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_14.mp4
+PASS	eval_index=15	episode_id=8267	start_step=73	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_15.mp4
+FAIL	eval_index=16	episode_id=8338	start_step=64	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_16.mp4
+FAIL	eval_index=17	episode_id=8396	start_step=15	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_17.mp4
+FAIL	eval_index=18	episode_id=8432	start_step=7	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_18.mp4
+FAIL	eval_index=19	episode_id=8519	start_step=31	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_19.mp4
+PASS	eval_index=20	episode_id=8521	start_step=30	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_20.mp4
+FAIL	eval_index=21	episode_id=9692	start_step=58	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_21.mp4
+PASS	eval_index=22	episode_id=9945	start_step=66	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_22.mp4
+PASS	eval_index=23	episode_id=10169	start_step=111	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_23.mp4
+PASS	eval_index=24	episode_id=10420	start_step=70	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_24.mp4
+FAIL	eval_index=25	episode_id=10568	start_step=2	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_25.mp4
+PASS	eval_index=26	episode_id=11766	start_step=73	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_26.mp4
+FAIL	eval_index=27	episode_id=12052	start_step=55	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_27.mp4
+FAIL	eval_index=28	episode_id=12219	start_step=33	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_28.mp4
+FAIL	eval_index=29	episode_id=12580	start_step=31	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_29.mp4
+FAIL	eval_index=30	episode_id=12934	start_step=38	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_30.mp4
+FAIL	eval_index=31	episode_id=13006	start_step=23	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_31.mp4
+FAIL	eval_index=32	episode_id=13279	start_step=41	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_32.mp4
+PASS	eval_index=33	episode_id=13528	start_step=16	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_33.mp4
+FAIL	eval_index=34	episode_id=14008	start_step=17	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_34.mp4
+FAIL	eval_index=35	episode_id=14047	start_step=11	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_35.mp4
+PASS	eval_index=36	episode_id=14249	start_step=23	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_36.mp4
+PASS	eval_index=37	episode_id=14384	start_step=12	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_37.mp4
+FAIL	eval_index=38	episode_id=14451	start_step=66	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_38.mp4
+PASS	eval_index=39	episode_id=14497	start_step=110	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_39.mp4
+PASS	eval_index=40	episode_id=15240	start_step=84	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_40.mp4
+FAIL	eval_index=41	episode_id=15403	start_step=11	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_41.mp4
+PASS	eval_index=42	episode_id=15703	start_step=66	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_42.mp4
+PASS	eval_index=43	episode_id=16012	start_step=55	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_43.mp4
+FAIL	eval_index=44	episode_id=16015	start_step=74	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_44.mp4
+FAIL	eval_index=45	episode_id=16310	start_step=28	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_45.mp4
+FAIL	eval_index=46	episode_id=16452	start_step=31	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_46.mp4
+PASS	eval_index=47	episode_id=17246	start_step=56	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_47.mp4
+FAIL	eval_index=48	episode_id=17881	start_step=64	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_48.mp4
+PASS	eval_index=49	episode_id=17961	start_step=58	video_path=/content/stablewm/our_evals/hi_c_staged_seed42_d50_seed42_n50/None/env_49.mp4

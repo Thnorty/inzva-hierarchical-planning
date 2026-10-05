@@ -1,0 +1,49 @@
+{
+  "script": "analyse_acting_npz",
+  "tag": "generated_subgoal_acting_d50_hh1_lh2_seed42_frac0.5",
+  "timestamp": "2026-10-01T12:56:43",
+  "git_commit": "",
+  "git_dirty": false,
+  "git_commit_at_end": "",
+  "argv": [
+    "/content/drive/MyDrive/inzva-final/analysis/analyse_acting_npz.py",
+    "/content/drive/MyDrive/inzva-final/results/colab/acting/generated_subgoal_acting_d50_hh1_lh2_seed42.npz",
+    "--tag",
+    "generated_subgoal_acting_d50_hh1_lh2_seed42_frac0.5",
+    "--on-path-frac",
+    "0.5"
+  ],
+  "args": {
+    "npz": "/content/drive/MyDrive/inzva-final/results/colab/acting/generated_subgoal_acting_d50_hh1_lh2_seed42.npz",
+    "tag": "generated_subgoal_acting_d50_hh1_lh2_seed42_frac0.5",
+    "write_manifest": null,
+    "on_path_frac": 0.5
+  },
+  "headline": "acting_npz_anatomy",
+  "metrics": {
+    "npz": "/content/drive/MyDrive/inzva-final/results/colab/acting/generated_subgoal_acting_d50_hh1_lh2_seed42.npz",
+    "n_episodes": 50,
+    "successes": 17,
+    "success_rate": 34.0,
+    "future_horizon": 50,
+    "mse_to_goal_median": 0.6955281496047974,
+    "mse_to_goal_median_success": 0.04119318723678589,
+    "mse_to_goal_median_failure": 1.5985428094863892,
+    "progress_median": 0.6017892360687256,
+    "nearest_step_median": 47.0,
+    "nearest_step_median_success": 50.0,
+    "nearest_step_median_failure": 44.0,
+    "nearest_mse_median": 0.3511943221092224,
+    "nearest_mse_median_success": 0.04119318723678589,
+    "nearest_mse_median_failure": 0.8475591540336609,
+    "on_path_frac": 0.5,
+    "reached_last_step": 22,
+    "reached_and_failed": 12,
+    "stopped_short_and_failed": 21,
+    "failed_off_path": 16,
+    "failed_on_path_stopped_short": 9,
+    "failed_on_path_reached_end": 8,
+    "manifest": null
+  },
+  "stdout": "generated_subgoal_acting_d50_hh1_lh2_seed42.npz\narrays: episode_successes, episodes_idx, final_latent, future_latents, generated_stage_targets, goal_latent, low_block_actual_latents, low_block_end_steps, low_block_predicted_latents, low_block_stage_indices, low_block_target_latents, sampled_indices, stage_end_actual_latents, start_latent, start_steps\n\n50 episodes, 17 succeeded (34.0 %), future horizon 50 steps\n\ngroup        n  MSE to goal  progress  nearest step  MSE there\n--------------------------------------------------------------\nsucceeded   17        0.041      0.92          50.0      0.041\nfailed      33        1.599      0.22          44.0      0.848\nall         50        0.696      0.60          47.0      0.351\n\nepisodes whose final state is nearest the last future step: 22/50\n   of those, succeeded: 10\n   of those, failed:    12\nfailed episodes that stopped short (nearest step < 49): 21\n\nfailures split by whether they stayed near the expert's path (nearest MSE <= 0.5 x the start-to-goal distance):\n   off the path altogether:       16\n   on the path, stopped short:     9\n   on the path, reached the end:   8\n\nReading: 'stopped short' points at the low-level planner, 'reached the end'\nat the success criterion or the final stage, and 'off the path' at the\nsubgoal -- the agent was steered somewhere the expert never went. Read the\nfirst group before the other two: a nearest step is reported for every\nepisode, including ones nowhere near the trajectory.\n"
+}

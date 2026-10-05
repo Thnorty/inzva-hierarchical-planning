@@ -1,0 +1,4 @@
+experiment_kind	policy	goal_offset_steps	high_horizon	low_horizon	low_receding_horizon	stage1_terminal_latent_error_mean	final_terminal_latent_error_mean	goal_progress_mean	reality_gap_mean	success_rate	result_status
+oracle_subgoal_acting	runs/pusht_hierarchical_default/pusht_hierarchical_default_epoch_15	50	2	5	1	0.3663887083530426	0.5701741576194763	1.18192720413208	0.04582244800403714	26.0	ok
+oracle_subgoal_acting	runs/pusht_hierarchical_default/pusht_hierarchical_default_epoch_15	50	2	2	1	0.17611823976039886	0.42503949999809265	1.3270617723464966	0.05537910927087068	57.99999999999999	ok
+oracle_subgoal_acting	runs/pusht_hierarchical_default/pusht_hierarchical_default_epoch_15	50	2	2	1	0.17272432148456573	0.3517768085002899	1.4003244638442993	0.05154319005087018	70.0	ok

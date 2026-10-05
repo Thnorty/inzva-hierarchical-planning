@@ -1,0 +1,27 @@
+name: train/pusht/hierarchical_default
+kind: command
+operation: train
+outputs:
+  root_kind: runs
+  root_name: pusht_hierarchical_default
+  completion_file: "{output_root}/COMPLETE"
+  expected_paths:
+    - "{output_root}/pusht_hierarchical_default_epoch_15_object.ckpt"
+requirements:
+  checkpoints:
+    - "{stablewm_home}/pusht/lewm_object.ckpt"
+command:
+  argv:
+    - python
+    - -m
+    - h_le_wm.train.hierarchical
+    - data=hi_pusht
+    - output_model_name=pusht_hierarchical_default
+    - subdir=runs/pusht_hierarchical_default
+    - trainer.max_epochs=15
+    - trainer.devices=1
+    - trainer.accelerator=gpu
+    - wm.high_level.latent_action_dim=32
+    - wandb.enabled=False
+    - pretrained_low_level.checkpoint.selection_mode=explicit_path
+    - pretrained_low_level.checkpoint.path={stablewm_home}/pusht/lewm_object.ckpt
