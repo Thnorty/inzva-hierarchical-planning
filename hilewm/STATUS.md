@@ -1,6 +1,14 @@
 # Project status
 
-**Last updated:** 2026-10-01 · **Read this first every session, update it last.**
+**Last updated:** 2026-10-05 · **Read this first every session, update it last.**
+
+> **2026-10-05: the working tree behind this project was deleted, and what survived
+> now lives in `hilewm/` of the inzva `stable-worldmodel` repository.** The records
+> this file cites have been regenerated there by the project's own scripts, and they
+> reproduce to the digit except where `docs/RECONSTRUCTION.md` says otherwise. Two
+> things changed as a result: the five comparisons that used the lost first oracle
+> run now quote its rerun (one episode apart), and a finished run that was never
+> written up -- **staged Hi-LeWM-C, 46.0 %** -- is now in the table below.
 
 ## Where we are
 
@@ -8,19 +16,28 @@
 less than the number this file carried until 2026-10-01.** Everything below is PushT,
 d=50, seed 42, 50 episodes, the paper's Table 5 CEM budget, and a 100-step goal budget
 unless noted. Every pair is on the *same* 50 episodes, so differences are paired
-(`analysis/compare_eval_runs.py`).
+(`analysis/compare_eval_runs.py`) -- except staged Hi-LeWM-C, whose per-episode
+manifest was never copied off Colab.
 
 | configuration | ours | paper | reproduces? | execution |
 | --- | --- | --- | --- | --- |
 | Hi-LeWM online, plain CEM | **36.0 %** | 38.7 % | yes | online, replan every 5 |
 | Hi-LeWM-C online, empirical macro | **34.0 %** | 48.7 % | **no** | online, replan every 5 |
 | oracle subgoals (expert waypoints) | **70.0 %** | 73.3 % | yes | **staged** |
+| Hi-LeWM-C staged, empirical macro | **46.0 %** | 64.0 % | **no** -- 64.0 is above our 95 % interval (33.0-59.6) | **staged**; unpaired |
 | flat LeWM | not measured | ~52.7 % (implied) | — | — |
 
 Every row above is at low horizon 2, high horizon 2, the paper's Table 5 CEM budget:
 `colab_hi.ipynb` cell 26 passes the authors' `D50` matrix row explicitly on every eval
 command, and the diagnostics default to the same. The CEM budgets and horizons are matched
-across all four runs.
+across all five runs. (`colab_hi.ipynb` is lost; its cell 26 survives as cell 26 of
+`analysis/colab_setup.ipynb`, and every eval's overrides are in `code/outputs/`.)
+
+**The paper's biggest claim does not reproduce either.** Staged Hi-LeWM-C, its 64.0
+against plain CEM's 38.7, reaches 46.0 % here: about +10 over our online plain CEM
+(Fisher p = 0.42, unpaired), not +25. It cannot be paired, and its solver banner was not
+saved, so it is weaker evidence than the online pair -- but it is the canonical row with
+the config's own bank, recorded exactly (FINDINGS *Staged Hi-LeWM-C: 46.0 %, not 64.0*).
 
 **The oracle row executes staged** — commit to a subgoal sequence, switch at a fixed step
 — while the two planner rows replan online every 5 steps. So the +34.0 between them was
@@ -48,8 +65,9 @@ we did not expect.
 **Three things qualify everything here.**
 
 1. **The low-level horizon dominates every high-level effect we can measure.** With oracle
-   subgoals held fixed, raising it from 2 to 5 costs **34 points** (60.0 % -> 26.0 % at the
-   50-step budget, paired, p = 0.0005) — the largest single effect anywhere in this
+   subgoals held fixed, raising it from 2 to 5 costs **32 points** (58.0 % -> 26.0 % at the
+   50-step budget, paired, p = 0.0015; 34 points and p = 0.0005 against the first run,
+   whose manifest is lost) — the largest single effect anywhere in this
    project and **the only comparison isolating one variable that is significant at one
    seed**. It is visible from the authors' own sweep rows and absent from the paper's
    tables. All our runs use 2, which is the authors' matrix-row value; the **shipped eval
@@ -86,7 +104,7 @@ what changed is that it no longer stands alone.
 | | where the evidence is |
 | --- | --- |
 | Local toolkit: model rebuilt from `*_weights.ckpt`, runs on CPU without `stable_worldmodel` | `analysis/hilewm_local/`, `analysis/README.md` |
-| PushT dataset downloaded and verified (13.1 GB -> 46.3 GB, `zstd -t` OK) | `results/backfill/2026-09-19_session/env__pusht_download.log` |
+| PushT dataset downloaded and verified (13.1 GB -> 46.3 GB, `zstd -t` OK) | the log is lost; the same file is verified in `../INZVA_README.md` §5.1 (13,136,247,974-byte archive, `zstd -t` -> 46,300,921,856 bytes) and matches it to the byte |
 | Found and patched: published `CEMSolver` cannot run the hierarchical planner at any env count | `docs/FINDINGS.md`, `analysis/hilewm_local/patches.py` |
 | Found: the quantile search box is computed but never enforced | `docs/FINDINGS.md` (retraction) |
 | Found: VQ checkpoints are d_l=16, a second confound beyond the epoch count | `docs/FINDINGS.md` |
@@ -116,12 +134,17 @@ what changed is that it no longer stands alone.
 | **First success rates (Colab, 2026-09-26)**: plain CEM **36.0 %** and Hi-LeWM-C **34.0 %** at d=50, seed 42, paper budget, paired on the same 50 episodes | `results/runs.csv`; FINDINGS *Our first success rate*, *Hi-LeWM-C does not beat plain CEM in control* |
 | **Acting suite (2026-09-27, 2026-10-01)**: oracle **70.0 %** at the paper's 100-step budget and 58-60 % at the artifact's 50, generated staged **44.0 %** (hh2) and **34.0 %** (hh1), oracle at low horizon 5 **26.0 %**; plus a measured **±2-point** noise floor from a strict-determinism rerun | `results/runs.csv`, `results/colab/manifests/`, `results/compare_eval_runs/`; FINDINGS *The acting suite decomposes the gap*, *it was the budget* |
 | **Found: the +34 oracle headline mixes the subgoal source with staged-vs-online execution**; the matched subgoal effect is +16 (p = 0.15). Also found: the shipped eval config's low horizon (5) differs from the authors' matrix row (2), a 34-point trap that our runs escape only because the notebook overrides it | FINDINGS *Qualified: the +34 mixes the subgoals with the execution mode* |
-| Git, results recording, this file | commits `ff6eb38` .. |
+| Git, results recording, this file | commits `ff6eb38` .. (that history is lost; the project as received is commit `7c2be18` of the inzva repo) |
+| **Reconstruction (2026-10-05):** merged into the inzva repo; three lost scripts rebuilt and checked against FINDINGS; every Colab-derived record regenerated, exact except the five that used the lost first oracle run; staged Hi-LeWM-C written up | `docs/RECONSTRUCTION.md` |
 
 ## In progress
 
-**Nothing is running.** The Colab pipeline works end to end and is no longer the
-bottleneck: six eval and diagnostic runs have finished through it, and
+**2026-10-05: regenerating the local CPU records** -- the audits, the lambda_res sweep, the
+horizon-2 check, the 30-cell axis-2 sweep and the decoded panels -- whose files were lost.
+`docs/RECONSTRUCTION.md` marks each as pending until its record is back and checked.
+Nothing is running on Colab.
+
+The Colab pipeline works end to end and is no longer the bottleneck: six eval and diagnostic runs have finished through it, and
 `analysis/colab_setup.ipynb` was rewritten (38 cells, 18 code) so that none of the nine
 artifact/library mismatches has to be rediscovered — each is handled in the cell where it
 bites, the guards fail before the 45-minute download rather than after it, and a restart
@@ -157,9 +180,10 @@ clone is not; the dataset and staged-checkpoint checks both pass.
    first time. All four hand-built manifests verified against it; one differs at exactly
    one episode, which is the documented rerun.
 
-3. **Staged Hi-LeWM-C at d=50** (`mode='hierarchical_staged'`, empirical macro on) — the
-   paper's largest claim anywhere, 64.0 against 38.7, **+25 points**. If that is real it
-   will show at one seed; if it is not, that is a result.
+3. **Done 2026-10-01, written up 2026-10-05: staged Hi-LeWM-C at d=50 reaches 46.0 %**
+   against the paper's 64.0. If +25 were real it would have shown at one seed; it did not.
+   Its manifest was lost, so a rerun with the manifest copied would make it pairable
+   against plain CEM -- 37 minutes on an A100.
 
 4. **Online Hi-LeWM-C at d=75** — +17 claimed (32.7 against 15.3), and the horizon where
    our diagnosis says the most.
@@ -228,7 +252,7 @@ are known to disagree on it.
 | Diagnosis steps 1, 2 | done |
 | Diagnosis steps 3, 4 | step 3 done in the model-only form; **step 4 now done in the environment too** (2026-10-01) — failures reach progress 0.76 under oracle subgoals and 0.12 under the model's |
 | Diagnosis step 5 | **partial** — the oracle half is done (70.0 % at the paper budget); the noise-sensitivity half has not been started |
-| Hi-LeWM-C comparison | done in latent space (6 paired draws); **done in control too, and it does not win**: 34.0 % against 36.0 %, paired p = 1.00. **Staged** Hi-LeWM-C — the paper's biggest claim — not run |
+| Hi-LeWM-C comparison | done in latent space (6 paired draws); **done in control too, and it does not win**: 34.0 % against 36.0 %, paired p = 1.00. **Staged** Hi-LeWM-C — the paper's biggest claim — reaches 46.0 % against its 64.0 (unpaired) |
 | VQ comparison | **latent space only** — no VQ variant has ever produced a success rate, and the object-checkpoint path is unverified |
 | >=3 seeds | **not done** — the local diagnostics are one seed family (draws 2000-2005/2009); the eval is one seed (42) |
 | d=25 / d=75 | **not done** — all d=50 |
@@ -260,9 +284,10 @@ regenerated before it can be shown.**
   own. This is the slide that answers "do the two fixes work the same way?" —
   they do not. Still not tied to success rates: no VQ variant has been run in control.
 - **The success-rate story, with its caveat stated on the slide:** plain CEM 36.0 % and
-  the oracle 70.0 % both reproduce the paper (38.7 and 73.3), Hi-LeWM-C does not show its
-  +10, and the matched subgoal effect is +16 at p = 0.15. The +34 must not be shown as a
-  subgoal effect without saying that the oracle executes staged and the planner online.
+  the oracle 70.0 % both reproduce the paper (38.7 and 73.3), Hi-LeWM-C shows neither its
+  online +10 nor its staged +25 (34.0 and 46.0 against 48.7 and 64.0), and the matched
+  subgoal effect is **+22 at p = 0.035**. The +34 must not be shown as a subgoal effect
+  without saying that it is +22 subgoals and +12 execution mode.
 - A methods story worth telling on its own: **three** conclusions that looked solid
   reversed under scrutiny — two when the CEM budget matched the paper's, and the +34
   oracle gap when the two code paths were read against each other.
@@ -270,6 +295,22 @@ regenerated before it can be shown.**
   silent configuration divergence between the artifact's own eval and diagnostics paths.
 
 ## Session log
+
+### 2026-10-05 — reconstruction
+
+The working tree was deleted; a folder survived (`inzva-final`) with the artifact, the
+analysis code, STATUS, FINDINGS, the Colab outputs and the checkpoints zip, but without
+git history, `docs/`, most of `results/`, four scripts, the session notebook and the
+current `CLAUDE.md`. Merged it into the inzva `stable-worldmodel` repo as `hilewm/`,
+pinned the toolkit's `stable-worldmodel` download to 0.1.1, and set the analysis up on a
+Windows machine, where the first CPU re-run reproduced the Intel Mac's numbers to the
+digit. Rebuilt `compare_eval_runs`, `summarize_eval_runs` and `audit_macro_bank` from
+FINDINGS' descriptions and checked each against the numbers it quotes; regenerated every
+Colab-derived record from the surviving manifests and `.npz`; rebuilt `runs.csv` from
+records rather than prose. Found along the way: a finished staged Hi-LeWM-C run (46.0 %,
+2026-10-01) that had been logged but never written up; that the folder's `CLAUDE.md` was
+the 2026-09-19 snapshot still asserting the retracted box-bound claim; and that the
+Cube checkpoint was never in the zip. `docs/RECONSTRUCTION.md` is the ledger.
 
 ### 2026-10-01 — sixth session: the budget, then the confound
 

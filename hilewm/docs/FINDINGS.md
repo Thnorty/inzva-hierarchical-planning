@@ -10,6 +10,16 @@ Every number here should trace to a file under `results/` — see
 left no log; `results/backfill/2026-09-19_session/MANIFEST.md` lists them and
 the command that regenerates each. **Regenerate before quoting.**
 
+> **Reconstruction, 2026-10-05.** The working tree behind this file was deleted;
+> what survived was merged into the inzva `stable-worldmodel` repository as
+> `hilewm/`. Most records this file cites have been regenerated there, by the same
+> scripts on the same data, and most reproduce to the digit. Where a cited record
+> was replaced, a bracketed note beside its path names the new one. The
+> backfill `MANIFEST.md` mentioned above is lost; every number it covered was
+> later superseded by a recorded measurement. **`docs/RECONSTRUCTION.md` is the
+> full account**, including the five comparisons whose numbers moved and the
+> few numbers that now rest on this text alone.
+
 > **Update 2026-09-21, later:** the headline ratios — support, exploitation, and
 > CEM win rate, for all four variants — have been **re-measured at the paper
 > budget**; see *Headline ratios at the paper budget* below, which supersedes
@@ -67,6 +77,8 @@ the command that regenerates each. **Regenerate before quoting.**
 | 2026-10-01 | **Diagnosis step 4 answered in the environment:** the model's subgoals are *wrong*, not merely hard. Failed episodes reach progress **0.76** under the expert's subgoals and **0.12** under the model's; a high-level failure ends 0.811 from the expert's path, a low-level one 0.138 | see *Diagnosis step 4, answered in the environment* |
 | 2026-10-01 | **Qualified before publishing:** the off-path / stopped-short / reached-the-end split is threshold-dependent. Generated and oracle failures are indistinguishable at a 0.10 cut and separate at 0.25 and 0.50; the low-horizon contrast survives all three. The reading now rests on the threshold-free `progress` and nearest-state distance | a sensitivity sweep caught it before it reached a slide; the script reports the split at three thresholds by default |
 | 2026-10-01 | **Withdrawn within the session:** a first version of the row above blamed a low-level horizon mismatch (eval config 5, diagnostics 2) and put 34 points on it. Wrong — `colab_hi.ipynb` cell 26 passes the authors' `D50` matrix row, which sets `planning.low.plan_config.horizon=2`, on every eval command, so all four runs were matched at 2 | the config file was read in place of the recorded command; FINDINGS' own provenance paragraph for the 36.0 % run already said "low horizon 2" |
+| 2026-10-05 | **Records regenerated after the working tree was lost.** Every comparison whose manifests survived reproduces to the digit. Five used the first 50-step oracle run (30/50), whose manifest is lost; regenerated from its 29/50 rerun they move by one discordant pair each (e.g. low horizon 5 -> 2: +34.0 / p = 0.0005 becomes **+32.0 / p = 0.0015**), and none loses significance | see `docs/RECONSTRUCTION.md`, *The first oracle run*. Quote the regenerated values, which a reader can check |
+| 2026-10-05 | **Staged Hi-LeWM-C written up: 46.0 %, against the paper's 64.0.** The run finished on 2026-10-01 and was logged, but never entered here | see *Staged Hi-LeWM-C: 46.0 %, not 64.0* |
 
 ## Contents
 
@@ -647,7 +659,7 @@ action blocks 1/5), seed 42, one seed.
 | difference | **-2.7 points** |
 
 From `analysis/summarize_eval_runs.py` over `results/runs.csv`; the record is
-`results/summarize_eval_runs/20260926-213028.json`. Run on Colab (A100, 40960 MiB)
+`results/summarize_eval_runs/20260926-213028.json` [regenerated 2026-10-05: `20261005-103325.json`, identical]. Run on Colab (A100, 40960 MiB)
 in ~37 minutes; environment and provenance below.
 
 **What this establishes.** The paper's central claim about this configuration
@@ -697,7 +709,7 @@ sampling).
 | difference vs paper | -2.7 | **-14.7** |
 
 Paired, on the identical episodes (`analysis/compare_eval_runs.py`, record
-`results/compare_eval_runs/20260926-230003_d50_seed42.json`):
+`results/compare_eval_runs/20260926-230003_d50_seed42.json` [regenerated 2026-10-05: `20261005-103115_d50_seed42.json`, identical]):
 
 |  | Hi-LeWM-C pass | Hi-LeWM-C fail |
 | --- | --- | --- |
@@ -811,7 +823,7 @@ fault in the action column, its normalisation or its grouping would therefore
 depress exactly one arm and spare the other — an asymmetric failure, not a shared
 one.
 
-So it was measured instead of argued (`results/audit_macro_bank/20260926-232444_distrust_check.json`,
+So it was measured instead of argued (`results/audit_macro_bank/20260926-232444_distrust_check.json` [regenerated 2026-10-05 by the rebuilt script: `20261005-103331_distrust_check.json`, identical],
 256 sampled sequences, main checkpoint, CPU):
 
 | check | result |
@@ -906,10 +918,11 @@ given *oracle* subgoals — is a few points over not having a hierarchy at all, 
 own planner lands 17 points below flat. Worth stating carefully, since the budgets
 differ, but it is the shape of the thing.
 
-Records: `results/compare_eval_runs/20260927-001416_oracle_vs_plain.json` (unpaired,
+Records: `results/compare_eval_runs/20260927-001416_oracle_vs_plain.json` [lost with the first oracle run's manifest; regenerated 2026-10-05 from its rerun as `*_rerun_manifest`: +22.0, 18:7, p = 0.043, Fisher p = 0.045] (unpaired,
 Fisher exact p = 0.027), the two paired records tagged `oracle_vs_plain_paired` and
-`oracle_vs_hi_c_paired`, and the manifest
-`results/colab/manifests/oracle_subgoal_acting_d50_seed42_episodes.tsv`.
+`oracle_vs_hi_c_paired` [regenerated 2026-10-05 from the rerun manifest: +22.0 /
+p = 0.043 and +24.0 / p = 0.029], and the manifest
+`results/colab/manifests/oracle_subgoal_acting_d50_seed42_episodes.tsv` [lost; the surviving 50-step manifest is the 29/50 rerun, `oracle_subgoal_acting_d50_hh2_lh2_budget50_seed42_episodes.tsv`].
 
 ### The acting suite decomposes the gap — and the low-level horizon dominates it (2026-09-27)
 
@@ -986,7 +999,10 @@ against 44.0 % at high horizon 2. Logged in `results/runs.csv` as
 `generated_subgoal_acting_hh1`.
 
 Records: `results/compare_eval_runs/` tags `generated_vs_oracle`, `online_vs_staged`,
-`lh5_vs_lh2`; manifests under `results/colab/manifests/`.
+`lh5_vs_lh2`; manifests under `results/colab/manifests/`. [2026-10-05: the two that
+used the first oracle run are regenerated from its rerun under `*_rerun_manifest`
+tags -- lh5 vs lh2 becomes +32.0, 20:4, p = 0.0015 -- and `online_vs_staged` is
+identical. `docs/RECONSTRUCTION.md`.]
 
 #### Why the oracle is only 60 %, and what my claim about it was worth (2026-10-01)
 
@@ -1119,7 +1135,7 @@ execution mode. It is a real difference between two shipped configurations and i
 **What stands.** The subgoal contrast with everything else held — oracle against the
 model's own subgoals, both staged, both hh2/lh2, both at `max_steps = 50`, same 50
 episodes — is **+16.0 points** (95 % Wald -2.7 to +34.7), 16 discordant to 8, McNemar exact
-**p = 0.152** (`results/compare_eval_runs/20260927-004722_generated_vs_oracle.json`). The
+**p = 0.152** (`results/compare_eval_runs/20260927-004722_generated_vs_oracle.json`) [regenerated 2026-10-05 against the rerun manifest: +14.0, 16:9, p = 0.230]. The
 *The acting suite decomposes the gap* entry already reported this and correctly called it
 the comparison that stands; the error was later re-escalating to +34 and reading it as a
 subgoal effect. Also clean: **two stages beat one**, 44.0 % against 34.0 %, where only the
@@ -1128,7 +1144,7 @@ high horizon differs.
 **The gap between +16 and +34 is unexplained.** The candidate is the execution mode, and
 the only measurement touching it — generated staged 44.0 % at 50 steps against online plain
 36.0 % at 100 steps, +8.0 at p = 0.45
-(`results/compare_eval_runs/20260927-004707_online_vs_staged.json`) — is itself confounded
+(`results/compare_eval_runs/20260927-004707_online_vs_staged.json`) [regenerated 2026-10-05: `20261005-103124_online_vs_staged.json`, identical] — is itself confounded
 with the budget, so it cannot carry the attribution.
 
 **The decisive run is four minutes.** `generated_subgoal_acting` with `--max-steps 100`,
@@ -1229,7 +1245,7 @@ So: rest the reading on `progress` and the distance to the nearest expert state.
 are a convenience, the script reports them as a sweep, and no claim here depends on a
 single cut.
 
-Records: `results/analyse_acting_npz/20261001-1310*.json`, one per run, each carrying
+Records: `results/analyse_acting_npz/20261001-1310*.json` [regenerated 2026-10-05 as `20261005-1029*` and `-1030*`, every value identical], one per run, each carrying
 `progress_median_failure`, `nearest_mse_median_failure` and
 `failure_split_by_threshold`.
 
@@ -1259,6 +1275,55 @@ is worth 34 points. So **an eval launched without the matrix-row overrides lands
 on the worse horizon** — a live trap for any future run, just not one that bit these.
 Recorded as a gotcha in `CLAUDE.md`.
 
+
+### Staged Hi-LeWM-C: 46.0 %, not 64.0 (run 2026-10-01, written up 2026-10-05)
+
+**The paper's largest PushT claim does not reproduce at one seed.** Staged
+Hi-LeWM-C at d=50 -- the configuration behind its 64.0 against plain CEM's 38.7,
++25 points -- reaches **46.0 % (23/50)**.
+
+| | ours | paper |
+| --- | --- | --- |
+| staged Hi-LeWM-C | **46.0 %** (Wilson 95 % 33.0 - 59.6) | 64.0 % |
+| online plain CEM | 36.0 % | 38.7 % |
+| online Hi-LeWM-C | 34.0 % | 48.7 % |
+
+The paper's 64.0 lies above our 95 % interval. Treated as a fixed target, 23/50
+against 0.64 gives an exact binomial p = 0.011; that overstates the case, since the
+paper's number is a best-of-sweep value with noise of its own. Treated as 32/50,
+Fisher's exact test gives p = 0.11. Either way, what we measure is **about +10
+over online plain CEM (Fisher p = 0.42, unpaired)**, not +25.
+
+**The configuration is the canonical one, recorded exactly.** From
+`code/outputs/2026-10-01/10-58-05/.hydra/overrides.yaml`: `planning.mode=hierarchical_staged`,
+`planning.high.empirical_macro.enabled=true` with the config's own bank defaults
+(4096 sequences, `chunk_len` 5, `residual_scale` 0.1, sequence sampling), the D50
+matrix row (horizons 2/2, receding 1/1, replan 5, blocks 1/5), the Table 5 budget,
+goal budget 100, seed 42, 50 episodes. The rate is from `results/colab/runs_rows.csv`,
+fingerprint `sha:cda5c4b65f95`.
+
+**What it cannot support, and why.**
+
+1. **It cannot be paired.** Its per-episode manifest was never copied off Colab.
+   It ran the same 50 episodes as every other d=50 eval (same seed, same sampler),
+   but which of them it won is unknown, so every comparison above is unpaired and
+   correspondingly weak. Its 50 episode videos survive
+   (`results/colab/hi_c_staged_seed42_d50_seed42_n50/None/`).
+2. **Its solver activation was not audited.** For the online Hi-LeWM-C run the
+   stdout showed the empirical solver's banner and 20 `Empirical macro solve time`
+   lines. This run's stdout was not saved; the override is recorded, the banner is
+   not.
+3. **One seed, one row of the sweep.** The paper's 64.0 is the best staged
+   configuration it found; the artifact records neither which one nor its bank
+   settings (see *Audit of that run* above).
+
+**How it fits the rest.** Staged execution is worth about the same to Hi-LeWM-C
+(+12 over its online 34.0) as to plain CEM (+12, *Resolved: the +34 is +22
+subgoals and +12 execution mode*), and staged Hi-LeWM-C lands next to the model's
+own subgoals under staged execution in the acting diagnostics (48.0 %, a different
+code path, so not comparable to the digit). The reading is consistent with
+everything above: the empirical bank does not buy control in either execution
+mode, and the subgoal gap to the expert's waypoints stays.
 
 ## Measured results (PushT, local CPU, no environment)
 
@@ -2176,21 +2241,17 @@ give 1500 distinct costs out of 1500 candidates; VQ-128 gives 572; VQ-16 gives
 
 ## Things NOT yet verified — check before relying on them
 
-- **How much of the +34 oracle gap is the subgoals and how much is
-  staged-vs-online execution.** `generated_subgoal_acting --max-steps 100` settles
-  it in 4 minutes; see *Qualified: the +34 mixes the subgoals with the execution
-  mode*. Until then the attributable subgoal effect is +16 at p = 0.152, measured
-  at a 50-step budget.
-- **Whether failed episodes stopped short or missed narrowly.**
-  `analysis/analyse_acting_npz.py` answers this per episode from the saved `.npz`
-  with no GPU and no rerun, but has only ever been run on synthetic input
-  (`results/analyse_acting_npz/` holds one `_synthetic.json`).
+- ~~How much of the +34 oracle gap is the subgoals~~ **Resolved 2026-10-01:** +22
+  subgoals, +12 execution mode.
+- ~~Whether failed episodes stopped short or missed narrowly~~ **Resolved
+  2026-10-01:** they missed; see *Diagnosis step 4, answered in the environment*.
 - Whether the VQ checkpoints run end-to-end. The `*_weights.ckpt` files load
   (verified 2026-09-19); the `*_object.ckpt` pickle path and an actual rollout
   still need `stable_worldmodel` installed. **No VQ variant has produced a success
   rate**, so the VQ comparison exists only in latent space.
-- Whether **staged** Hi-LeWM-C, **d=75**, or **any second seed** behave as the
-  paper says. All three are unmeasured.
+- Whether **d=75** or **any second seed** behave as the paper says. Both are
+  unmeasured. (Staged Hi-LeWM-C was measured on 2026-10-01: 46.0 % against the
+  paper's 64.0, one seed, unpaired.)
 - Whether the flat LeWM baseline can be restored at all; ~52.7 % is the paper's
   implied number, and one of our claims rests on it.
 
