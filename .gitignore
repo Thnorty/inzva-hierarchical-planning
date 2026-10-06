@@ -269,3 +269,4 @@ uv.lock
 !hilewm/results/
 !hilewm/code/outputs/**/*.log
 !hilewm/results/**/*.mp4
+!hilewm/analysis/figures/

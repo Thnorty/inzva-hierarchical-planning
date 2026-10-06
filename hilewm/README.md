@@ -28,7 +28,7 @@ comparable**.
 ```text
 analysis/     our code; imports the artifact, never edits it
 code/         the authors' artifact, as released (four empty __init__.py added)
-checkpoints/  configs in git; weights unzipped here from checkpoints.zip (gitignored)
+checkpoints/  configs in git; weights here on the machine that ran it (gitignored)
 results/      every measurement, plus the irreplaceable Colab outputs
 docs/         FINDINGS, the Colab plan, the reconstruction ledger
 ```
@@ -50,8 +50,10 @@ uv pip install --python .venv/Scripts/python.exe einops "transformers<5.9" h5py 
 SP=$(.venv/Scripts/python -c "import site; print(site.getsitepackages()[-1])")
 printf '%s\n%s\n' "$(cygpath -w "$PWD/code")" "$(cygpath -w "$PWD/analysis")" > "$SP/hilewm_paths.pth"
 
-# the weights: 2.1 GB, from the checkpoints.zip the project arrived with
-unzip -n path/to/checkpoints.zip -x '__MACOSX/*' -d .
+# the weights, 3.7 GB extracted: already in checkpoints/ on the machine that ran the
+# reconstruction (verified against the original zip's CRCs). Anywhere else, download
+# checkpoints/ from the authors' Zenodo artifact (doi:10.5281/zenodo.21353240) and
+# unpack it here; this project never uses its cube/ part.
 ```
 
 Then, from `hilewm/`:

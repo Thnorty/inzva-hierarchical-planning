@@ -2159,7 +2159,7 @@ closer to the start than to the true waypoint.
 #### Re-rendered at the paper budget, with Hi-LeWM-C (2026-09-22) — superseded by the 16-row panels above
 
 `render_subgoals.py --draw 0 --rows 6`, d=50, 1500 x 40. Output
-`analysis/figures/subgoals_*_d50_draw0*.png` (gitignored; regenerate with the
+`analysis/figures/subgoals_*_d50_draw0*.png` (gitignored until 2026-10-06, now tracked; regenerate with the
 records in `results/render_subgoals/`). The d32 panel has seven columns — frame t,
 probe(z_t), probe(z_true), probe(expert), probe(plain CEM), **probe(Hi-LeWM-C)**,
 probe(z_goal) — so the controlled comparison is one image: same model, same

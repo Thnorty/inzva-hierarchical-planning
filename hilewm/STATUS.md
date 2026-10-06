@@ -125,7 +125,7 @@ what changed is that it no longer stands alone.
 | Provenance fix: records now stamp the commit at run start, and also record the commit at end | `analysis/hilewm_local/results.py` |
 | **fixed_stride_dim32**, 10 paired draws + spectrum: support distance is a d_l effect (fs32 vs d8 10/10); waypoint strategy changes nothing measurable; the d32-vs-d8 exploitation gap is not attributable to either (p=0.11 both ways) | FINDINGS *fixed_stride_dim32* |
 | Geometry table corrected (d32 "8 / 25" mixed two definitions; now 7 / 25 by spectral gap, 8 / 24 by threshold); spectra for d32, d8, fs32 now have a results record | FINDINGS; `results/audit_dimensionality/20260922-114829_*` |
-| 16-row panels for d32 + Hi-LeWM-C and VQ-16; audit cross-check exact again | `analysis/figures/*_d50_draw0*.png` |
+| 16-row panels for d32 + Hi-LeWM-C and VQ-16; audit cross-check exact again (d8 and VQ-128 at 16 rows too since 2026-10-05) | `analysis/figures/*_d50_draw0*.png`, tracked |
 | **Axis 2 at the paper budget**: 5 variants x 6 paired draws, 30 cells, 11h20m, 0 failures; two gates passed (expert reference identical for the paired solvers; all 30 cells reproduce the audit's exploitation to one decimal) | FINDINGS *Axis 2 at the paper budget*; `analysis/run_subgoal_sweep.py`, `analysis/compare_subgoal_sweep.py` |
 | Hi-LeWM-C branch in `measure_subgoal` (`--solver empirical`), verified against audit draw 0 on ten numbers | commit `bf8a064` |
 | **Horizon-2 mismatch closed**: Spearman +0.595 at n=64, 4 of 4 draws significant — the objective is aligned, so that candidate explanation is out | FINDINGS *The horizon-2 cost/subgoal mismatch is not real* |
@@ -217,9 +217,8 @@ clone is not; the dataset and staged-checkpoint checks both pass.
 10. **Check the paper text on Hi-LeWM-C's zero-residual candidates** — our summary says one
     per anchor, the code has one per iteration.
 
-11. Optional: 16-row decoded panels for d8 and VQ-128, for consistency with the other two.
-    `analysis/figures/` is gitignored and currently absent, so **every panel needs
-    regenerating before the showcase**.
+11. **Done 2026-10-05:** all four decoded panels at 16 rows, Phase A and B, committed in
+    `analysis/figures/` (tracked from 2026-10-06).
 
 Keep `SEED` and `NUM_EVAL` fixed within a comparison; the same seed gives the same 50
 episodes, which is what makes the runs pairable. And set
@@ -267,8 +266,8 @@ are known to disagree on it.
 ## Presentation material — what is ready
 
 The interim presentation is behind us; this is the inventory for the final showcase.
-**`analysis/figures/` is gitignored and currently absent, so every panel below has to be
-regenerated before it can be shown.**
+**Every panel below is in `analysis/figures/`, regenerated on 2026-10-05 at 16 rows and
+committed.** The d32 and VQ-16 panels' audit cross-checks reproduce to the digit.
 
 - Figure 1: `render_subgoals.py --draw 0 --with-empirical` on the main checkpoint —
   expert, plain CEM and Hi-LeWM-C subgoals side by side on the same segments; the

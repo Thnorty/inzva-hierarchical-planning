@@ -2078,7 +2078,8 @@ nothing else, so keep it apart:
   `hilewm/docs/FINDINGS.md` its evidence log; team rule 5 applies to them the same
   way, and the section about it in `notes/inzva-progress.html` must follow.
 - **Weights out of git.** 2.1 GB, unzipped into `hilewm/checkpoints/` from the
-  `checkpoints.zip` it arrived with; `hilewm/.gitignore` keeps them out.
+  zip it arrived with (since removed, after a CRC check); elsewhere, from
+  the authors' Zenodo artifact (doi:10.5281/zenodo.21353240). `hilewm/.gitignore` keeps them out.
 - **pytest skips it** (`norecursedirs` in `pyproject.toml`); its own tests need
   the upstream LeWM checkout. Pre-commit skips it too, so its authors' formatting
   stays as received.

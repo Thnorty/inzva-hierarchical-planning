@@ -95,7 +95,7 @@ whose per-episode manifest survived is fully recoverable without that.
 
 | cited | where it is |
 | --- | --- |
-| the model weights | `checkpoints.zip` in the received folder; unzip into `checkpoints/` (gitignored, 2.1 GB) |
+| the model weights | extracted into `checkpoints/` (gitignored) and verified member by member against the received zip's sizes and CRC32s; the zip itself was removed with the received folder on 2026-10-06. Elsewhere, from the authors' Zenodo artifact (doi:10.5281/zenodo.21353240) |
 | `checkpoints/cube/main/cube_hi_lewm_epoch15_object.ckpt` | not in the zip at all. Public in the authors' Zenodo artifact (doi:10.5281/zenodo.21353240); this project is PushT-only and never loaded it |
 | `checkpoints/runs/...` | a staging directory `setup_checkpoints.sh` creates under `STABLEWM_HOME` on Colab, not a file |
 | `code/data/stablewm/pusht_expert_train.h5` | the dataset; on this machine `../.stable-wm/datasets/pusht_expert_train.h5` |
@@ -173,3 +173,15 @@ figure (7.7155867 against 7.7155786). Its d32 cell ran in the sweep interrupted
 on 2026-10-05 at 4 threads, its Hi-LeWM-C cell in the restarted sweep at 6, and a
 different thread count changes the order of floating-point reductions. The
 segments are the same. A future sweep should keep one thread count throughout.
+
+## The received folder was removed
+
+On 2026-10-06, after the reconstruction, the received `inzva-final` folder was
+moved to the Recycle Bin. Before that, every file in it was checked against this
+repository by content (`.runlogs/verify_inzva_final.py`, gitignored): 539
+identical to the working tree or to the as-received commit `7c2be18`; all 24
+weight files in `checkpoints.zip` present here with matching size and CRC32; 51
+files of an unmodified clone of public upstream LeWM commit `8edfeb3`; 53
+`__pycache__` and `.DS_Store` files. One file had no copy: the older
+`analyse_acting_npz.py` (2026-10-01 05:12) from the duplicate `analysis/analysis/`
+tree. It is kept byte for byte in `analysis/archive/`.
