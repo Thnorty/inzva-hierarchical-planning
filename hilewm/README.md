@@ -15,13 +15,13 @@ comparable**.
 
 | if you want | read |
 | --- | --- |
-| where it stands, in five minutes | `STATUS.md` |
+| where it stands, in five minutes | `docs/STATUS.md` |
 | every measurement, with its caveats and corrections | `docs/FINDINGS.md` |
 | **which numbers to trust after the files were lost** | `docs/RECONSTRUCTION.md` |
 | how to run the analysis | `analysis/README.md` |
 | how to run evals on Colab | `docs/COLAB_PLAN.md` |
 | the paper, the plan and the working rules | `CLAUDE.md` |
-| the authors' own archive notes | `ARTIFACT_README.md`, `code/README.md`, `checkpoints/README.md` |
+| the authors' own archive notes | `docs/ARTIFACT_README.md` (its paths are relative to `hilewm/`), `code/README.md`, `checkpoints/README.md` |
 
 ## Layout
 
@@ -30,7 +30,7 @@ analysis/     our code; imports the artifact, never edits it
 code/         the authors' artifact, as released (four empty __init__.py added)
 checkpoints/  configs in git; weights here on the machine that ran it (gitignored)
 results/      every measurement, plus the irreplaceable Colab outputs
-docs/         FINDINGS, the Colab plan, the reconstruction ledger
+docs/         STATUS, FINDINGS, the Colab plan, the reconstruction ledger, the authors' README
 ```
 
 ## Setup on this machine (Windows, CPU)

@@ -1,6 +1,6 @@
 # Project status
 
-**Last updated:** 2026-10-05 · **Read this first every session, update it last.**
+**Last updated:** 2026-10-06 · **Read this first every session, update it last.**
 
 > **2026-10-05: the working tree behind this project was deleted, and what survived
 > now lives in `hilewm/` of the inzva `stable-worldmodel` repository.** The records
@@ -266,6 +266,8 @@ are known to disagree on it.
 ## Presentation material — what is ready
 
 The interim presentation is behind us; this is the inventory for the final showcase.
+The deck itself is built in `../presentation/`, whose README maps each headline number
+to its record.
 **Every panel below is in `analysis/figures/`, regenerated on 2026-10-05 at 16 rows and
 committed.** The d32 and VQ-16 panels' audit cross-checks reproduce to the digit.
 
@@ -298,6 +300,11 @@ committed.** The d32 and VQ-16 panels' audit cross-checks reproduce to the digit
   silent configuration divergence between the artifact's own eval and diagnostics paths.
 
 ## Session log
+
+### 2026-10-06 — reorganised
+
+This file and `ARTIFACT_README.md` moved into `docs/`, where FINDINGS and the Colab
+notebook already cited it. The final deck gets `../presentation/`.
 
 ### 2026-10-05 — reconstruction
 

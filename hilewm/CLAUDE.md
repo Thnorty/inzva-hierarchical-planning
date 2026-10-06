@@ -119,7 +119,7 @@ corrected there since. **This file's copy was a stale 2026-09-19 snapshot until
 2026-10-05**: it still asserted that the "unconstrained" CEM is box-bounded by data
 quantiles, which FINDINGS retracted the same day (the box is computed, but
 `CEMSolver` never reads it). Read FINDINGS for any claim about the code or the
-results, `STATUS.md` for where things stand, and `docs/RECONSTRUCTION.md` for which
+results, `docs/STATUS.md` for where things stand, and `docs/RECONSTRUCTION.md` for which
 records were regenerated after the old working tree was lost.
 
 ## Gotchas
@@ -157,7 +157,7 @@ records were regenerated after the old working tree was lost.
 
 ## Timeline
 
-As planned on 2026-09-19. Where the work actually stands is `STATUS.md`.
+As planned on 2026-09-19. Where the work actually stands is `docs/STATUS.md`.
 
 - **Now → next week:** environment running, checkpoints staged, one baseline eval, an interim presentation (paper story + our research questions + plan; ideally one decoded-subgoal slide).
 - **Weeks 1–2 after:** reproduction at d=50/75, build the diagnostics, oracle experiment.

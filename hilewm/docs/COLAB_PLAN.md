@@ -99,7 +99,7 @@ an acting diagnostic ~4 min. Peak GPU memory stayed under 1 GB of 40.
 
 ## What is next on Colab
 
-From `STATUS.md`: online Hi-LeWM-C at d=75; seeds 43 and 44 for the d=50 pair;
+From `docs/STATUS.md`: online Hi-LeWM-C at d=75; seeds 43 and 44 for the d=50 pair;
 the VQ variants in control (never run); the flat LeWM baseline; noise on oracle
 subgoals. Keep `SEED` and `NUM_EVAL` fixed within a comparison, and copy the
 manifests.

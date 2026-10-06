@@ -48,7 +48,7 @@ a new document from surviving material; **lost** = cannot be recovered.
 | missing | status | notes |
 | --- | --- | --- |
 | `docs/FINDINGS.md` | not missing | it was at the folder root; moved to `docs/`, where both documents cite it |
-| `docs/STATUS.md` | not missing | cited once by that path; the file is `STATUS.md` at the project root |
+| `docs/STATUS.md` | not missing | cited by that path; it arrived at the project root and was moved back to `docs/` on 2026-10-06 |
 | `docs/COLAB_PLAN.md` | rewritten | from `build_colab_notebook.py`, FINDINGS *Colab feasibility* and the surviving run configs. Says so at the top |
 | `results/README.md` | rewritten | layout and recording conventions, from `hilewm_local/results.py` |
 | `colab_hi.ipynb` | **lost**, partly covered | the session notebook the evals ran from. Its cell 26, which FINDINGS cites four times, is cell 26 of the surviving `analysis/colab_setup.ipynb`, and it does pass the D50 row with low horizon 2. Its cell 39 (the acting suite) is gone; the commands are reconstructed in `docs/COLAB_PLAN.md` from what each acting result recorded about itself |

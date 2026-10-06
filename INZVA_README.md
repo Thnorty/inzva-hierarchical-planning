@@ -22,6 +22,10 @@ Three documents, in reading order. Do not start with this one.
 
 Open both HTML files in a browser; they are self-contained pages.
 
+**Lost?** `notes/README.md` maps every document in the repository, for both
+projects, and `presentation/` holds the decks and the record behind each
+number on their slides.
+
 `hilewm/` is a separate project, the team's diagnosis of the Hi-LeWM paper. It
 has its own environment, documents and goal offset, and its numbers are not
 comparable with ours; start at `hilewm/README.md` (§15).
@@ -1277,6 +1281,8 @@ Everything below is ours. The rest of the tree is upstream at `6f1e499`.
 | `scripts/inzva_split.py` | Deterministic episode-level train/val split, with a fingerprint | §6.2 |
 | `scripts/collect_results.py` | Turns eval output into a tracked record with versions attached | §6.3 |
 | `notes/results/` | The tracked records themselves | §6.3 |
+| `notes/README.md` | One map of every document, both projects | — |
+| `notes/inzva-progress.html` | The status page; ships with the work (rule 5) | §8 |
 | `notes/inzva-report-4.html` | The project spec, frozen as sent to the department before presentation 4 and left unedited. Still says `k = 8` and a 40-step horizon; §13 has the measurements that replaced them. A live copy carrying those corrections existed until 2026-09-20 and was removed as duplication: everything unique to it lives in §6, §11 and §13 | — |
 | `stable_worldmodel/wm/gru/` | Both world models: one class, stride 1 for fine and 2 for coarse | §10 |
 | `scripts/train_gru.py` | Trains either of them; resumes after a cluster time limit | §10 |
@@ -1288,6 +1294,8 @@ Everything below is ours. The rest of the tree is upstream at `6f1e499`.
 | `scripts/adapt_dinowm.py` | Prepares the published DINO-WM checkpoint so it loads | §11 |
 | `slurm/` | Cluster job scripts and the submit wrapper | §12 |
 | `tests/wm/test_gru_wm.py`, `tests/planning/solver/test_hierarchical.py` | Contract tests for the model and the solver | §10, §14 |
+| `presentation/` | The decks, and the record behind each headline number | — |
+| `hilewm/` | The team's second project, self-contained | §15 |
 
 Two upstream files carry local edits, both deliberate and both documented:
 
@@ -2074,7 +2082,7 @@ nothing else, so keep it apart:
   analyses reproduce the original machine's numbers to the digit here.
 - **Its own goal offset.** d=50 against our 25, and the paper's own models, so no
   number in it is comparable with ours.
-- **Its own documents.** `hilewm/STATUS.md` is its status page and
+- **Its own documents.** `hilewm/docs/STATUS.md` is its status page and
   `hilewm/docs/FINDINGS.md` its evidence log; team rule 5 applies to them the same
   way, and the section about it in `notes/inzva-progress.html` must follow.
 - **Weights out of git.** 2.1 GB, unzipped into `hilewm/checkpoints/` from the
