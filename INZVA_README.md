@@ -23,12 +23,13 @@ Three documents, in reading order. Do not start with this one.
 Open both HTML files in a browser; they are self-contained pages.
 
 **Lost?** `notes/README.md` maps every document in the repository, for both
-projects, and `presentation/` holds the decks and the record behind each
+parts of the project, and `presentation/` holds the decks and the record behind each
 number on their slides.
 
-`hilewm/` is a separate project, the team's diagnosis of the Hi-LeWM paper. It
-has its own environment, documents and goal offset, and its numbers are not
-comparable with ours; start at `hilewm/README.md` (§15).
+`hilewm/` is the project's second part, the diagnosis of the Hi-LeWM paper's
+hierarchy. It has its own environment, documents and goal offset (d=50 against
+our 25), so its success rates are not comparable with this part's; start at
+`hilewm/README.md` (§15).
 
 `inzva-report-4.html` is the spec exactly as sent to the department before
 presentation 4, and it is not edited. **Two settings in it are out of date**:
@@ -1281,7 +1282,7 @@ Everything below is ours. The rest of the tree is upstream at `6f1e499`.
 | `scripts/inzva_split.py` | Deterministic episode-level train/val split, with a fingerprint | §6.2 |
 | `scripts/collect_results.py` | Turns eval output into a tracked record with versions attached | §6.3 |
 | `notes/results/` | The tracked records themselves | §6.3 |
-| `notes/README.md` | One map of every document, both projects | — |
+| `notes/README.md` | One map of every document, both parts | — |
 | `notes/inzva-progress.html` | The status page; ships with the work (rule 5) | §8 |
 | `notes/inzva-report-4.html` | The project spec, frozen as sent to the department before presentation 4 and left unedited. Still says `k = 8` and a 40-step horizon; §13 has the measurements that replaced them. A live copy carrying those corrections existed until 2026-09-20 and was removed as duplication: everything unique to it lives in §6, §11 and §13 | — |
 | `stable_worldmodel/wm/gru/` | Both world models: one class, stride 1 for fine and 2 for coarse | §10 |
@@ -1295,7 +1296,7 @@ Everything below is ours. The rest of the tree is upstream at `6f1e499`.
 | `slurm/` | Cluster job scripts and the submit wrapper | §12 |
 | `tests/wm/test_gru_wm.py`, `tests/planning/solver/test_hierarchical.py` | Contract tests for the model and the solver | §10, §14 |
 | `presentation/` | The decks, and the record behind each headline number | — |
-| `hilewm/` | The team's second project, self-contained | §15 |
+| `hilewm/` | Part 2, the Hi-LeWM diagnosis, self-contained | §15 |
 
 Two upstream files carry local edits, both deliberate and both documented:
 
@@ -2070,12 +2071,12 @@ sweep is where the claim lives, not here.
 
 ---
 
-## 15. `hilewm/`: the Hi-LeWM diagnosis project
+## 15. `hilewm/`: part 2, the Hi-LeWM diagnosis
 
-Merged on 2026-10-05. A teammate's project that measures why hierarchical
-planning in *"Mind the Gap"* (Hi-LeWM) picks bad subgoals, using the paper's
-released checkpoints. It shares the PushT dataset and the library with us and
-nothing else, so keep it apart:
+Merged on 2026-10-05. The project's second part, a teammate's: it measures why
+hierarchical planning in *"Mind the Gap"* (Hi-LeWM) picks bad subgoals, using
+the paper's released checkpoints. It shares the PushT dataset and the library
+with the first part and nothing else, so keep the two apart:
 
 - **Its own environment.** `hilewm/.venv`, with `stable-worldmodel` **0.1.1** from
   PyPI, never the pinned fork this repo is. Setup in `hilewm/README.md`. Its CPU

@@ -1,10 +1,12 @@
 # Where everything is
 
-One map of every document in this repository, for both of the team's projects.
-They share the PushT dataset and nothing else: different code, environments and
-goal offsets, so **their numbers are never compared**.
+One map of every document in this repository. The project, hierarchical planning
+with latent world models on PushT, has two parts: we build our own coarse-to-fine
+planner, and we diagnose the published hierarchical planner (Hi-LeWM). They share
+the PushT dataset and nothing else: different code, environments and goal
+offsets, so **their success rates are never compared**.
 
-## Project 1: coarse-to-fine planning with a GRU world model
+## Part 1: coarse-to-fine planning with a GRU world model
 
 d=25, horizon 10, seeds 0-2. Lives at the repository root.
 
@@ -15,7 +17,7 @@ d=25, horizon 10, seeds 0-2. Lives at the repository root.
 | how to run anything, and why each setting is what it is | `INZVA_README.md`, the manual. Code and configs cite it by section number |
 | a number someone quoted | `notes/results/<run>_results.md`, one per run, written by `scripts/collect_results.py`; never edited by hand |
 
-## Project 2: the Hi-LeWM subgoal diagnosis
+## Part 2: the Hi-LeWM subgoal diagnosis
 
 d=50, the paper's released checkpoints, seed 42. Lives in `hilewm/`.
 

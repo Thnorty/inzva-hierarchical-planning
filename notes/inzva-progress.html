@@ -339,8 +339,8 @@ footer{
 <section>
   <div class="num">07</div>
   <div class="body">
-    <h2>The team&rsquo;s second project joined this repo</h2>
-    <p>A teammate&rsquo;s project, a diagnosis of hierarchical planning in a published paper (&ldquo;Mind the Gap&rdquo;, Hi-LeWM), now lives in <code>hilewm/</code>. It shares our dataset and our library but nothing else: it uses the paper&rsquo;s trained checkpoints, its own environment, and goals 50 steps away where ours are 25. <b>None of its numbers can be compared with anything above.</b></p>
+    <h2>The project&rsquo;s second part joined this repo</h2>
+    <p>The project&rsquo;s second part, a teammate&rsquo;s diagnosis of hierarchical planning in a published paper (&ldquo;Mind the Gap&rdquo;, Hi-LeWM), now lives in <code>hilewm/</code>. It shares our dataset and our library but nothing else: it uses the paper&rsquo;s trained checkpoints, its own environment, and goals 50 steps away where ours are 25. <b>None of its numbers can be compared with anything above.</b></p>
     <p><b>It arrived without its working tree.</b> The folder that survived had the code, the results log and the Colab outputs, but not the git history, four scripts, most of the result records or the session notebook. We rebuilt what could be rebuilt and checked every rebuilt piece against the numbers its log quotes: the comparisons reproduce exactly wherever their inputs survived, and the CPU analyses reproduce to the digit on this machine. The few things that are gone for good are listed in <code>hilewm/docs/RECONSTRUCTION.md</code>, so nobody quotes a number that no longer has a source.</p>
     <table>
       <thead><tr><th>Its main results, d=50, one seed</th><th>Theirs</th><th>The paper</th></tr></thead>
@@ -353,7 +353,7 @@ footer{
     </table>
     <p>The paper&rsquo;s own planner reproduces; its two fixes do not. The model&rsquo;s subgoals cost 22 points against the expert&rsquo;s (p = 0.035), and failures under them end off the expert&rsquo;s path rather than short of the goal. The third row was run but never written up until the reconstruction found it.</p>
     <div class="callout">
-      <p><b>One of its findings is our section 05 again.</b> With expert subgoals held fixed, the planner horizon shipped in the paper&rsquo;s config costs 32 points against the setting its authors actually used. Two projects, two published codebases, the same lesson: a planner setting copied from upstream is a measurement nobody has made yet.</p>
+      <p><b>One of its findings is our section 05 again.</b> With expert subgoals held fixed, the planner horizon shipped in the paper&rsquo;s config costs 32 points against the setting its authors actually used. Two parts, two published codebases, the same lesson: a planner setting copied from upstream is a measurement nobody has made yet.</p>
     </div>
   </div>
 </section>
@@ -371,7 +371,7 @@ footer{
         <tr><td>A number someone quoted</td><td><code>notes/results/</code>, one file per run</td></tr>
         <tr><td>The Hi-LeWM diagnosis project</td><td><code>hilewm/README.md</code>, then <code>hilewm/docs/STATUS.md</code></td></tr>
         <tr><td>The decks, and the record behind each number on a slide</td><td><code>presentation/</code></td></tr>
-        <tr><td>Every document in the repo, both projects, on one page</td><td><code>notes/README.md</code></td></tr>
+        <tr><td>Every document in the repo, both parts, on one page</td><td><code>notes/README.md</code></td></tr>
       </tbody>
     </table>
     <p><code>inzva-report-4.html</code> is kept exactly as it was sent and is not edited, so two settings in it are out of date: it says a 40-step horizon and a coarse stride of 8, which we replaced with 10 and 2 after measuring them (section 05 above). Read it for what the project is and why; read this page for where the numbers stand.</p>

@@ -1,15 +1,15 @@
 # Hi-LeWM subgoal diagnosis
 
-Why does hierarchical planning in LeWorldModel pick bad subgoals? This project
-takes the released checkpoints of *"Mind the Gap: Promises and Pitfalls of
+Why does hierarchical planning in LeWorldModel pick bad subgoals? This part of
+the inzva project takes the released checkpoints of *"Mind the Gap: Promises and Pitfalls of
 Hierarchical Planning in LeWorldModel"* (Caselli et al., arXiv 2607.12547) and
 measures, rather than restates, the paper's explanation. It trains nothing.
 
-It is the inzva team's second project, separate from the coarse-to-fine solver
-at the root of this repository. The two share the PushT dataset and the
-`stable-worldmodel` library, but not code, environments or goal offsets (this
-one uses d=50; the root project uses 25), so **their success rates are not
-comparable**.
+It is the second part of the team's project on hierarchical planning with world
+models; the first part, a coarse-to-fine solver, is at the root of this
+repository. The two parts share the PushT dataset and the `stable-worldmodel`
+library, but not code, environments or goal offsets (this part uses d=50; the
+root part uses 25), so **their success rates are not comparable**.
 
 ## Reading order
 

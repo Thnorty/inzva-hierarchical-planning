@@ -11,13 +11,13 @@ decks that came before it.
 ## The rule for slides
 
 Every number on a slide comes from a record, never from memory or a terminal
-snippet. The two projects keep their records in different places and use
-different goal offsets (d=25 for ours, d=50 for Hi-LeWM), so **their success
-rates never share an axis**.
+snippet. The project's two parts keep their records in different places and
+use different goal offsets (d=25 for our planner, d=50 for Hi-LeWM), so **their
+success rates never share an axis**.
 
 ## Where each headline number lives
 
-### Project 1: coarse-to-fine planning (`notes/`, `INZVA_README.md`)
+### Part 1: coarse-to-fine planning (`notes/`, `INZVA_README.md`)
 
 Seeds 0, 1, 2; 50 episodes each; d=25, horizon 10.
 
@@ -35,7 +35,7 @@ The story so far, in the progress page's words: the method runs, and the
 refinement has yet to earn its keep. One budget only; Experiment A's budget
 sweep is where the claim lives.
 
-### Project 2: the Hi-LeWM diagnosis (`hilewm/`)
+### Part 2: the Hi-LeWM diagnosis (`hilewm/`)
 
 Seed 42, 50 episodes, d=50, the paper's Table 5 budget. Read
 `hilewm/docs/RECONSTRUCTION.md` before quoting anything, and the slide-ready
