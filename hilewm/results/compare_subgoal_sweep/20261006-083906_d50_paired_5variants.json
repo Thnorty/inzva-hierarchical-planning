@@ -1,0 +1,937 @@
+{
+  "script": "compare_subgoal_sweep",
+  "tag": "d50_paired_5variants",
+  "timestamp": "2026-10-06T08:39:06",
+  "git_commit": "5f505b2",
+  "git_dirty": false,
+  "git_commit_at_end": "5f505b2",
+  "argv": [
+    "analysis/compare_subgoal_sweep.py"
+  ],
+  "args": {},
+  "headline": "",
+  "metrics": {
+    "draws": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "variants": [
+      "d32",
+      "d8",
+      "hilewm_c",
+      "vq128",
+      "vq16"
+    ],
+    "n_segments": 16,
+    "pairing_check_d32_hilewm_c": false,
+    "cross_check_cells": 30,
+    "cross_check_mismatches": 0,
+    "cross_check_missing": 0,
+    "cross_check_pass": true,
+    "d32__exploitation_ratio": [
+      24.657047271728516,
+      6.64077091217041,
+      2.647958278656006,
+      8.329072952270508,
+      12.412853240966797,
+      12.085256576538086
+    ],
+    "hilewm_c__exploitation_ratio": [
+      1.8674845695495605,
+      0.8079343438148499,
+      0.5011171102523804,
+      0.8185334801673889,
+      0.8645043969154358,
+      0.7876287698745728
+    ],
+    "d8__exploitation_ratio": [
+      7.450300216674805,
+      6.443880081176758,
+      2.2365784645080566,
+      2.713057518005371,
+      10.653193473815918,
+      5.572053909301758
+    ],
+    "vq128__exploitation_ratio": [
+      3.6654582023620605,
+      2.2629895210266113,
+      5.828099250793457,
+      4.143439769744873,
+      3.1696925163269043,
+      7.977488994598389
+    ],
+    "vq16__exploitation_ratio": [
+      2.5380234718322754,
+      2.2013931274414062,
+      2.976393938064575,
+      1.9310083389282227,
+      1.6536736488342285,
+      4.251970291137695
+    ],
+    "d32__cem_beats_expert_fraction": [
+      0.8125,
+      0.8125,
+      0.6875,
+      0.75,
+      0.8125,
+      0.6875
+    ],
+    "hilewm_c__cem_beats_expert_fraction": [
+      0.625,
+      0.5,
+      0.25,
+      0.4375,
+      0.5,
+      0.5
+    ],
+    "d8__cem_beats_expert_fraction": [
+      0.8125,
+      0.75,
+      0.6875,
+      0.625,
+      0.75,
+      0.75
+    ],
+    "vq128__cem_beats_expert_fraction": [
+      1.0,
+      0.875,
+      0.9375,
+      0.9375,
+      0.875,
+      0.9375
+    ],
+    "vq16__cem_beats_expert_fraction": [
+      0.9375,
+      0.9375,
+      0.875,
+      0.8125,
+      0.625,
+      0.9375
+    ],
+    "d32__first_waypoint_error_cem": [
+      51.80014419555664,
+      117.96111297607422,
+      154.03492736816406,
+      60.514549255371094,
+      71.96923828125,
+      78.23971557617188
+    ],
+    "hilewm_c__first_waypoint_error_cem": [
+      38.309967041015625,
+      41.92583084106445,
+      20.54058074951172,
+      58.42499542236328,
+      13.697038650512695,
+      22.54527473449707
+    ],
+    "d8__first_waypoint_error_cem": [
+      60.945289611816406,
+      67.5836181640625,
+      76.2484359741211,
+      61.859161376953125,
+      23.778331756591797,
+      49.683570861816406
+    ],
+    "vq128__first_waypoint_error_cem": [
+      62.094940185546875,
+      51.973995208740234,
+      37.488121032714844,
+      37.201560974121094,
+      44.64118576049805,
+      28.632503509521484
+    ],
+    "vq16__first_waypoint_error_cem": [
+      76.84654998779297,
+      111.77597045898438,
+      71.41133880615234,
+      50.97219467163086,
+      21.448379516601562,
+      59.2230339050293
+    ],
+    "d32__realism_cem_md2": [
+      163.50929260253906,
+      135.07431030273438,
+      76.55059814453125,
+      146.3197021484375,
+      142.94361877441406,
+      124.6760482788086
+    ],
+    "hilewm_c__realism_cem_md2": [
+      173.01889038085938,
+      178.43222045898438,
+      174.52679443359375,
+      182.79676818847656,
+      210.5705108642578,
+      178.03414916992188
+    ],
+    "d8__realism_cem_md2": [
+      113.87765502929688,
+      102.69436645507812,
+      108.51202392578125,
+      111.21522521972656,
+      162.1556854248047,
+      114.43951416015625
+    ],
+    "vq128__realism_cem_md2": [
+      154.0762176513672,
+      152.3333282470703,
+      160.7783203125,
+      152.36204528808594,
+      174.13992309570312,
+      152.38473510742188
+    ],
+    "vq16__realism_cem_md2": [
+      163.19473266601562,
+      165.2615966796875,
+      156.1151580810547,
+      176.52908325195312,
+      184.17813110351562,
+      148.0104522705078
+    ],
+    "d32__realism_cem_nn": [
+      8.97227954864502,
+      8.032097816467285,
+      9.034980773925781,
+      8.338650703430176,
+      7.9324235916137695,
+      7.73543119430542
+    ],
+    "hilewm_c__realism_cem_nn": [
+      8.332192420959473,
+      7.089702606201172,
+      8.625436782836914,
+      8.098674774169922,
+      8.19526481628418,
+      7.492382049560547
+    ],
+    "d8__realism_cem_nn": [
+      6.9846320152282715,
+      8.388307571411133,
+      8.578957557678223,
+      8.554500579833984,
+      6.427088260650635,
+      7.748010158538818
+    ],
+    "vq128__realism_cem_nn": [
+      6.513439655303955,
+      6.984231948852539,
+      8.526618003845215,
+      7.197757244110107,
+      6.982646465301514,
+      6.860459327697754
+    ],
+    "vq16__realism_cem_nn": [
+      7.25321102142334,
+      6.849174499511719,
+      8.480198860168457,
+      7.3985724449157715,
+      6.958126544952393,
+      6.54837703704834
+    ],
+    "d32__reach_cem_relative": [
+      0.053676486015319824,
+      0.15246450901031494,
+      0.6038601994514465,
+      0.06247495114803314,
+      0.045516420155763626,
+      0.09395111352205276
+    ],
+    "hilewm_c__reach_cem_relative": [
+      0.023621071130037308,
+      0.02275528386235237,
+      0.02596489153802395,
+      0.017087170854210854,
+      0.016367288306355476,
+      0.016711674630641937
+    ],
+    "d8__reach_cem_relative": [
+      0.14391444623470306,
+      0.1713528037071228,
+      0.07896096259355545,
+      0.08325733244419098,
+      0.024976173415780067,
+      0.07977160811424255
+    ],
+    "vq128__reach_cem_relative": [
+      0.024959981441497803,
+      0.03056945651769638,
+      0.05841438099741936,
+      0.023727912455797195,
+      0.01702813059091568,
+      0.02003801055252552
+    ],
+    "vq16__reach_cem_relative": [
+      0.025310592725872993,
+      0.027028007432818413,
+      0.031110787764191628,
+      0.01625729724764824,
+      0.02083493210375309,
+      0.03312729671597481
+    ],
+    "d32__expert_terminal_cost_median": [
+      27.466360092163086,
+      17.20407485961914,
+      11.651113510131836,
+      13.118008613586426,
+      12.566967964172363,
+      18.05681610107422
+    ],
+    "hilewm_c__expert_terminal_cost_median": [
+      27.466360092163086,
+      17.20408821105957,
+      11.651113510131836,
+      13.118008613586426,
+      12.566967964172363,
+      18.05681610107422
+    ],
+    "d8__expert_terminal_cost_median": [
+      31.623620986938477,
+      39.55169677734375,
+      10.62175178527832,
+      16.931697845458984,
+      14.880742073059082,
+      15.607888221740723
+    ],
+    "vq128__expert_terminal_cost_median": [
+      110.94380187988281,
+      147.49742126464844,
+      148.3373565673828,
+      126.85282135009766,
+      82.32770538330078,
+      101.17019653320312
+    ],
+    "vq16__expert_terminal_cost_median": [
+      98.12621307373047,
+      296.658935546875,
+      169.41952514648438,
+      124.65402221679688,
+      90.71037292480469,
+      135.82969665527344
+    ],
+    "d32__first_waypoint_error_expert": [
+      10.016776084899902,
+      7.7155866622924805,
+      4.272280216217041,
+      6.121945381164551,
+      2.4493186473846436,
+      3.5572900772094727
+    ],
+    "hilewm_c__first_waypoint_error_expert": [
+      10.016776084899902,
+      7.715578556060791,
+      4.272280216217041,
+      6.121945381164551,
+      2.4493186473846436,
+      3.5572900772094727
+    ],
+    "d8__first_waypoint_error_expert": [
+      25.956493377685547,
+      6.0106682777404785,
+      5.042206764221191,
+      8.121874809265137,
+      4.0992889404296875,
+      5.439429759979248
+    ],
+    "vq128__first_waypoint_error_expert": [
+      66.40910339355469,
+      84.79717254638672,
+      55.29621124267578,
+      38.980804443359375,
+      27.72605323791504,
+      25.50820541381836
+    ],
+    "vq16__first_waypoint_error_expert": [
+      73.6949234008789,
+      140.9708251953125,
+      71.41133880615234,
+      34.709259033203125,
+      20.305194854736328,
+      49.08145523071289
+    ],
+    "d32__reach_true_relative": [
+      0.009895925410091877,
+      0.011062516830861568,
+      0.0172939021140337,
+      0.009113588370382786,
+      0.00858322437852621,
+      0.00989416241645813
+    ],
+    "hilewm_c__reach_true_relative": [
+      0.009895925410091877,
+      0.011062531732022762,
+      0.0172939021140337,
+      0.009113588370382786,
+      0.00858322437852621,
+      0.00989416241645813
+    ],
+    "d8__reach_true_relative": [
+      0.009895925410091877,
+      0.011062531732022762,
+      0.0172939021140337,
+      0.009113588370382786,
+      0.00858322437852621,
+      0.00989416241645813
+    ],
+    "vq128__reach_true_relative": [
+      0.009895925410091877,
+      0.011062531732022762,
+      0.0172939021140337,
+      0.009113588370382786,
+      0.00858322437852621,
+      0.00989416241645813
+    ],
+    "vq16__reach_true_relative": [
+      0.009895925410091877,
+      0.011062531732022762,
+      0.0172939021140337,
+      0.009113588370382786,
+      0.00858322437852621,
+      0.00989416241645813
+    ],
+    "d32__realism_true_md2": [
+      229.92135620117188,
+      222.2315673828125,
+      210.37057495117188,
+      203.70321655273438,
+      209.10475158691406,
+      202.59951782226562
+    ],
+    "hilewm_c__realism_true_md2": [
+      229.92135620117188,
+      222.23239135742188,
+      210.37057495117188,
+      203.70321655273438,
+      209.10475158691406,
+      202.59951782226562
+    ],
+    "d8__realism_true_md2": [
+      229.92135620117188,
+      222.23239135742188,
+      210.37057495117188,
+      203.70321655273438,
+      209.10475158691406,
+      202.59951782226562
+    ],
+    "vq128__realism_true_md2": [
+      229.92135620117188,
+      222.23239135742188,
+      210.37057495117188,
+      203.70321655273438,
+      209.10475158691406,
+      202.59951782226562
+    ],
+    "vq16__realism_true_md2": [
+      229.92135620117188,
+      222.23239135742188,
+      210.37057495117188,
+      203.70321655273438,
+      209.10475158691406,
+      202.59951782226562
+    ],
+    "d32__realism_true_nn": [
+      7.250123023986816,
+      7.540009498596191,
+      8.304547309875488,
+      8.526577949523926,
+      6.762729644775391,
+      6.693508625030518
+    ],
+    "hilewm_c__realism_true_nn": [
+      7.250123023986816,
+      7.540009498596191,
+      8.304547309875488,
+      8.526577949523926,
+      6.762729644775391,
+      6.693508625030518
+    ],
+    "d8__realism_true_nn": [
+      7.250123023986816,
+      7.540009498596191,
+      8.304547309875488,
+      8.526577949523926,
+      6.762729644775391,
+      6.693508625030518
+    ],
+    "vq128__realism_true_nn": [
+      7.250123023986816,
+      7.540009498596191,
+      8.304547309875488,
+      8.526577949523926,
+      6.762729644775391,
+      6.693508625030518
+    ],
+    "vq16__realism_true_nn": [
+      7.250123023986816,
+      7.540009498596191,
+      8.304547309875488,
+      8.526577949523926,
+      6.762729644775391,
+      6.693508625030518
+    ],
+    "d32__subgoal_vs_ceiling": [
+      5.1713389374495815,
+      15.288677081753525,
+      36.05450007316158,
+      9.884856118049795,
+      29.383370905250725,
+      21.99419048714387
+    ],
+    "hilewm_c__subgoal_vs_ceiling": [
+      3.8245805552913543,
+      5.433919250051651,
+      4.80787301159279,
+      9.54353425009639,
+      5.592183224154296,
+      6.337766739613988
+    ],
+    "d8__subgoal_vs_ceiling": [
+      2.3479785472181796,
+      11.243944107570753,
+      15.12203674691993,
+      7.616364796264338,
+      5.800599104414277,
+      9.1339668042714
+    ],
+    "vq128__subgoal_vs_ceiling": [
+      0.9350365689709564,
+      0.6129213232942269,
+      0.6779509877845439,
+      0.9543559068458017,
+      1.6100807921500984,
+      1.122482081550536
+    ],
+    "vq16__subgoal_vs_ceiling": [
+      1.0427658574223646,
+      0.7929014411607566,
+      1.0,
+      1.468547473827387,
+      1.056300107930192,
+      1.2066275057788074
+    ],
+    "sign__exploitation_ratio__d32_vs_hilewm_c": {
+      "wins": 6,
+      "losses": 0,
+      "ties": 0,
+      "p": 0.03125,
+      "median_ratio": 11.689475871987963
+    },
+    "sign__exploitation_ratio__d32_vs_d8": {
+      "wins": 6,
+      "losses": 0,
+      "ties": 0,
+      "p": 0.03125,
+      "median_ratio": 1.6764189163388792
+    },
+    "sign__exploitation_ratio__d32_vs_vq128": {
+      "wins": 5,
+      "losses": 1,
+      "ties": 0,
+      "p": 0.21875,
+      "median_ratio": 2.4723478148463984
+    },
+    "sign__exploitation_ratio__d32_vs_vq16": {
+      "wins": 5,
+      "losses": 1,
+      "ties": 0,
+      "p": 0.21875,
+      "median_ratio": 3.6649751533658357
+    },
+    "sign__exploitation_ratio__hilewm_c_vs_d8": {
+      "wins": 0,
+      "losses": 6,
+      "ties": 0,
+      "p": 0.03125,
+      "median_ratio": 0.18270431721438019
+    },
+    "sign__exploitation_ratio__hilewm_c_vs_vq128": {
+      "wins": 0,
+      "losses": 6,
+      "ties": 0,
+      "p": 0.03125,
+      "median_ratio": 0.23514502044150531
+    },
+    "sign__exploitation_ratio__hilewm_c_vs_vq16": {
+      "wins": 0,
+      "losses": 6,
+      "ties": 0,
+      "p": 0.03125,
+      "median_ratio": 0.39544981312006866
+    },
+    "sign__exploitation_ratio__d8_vs_vq128": {
+      "wins": 3,
+      "losses": 3,
+      "ties": 0,
+      "p": 1.0,
+      "median_ratio": 1.3655210541738658
+    },
+    "sign__exploitation_ratio__d8_vs_vq16": {
+      "wins": 5,
+      "losses": 1,
+      "ties": 0,
+      "p": 0.21875,
+      "median_ratio": 2.1660890143173157
+    },
+    "sign__exploitation_ratio__vq128_vs_vq16": {
+      "wins": 6,
+      "losses": 0,
+      "ties": 0,
+      "p": 0.03125,
+      "median_ratio": 1.8964723158673766
+    },
+    "sign__cem_beats_expert_fraction__d32_vs_hilewm_c": {
+      "wins": 6,
+      "losses": 0,
+      "ties": 0,
+      "p": 0.03125,
+      "median_ratio": 1.625
+    },
+    "sign__cem_beats_expert_fraction__d32_vs_d8": {
+      "wins": 3,
+      "losses": 1,
+      "ties": 2,
+      "p": 0.625,
+      "median_ratio": 1.0416666666666665
+    },
+    "sign__cem_beats_expert_fraction__d32_vs_vq128": {
+      "wins": 0,
+      "losses": 6,
+      "ties": 0,
+      "p": 0.03125,
+      "median_ratio": 0.80625
+    },
+    "sign__cem_beats_expert_fraction__d32_vs_vq16": {
+      "wins": 1,
+      "losses": 5,
+      "ties": 0,
+      "p": 0.21875,
+      "median_ratio": 0.8666666666666667
+    },
+    "sign__cem_beats_expert_fraction__hilewm_c_vs_d8": {
+      "wins": 0,
+      "losses": 6,
+      "ties": 0,
+      "p": 0.03125,
+      "median_ratio": 0.6666666666666666
+    },
+    "sign__cem_beats_expert_fraction__hilewm_c_vs_vq128": {
+      "wins": 0,
+      "losses": 6,
+      "ties": 0,
+      "p": 0.03125,
+      "median_ratio": 0.5523809523809524
+    },
+    "sign__cem_beats_expert_fraction__hilewm_c_vs_vq16": {
+      "wins": 0,
+      "losses": 6,
+      "ties": 0,
+      "p": 0.03125,
+      "median_ratio": 0.5358974358974359
+    },
+    "sign__cem_beats_expert_fraction__d8_vs_vq128": {
+      "wins": 0,
+      "losses": 6,
+      "ties": 0,
+      "p": 0.03125,
+      "median_ratio": 0.80625
+    },
+    "sign__cem_beats_expert_fraction__d8_vs_vq16": {
+      "wins": 1,
+      "losses": 5,
+      "ties": 0,
+      "p": 0.21875,
+      "median_ratio": 0.8
+    },
+    "sign__cem_beats_expert_fraction__vq128_vs_vq16": {
+      "wins": 4,
+      "losses": 1,
+      "ties": 1,
+      "p": 0.375,
+      "median_ratio": 1.069047619047619
+    },
+    "sign__first_waypoint_error_cem__d32_vs_hilewm_c": {
+      "wins": 6,
+      "losses": 0,
+      "ties": 0,
+      "p": 0.03125,
+      "median_ratio": 3.141952069406695
+    },
+    "sign__first_waypoint_error_cem__d32_vs_d8": {
+      "wins": 4,
+      "losses": 2,
+      "ties": 0,
+      "p": 0.6875,
+      "median_ratio": 1.660085082237482
+    },
+    "sign__first_waypoint_error_cem__d32_vs_vq128": {
+      "wins": 5,
+      "losses": 1,
+      "ties": 0,
+      "p": 0.21875,
+      "median_ratio": 1.948142448662515
+    },
+    "sign__first_waypoint_error_cem__d32_vs_vq16": {
+      "wins": 5,
+      "losses": 1,
+      "ties": 0,
+      "p": 0.21875,
+      "median_ratio": 1.25415492592585
+    },
+    "sign__first_waypoint_error_cem__hilewm_c_vs_d8": {
+      "wins": 0,
+      "losses": 6,
+      "ties": 0,
+      "p": 0.03125,
+      "median_ratio": 0.5981925964853958
+    },
+    "sign__first_waypoint_error_cem__hilewm_c_vs_vq128": {
+      "wins": 1,
+      "losses": 5,
+      "ties": 0,
+      "p": 0.21875,
+      "median_ratio": 0.7021796995083562
+    },
+    "sign__first_waypoint_error_cem__hilewm_c_vs_vq16": {
+      "wins": 1,
+      "losses": 5,
+      "ties": 0,
+      "p": 0.21875,
+      "median_ratio": 0.4396048771162984
+    },
+    "sign__first_waypoint_error_cem__d8_vs_vq128": {
+      "wins": 4,
+      "losses": 2,
+      "ties": 0,
+      "p": 0.6875,
+      "median_ratio": 1.4815730799928306
+    },
+    "sign__first_waypoint_error_cem__d8_vs_vq16": {
+      "wins": 3,
+      "losses": 3,
+      "ties": 0,
+      "p": 1.0,
+      "median_ratio": 0.9533293982091647
+    },
+    "sign__first_waypoint_error_cem__vq128_vs_vq16": {
+      "wins": 1,
+      "losses": 5,
+      "ties": 0,
+      "p": 0.21875,
+      "median_ratio": 0.627400313733242
+    },
+    "sign__realism_cem_md2__d32_vs_hilewm_c": {
+      "wins": 0,
+      "losses": 6,
+      "ties": 0,
+      "p": 0.03125,
+      "median_ratio": 0.7286495802295466
+    },
+    "sign__realism_cem_md2__d32_vs_d8": {
+      "wins": 4,
+      "losses": 2,
+      "ties": 0,
+      "p": 0.6875,
+      "median_ratio": 1.2023766453451772
+    },
+    "sign__realism_cem_md2__d32_vs_vq128": {
+      "wins": 1,
+      "losses": 5,
+      "ties": 0,
+      "p": 0.21875,
+      "median_ratio": 0.8537786203204564
+    },
+    "sign__realism_cem_md2__d32_vs_vq16": {
+      "wins": 1,
+      "losses": 5,
+      "ties": 0,
+      "p": 0.21875,
+      "median_ratio": 0.8231032911169962
+    },
+    "sign__realism_cem_md2__hilewm_c_vs_d8": {
+      "wins": 6,
+      "losses": 0,
+      "ties": 0,
+      "p": 0.03125,
+      "median_ratio": 1.58203443131374
+    },
+    "sign__realism_cem_md2__hilewm_c_vs_vq128": {
+      "wins": 6,
+      "losses": 0,
+      "ties": 0,
+      "p": 0.03125,
+      "median_ratio": 1.1698238135470627
+    },
+    "sign__realism_cem_md2__hilewm_c_vs_vq16": {
+      "wins": 6,
+      "losses": 0,
+      "ties": 0,
+      "p": 0.03125,
+      "median_ratio": 1.098815930196654
+    },
+    "sign__realism_cem_md2__d8_vs_vq128": {
+      "wins": 0,
+      "losses": 6,
+      "ties": 0,
+      "p": 0.03125,
+      "median_ratio": 0.7345199911619545
+    },
+    "sign__realism_cem_md2__d8_vs_vq16": {
+      "wins": 0,
+      "losses": 6,
+      "ties": 0,
+      "p": 0.03125,
+      "median_ratio": 0.6964395335039368
+    },
+    "sign__realism_cem_md2__vq128_vs_vq16": {
+      "wins": 2,
+      "losses": 4,
+      "ties": 0,
+      "p": 0.6875,
+      "median_ratio": 0.9448111144151599
+    },
+    "sign__realism_cem_nn__d32_vs_hilewm_c": {
+      "wins": 5,
+      "losses": 1,
+      "ties": 0,
+      "p": 0.21875,
+      "median_ratio": 1.0399602295407195
+    },
+    "sign__realism_cem_nn__d32_vs_d8": {
+      "wins": 3,
+      "losses": 3,
+      "ties": 0,
+      "p": 1.0,
+      "median_ratio": 1.0257662541433428
+    },
+    "sign__realism_cem_nn__d32_vs_vq128": {
+      "wins": 6,
+      "losses": 0,
+      "ties": 0,
+      "p": 0.03125,
+      "median_ratio": 1.1430263675000427
+    },
+    "sign__realism_cem_nn__d32_vs_vq16": {
+      "wins": 6,
+      "losses": 0,
+      "ties": 0,
+      "p": 0.03125,
+      "median_ratio": 1.1563666236401278
+    },
+    "sign__realism_cem_nn__hilewm_c_vs_d8": {
+      "wins": 3,
+      "losses": 3,
+      "ties": 0,
+      "p": 1.0,
+      "median_ratio": 0.986212537110208
+    },
+    "sign__realism_cem_nn__hilewm_c_vs_vq128": {
+      "wins": 6,
+      "losses": 0,
+      "ties": 0,
+      "p": 0.03125,
+      "median_ratio": 1.108638635325706
+    },
+    "sign__realism_cem_nn__hilewm_c_vs_vq16": {
+      "wins": 6,
+      "losses": 0,
+      "ties": 0,
+      "p": 0.03125,
+      "median_ratio": 1.1193926499791056
+    },
+    "sign__realism_cem_nn__d8_vs_vq128": {
+      "wins": 5,
+      "losses": 1,
+      "ties": 0,
+      "p": 0.21875,
+      "median_ratio": 1.100856740616511
+    },
+    "sign__realism_cem_nn__d8_vs_vq16": {
+      "wins": 4,
+      "losses": 2,
+      "ties": 0,
+      "p": 0.6875,
+      "median_ratio": 1.0839412222473968
+    },
+    "sign__realism_cem_nn__vq128_vs_vq16": {
+      "wins": 4,
+      "losses": 2,
+      "ties": 0,
+      "p": 0.6875,
+      "median_ratio": 1.0044988764355782
+    },
+    "sign__reach_cem_relative__d32_vs_hilewm_c": {
+      "wins": 6,
+      "losses": 0,
+      "ties": 0,
+      "p": 0.03125,
+      "median_ratio": 4.639067011820121
+    },
+    "sign__reach_cem_relative__d32_vs_d8": {
+      "wins": 3,
+      "losses": 3,
+      "ties": 0,
+      "p": 1.0,
+      "median_ratio": 1.033760420468366
+    },
+    "sign__reach_cem_relative__d32_vs_vq128": {
+      "wins": 6,
+      "losses": 0,
+      "ties": 0,
+      "p": 0.03125,
+      "median_ratio": 3.6808290565603814
+    },
+    "sign__reach_cem_relative__d32_vs_vq16": {
+      "wins": 6,
+      "losses": 0,
+      "ties": 0,
+      "p": 0.03125,
+      "median_ratio": 3.3394750395967066
+    },
+    "sign__reach_cem_relative__hilewm_c_vs_d8": {
+      "wins": 0,
+      "losses": 6,
+      "ties": 0,
+      "p": 0.03125,
+      "median_ratio": 0.2073636210973916
+    },
+    "sign__reach_cem_relative__hilewm_c_vs_vq128": {
+      "wins": 0,
+      "losses": 6,
+      "ties": 0,
+      "p": 0.03125,
+      "median_ratio": 0.7891892131885325
+    },
+    "sign__reach_cem_relative__hilewm_c_vs_vq16": {
+      "wins": 1,
+      "losses": 5,
+      "ties": 0,
+      "p": 0.21875,
+      "median_ratio": 0.838254718025919
+    },
+    "sign__reach_cem_relative__d8_vs_vq128": {
+      "wins": 6,
+      "losses": 0,
+      "ties": 0,
+      "p": 0.03125,
+      "median_ratio": 3.7449247467406646
+    },
+    "sign__reach_cem_relative__d8_vs_vq16": {
+      "wins": 6,
+      "losses": 0,
+      "ties": 0,
+      "p": 0.03125,
+      "median_ratio": 3.8296428618647225
+    },
+    "sign__reach_cem_relative__vq128_vs_vq16": {
+      "wins": 3,
+      "losses": 3,
+      "ties": 0,
+      "p": 1.0,
+      "median_ratio": 1.0585882546520957
+    }
+  },
+  "stdout": "variants   : d32, hilewm_c, d8, vq128, vq16\ndraws      : [0, 1, 2, 3, 4, 5] (seeds [2000, 2001, 2002, 2003, 2004, 2005]), d=50, 16 segments each\nbudget     : paper Table 5 (high 1500x40 topk 10, low 900x30 topk 150)\n\npairing check: expert ẑ_1 identical for d32 and hilewm_c on all 6 draws -> FAIL\n  d32      : [10.0168, 7.7156, 4.2723, 6.1219, 2.4493, 3.5573]\n  hilewm_c : [10.0168, 7.7156, 4.2723, 6.1219, 2.4493, 3.5573]\n\ncross-check against the audit records (exploitation, same draw):\n  30/30 cells reproduce the audit to one decimal -> PASS\n\n====================================================================================================\nPER-VARIANT MEDIANS over 6 paired draws (range in brackets)\n====================================================================================================\n\nexploitation (expert cost / solver cost)\n  d32               x10.21 (x2.65-x24.66)\n  hilewm_c            x0.81 (x0.50-x1.87)\n  d8                 x6.01 (x2.24-x10.65)\n  vq128               x3.90 (x2.26-x7.98)\n  vq16                x2.37 (x1.65-x4.25)\n\nsolver beats expert\n  d32                       78% (69%-81%)\n  hilewm_c                  50% (25%-62%)\n  d8                        75% (62%-81%)\n  vq128                    94% (88%-100%)\n  vq16                      91% (62%-94%)\n\nfirst-waypoint error ‖ẑ_1 − z_true‖²\n  d32                75.10 (51.80-154.03)\n  hilewm_c            30.43 (13.70-58.42)\n  d8                  61.40 (23.78-76.25)\n  vq128               41.06 (28.63-62.09)\n  vq16               65.32 (21.45-111.78)\n\nsubgoal Mahalanobis² vs real frames\n  d32               139.01 (76.55-163.51)\n  hilewm_c         178.23 (173.02-210.57)\n  d8               112.55 (102.69-162.16)\n  vq128            153.23 (152.33-174.14)\n  vq16             164.23 (148.01-184.18)\n\nsubgoal distance to nearest real frame\n  d32                    8.19 (7.74-9.03)\n  hilewm_c               8.15 (7.09-8.63)\n  d8                     8.07 (6.43-8.58)\n  vq128                  6.98 (6.51-8.53)\n  vq16                   7.11 (6.55-8.48)\n\nreach error, relative\n  d32                    0.08 (0.05-0.60)\n  hilewm_c               0.02 (0.02-0.03)\n  d8                     0.08 (0.02-0.17)\n  vq128                  0.02 (0.02-0.06)\n  vq16                   0.03 (0.02-0.03)\n\n----------------------------------------------------------------------------------------------------\nPer-variant references (NOT comparable across checkpoints — each model has its own scale)\n----------------------------------------------------------------------------------------------------\n\nmodel accuracy floor (expert cost)\n  d32                 15.16 (11.65-27.47)\n  hilewm_c            15.16 (11.65-27.47)\n  d8                  16.27 (10.62-39.55)\n  vq128             118.90 (82.33-148.34)\n  vq16              130.24 (90.71-296.66)\n\nbest achievable subgoal (expert ẑ_1)\n  d32                   5.20 (2.45-10.02)\n  hilewm_c              5.20 (2.45-10.02)\n  d8                    5.73 (4.10-25.96)\n  vq128               47.14 (25.51-84.80)\n  vq16               60.25 (20.31-140.97)\n\nreach error for a true waypoint\n  d32                    0.01 (0.01-0.02)\n  hilewm_c               0.01 (0.01-0.02)\n  d8                     0.01 (0.01-0.02)\n  vq128                  0.01 (0.01-0.02)\n  vq16                   0.01 (0.01-0.02)\n\ntrue waypoint Mahalanobis² (the realistic value)\n  d32              209.74 (202.60-229.92)\n  hilewm_c         209.74 (202.60-229.92)\n  d8               209.74 (202.60-229.92)\n  vq128            209.74 (202.60-229.92)\n  vq16             209.74 (202.60-229.92)\n\ntrue waypoint distance to nearest real frame\n  d32                    7.40 (6.69-8.53)\n  hilewm_c               7.40 (6.69-8.53)\n  d8                     7.40 (6.69-8.53)\n  vq128                  7.40 (6.69-8.53)\n  vq16                   7.40 (6.69-8.53)\n\n----------------------------------------------------------------------------------------------------\nAchieved / achievable subgoal error, per draw, then median (1.0 = at this representation's ceiling)\n----------------------------------------------------------------------------------------------------\n  d32               x18.64 (x5.17-x36.05)\n  hilewm_c            x5.51 (x3.82-x9.54)\n  d8                 x8.38 (x2.35-x15.12)\n  vq128               x0.94 (x0.61-x1.61)\n  vq16                x1.05 (x0.79-x1.47)\n\n====================================================================================================\nPAIRED SIGN TESTS, same segments, n=6 draws (floor p=0.031 at n=6)\n====================================================================================================\n\nexploitation (expert cost / solver cost)  —  'A>B' counts draws where A has the higher value (more exploitation)\n  A vs B                    A>B  ties       p    median A/B\n  d32 vs hilewm_c           6/6     0   0.031        11.69x *\n  d32 vs d8                 6/6     0   0.031         1.68x *\n  d32 vs vq128              5/6     0   0.219         2.47x\n  d32 vs vq16               5/6     0   0.219         3.66x\n  hilewm_c vs d8            0/6     0   0.031         0.18x *\n  hilewm_c vs vq128         0/6     0   0.031         0.24x *\n  hilewm_c vs vq16          0/6     0   0.031         0.40x *\n  d8 vs vq128               3/6     0   1.000         1.37x\n  d8 vs vq16                5/6     0   0.219         2.17x\n  vq128 vs vq16             6/6     0   0.031         1.90x *\n\nsolver beats expert  —  'A>B' counts draws where A has the higher value (more wins)\n  A vs B                    A>B  ties       p    median A/B\n  d32 vs hilewm_c           6/6     0   0.031         1.62x *\n  d32 vs d8                 3/4     2   0.625         1.04x\n  d32 vs vq128              0/6     0   0.031         0.81x *\n  d32 vs vq16               1/6     0   0.219         0.87x\n  hilewm_c vs d8            0/6     0   0.031         0.67x *\n  hilewm_c vs vq128         0/6     0   0.031         0.55x *\n  hilewm_c vs vq16          0/6     0   0.031         0.54x *\n  d8 vs vq128               0/6     0   0.031         0.81x *\n  d8 vs vq16                1/6     0   0.219         0.80x\n  vq128 vs vq16             4/5     1   0.375         1.07x\n\nfirst-waypoint error ‖ẑ_1 − z_true‖²  —  'A>B' counts draws where A has the higher value (worse subgoal)\n  A vs B                    A>B  ties       p    median A/B\n  d32 vs hilewm_c           6/6     0   0.031         3.14x *\n  d32 vs d8                 4/6     0   0.688         1.66x\n  d32 vs vq128              5/6     0   0.219         1.95x\n  d32 vs vq16               5/6     0   0.219         1.25x\n  hilewm_c vs d8            0/6     0   0.031         0.60x *\n  hilewm_c vs vq128         1/6     0   0.219         0.70x\n  hilewm_c vs vq16          1/6     0   0.219         0.44x\n  d8 vs vq128               4/6     0   0.688         1.48x\n  d8 vs vq16                3/6     0   1.000         0.95x\n  vq128 vs vq16             1/6     0   0.219         0.63x\n\nsubgoal Mahalanobis² vs real frames  —  'A>B' counts draws where A has the higher value (further from centre)\n  A vs B                    A>B  ties       p    median A/B\n  d32 vs hilewm_c           0/6     0   0.031         0.73x *\n  d32 vs d8                 4/6     0   0.688         1.20x\n  d32 vs vq128              1/6     0   0.219         0.85x\n  d32 vs vq16               1/6     0   0.219         0.82x\n  hilewm_c vs d8            6/6     0   0.031         1.58x *\n  hilewm_c vs vq128         6/6     0   0.031         1.17x *\n  hilewm_c vs vq16          6/6     0   0.031         1.10x *\n  d8 vs vq128               0/6     0   0.031         0.73x *\n  d8 vs vq16                0/6     0   0.031         0.70x *\n  vq128 vs vq16             2/6     0   0.688         0.94x\n\nsubgoal distance to nearest real frame  —  'A>B' counts draws where A has the higher value (less realistic)\n  A vs B                    A>B  ties       p    median A/B\n  d32 vs hilewm_c           5/6     0   0.219         1.04x\n  d32 vs d8                 3/6     0   1.000         1.03x\n  d32 vs vq128              6/6     0   0.031         1.14x *\n  d32 vs vq16               6/6     0   0.031         1.16x *\n  hilewm_c vs d8            3/6     0   1.000         0.99x\n  hilewm_c vs vq128         6/6     0   0.031         1.11x *\n  hilewm_c vs vq16          6/6     0   0.031         1.12x *\n  d8 vs vq128               5/6     0   0.219         1.10x\n  d8 vs vq16                4/6     0   0.688         1.08x\n  vq128 vs vq16             4/6     0   0.688         1.00x\n\nreach error, relative  —  'A>B' counts draws where A has the higher value (harder to reach)\n  A vs B                    A>B  ties       p    median A/B\n  d32 vs hilewm_c           6/6     0   0.031         4.64x *\n  d32 vs d8                 3/6     0   1.000         1.03x\n  d32 vs vq128              6/6     0   0.031         3.68x *\n  d32 vs vq16               6/6     0   0.031         3.34x *\n  hilewm_c vs d8            0/6     0   0.031         0.21x *\n  hilewm_c vs vq128         0/6     0   0.031         0.79x *\n  hilewm_c vs vq16          1/6     0   0.219         0.84x\n  d8 vs vq128               6/6     0   0.031         3.74x *\n  d8 vs vq16                6/6     0   0.031         3.83x *\n  vq128 vs vq16             3/6     0   1.000         1.06x\n"
+}

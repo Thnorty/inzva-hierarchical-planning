@@ -85,8 +85,8 @@ whose per-episode manifest survived is fully recoverable without that.
 | `results/compare_draws/` | exact except VQ-128 | `20261005-225122_d50_paired.json`. `compare_draws.py` now finds records by content and reads the 20-iteration draws at full precision |
 | `results/inspect_empirical_residual/20260922-002009_d50_sequence.json` | exact | `20261005-123651_d50_sequence.json`: 160 of 240,000 pure-bank candidates, never elite |
 | `results/measure_subgoal/` (horizon-2 check, seeds 2000-2003) | **not regenerated**, by decision | four 64-segment runs, ~4 h of CPU, for a candidate explanation FINDINGS had already closed (Spearman +0.595, 4 of 4 draws). Skipped on 2026-10-05; the numbers in *The horizon-2 cost/subgoal mismatch is not real* rest on that text alone. Regenerate with `measure_subgoal.py --num-eval 64 --skip-reachability --seed 200k` before presenting them |
-| `results/measure_subgoal/` + `results/subgoal_sweep/20260923-194639_index.jsonl` (axis-2 sweep) | PENDING | |
-| `results/compare_subgoal_sweep/` | PENDING | |
+| `results/measure_subgoal/` + `results/subgoal_sweep/20260923-194639_index.jsonl` (axis-2 sweep) | exact for d32 and Hi-LeWM-C; **differs** slightly for d8 and VQ | 30 cells, 0 failures, finished 2026-10-06 02:30. Index `20261005-174557_index.jsonl`; the two earlier indexes log the runs the memory guard interrupted, kept as the record of what happened. See *The axis-2 sweep* below |
+| `results/compare_subgoal_sweep/` | regenerated | `20261006-083906_d50_paired_5variants.json`. All 30 cells reproduce the regenerated audit to one decimal. Its pairing check prints FAIL on a 1e-6 difference; see below |
 | `results/render_subgoals/`, `analysis/figures/` | exact, and extended | all four panels at 16 rows, Phase A and B (FINDINGS had d8 and VQ-128 at 6). The d32 and VQ-16 cross-checks reproduce FINDINGS to the digit (10.02 / 51.80 / 38.31; 73.69 / 76.85). The PNGs stay gitignored by design |
 | `results/backfill/2026-09-19_session/MANIFEST.md` | **lost** | listed the commands behind numbers from before recording existed. Every such number was later superseded by a recorded measurement |
 | `results/backfill/2026-09-19_session/env__pusht_download.log` | covered | the download log. The same file's verification is recorded in `INZVA_README.md` §5.1 (13,136,247,974-byte archive, `zstd -t` -> 46,300,921,856 bytes), and the file here matches it to the byte |
@@ -144,3 +144,32 @@ draws (p = 0.02); here it is **8 of 10 (p = 0.11)**. Every other paired
 comparison keeps its verdict, including VQ-128 over VQ-16 in 10 of 10. So
 "d32 exploits more than every other variant" holds against d8 and VQ-16 on both
 platforms and against VQ-128 on one, and should be stated that way.
+
+## The axis-2 sweep
+
+Medians against FINDINGS' *Axis 2 at the paper budget* table:
+
+| variant | result |
+| --- | --- |
+| d32, Hi-LeWM-C | every column identical |
+| d8 | identical except first-waypoint error 61.40 (61.36) and realism MD² 112.55 (112.59) |
+| VQ-128 | exploitation x3.90 (x3.55), first-waypoint error 41.06 (41.92), realism NN 6.98 (7.09), reach 0.02 (0.03) |
+| VQ-16 | wins 91 % (88 %), first-waypoint error 65.32 (61.19), achieved/achievable x1.05 (x1.02) |
+| per-variant references, true-waypoint reference | identical |
+
+The VQ shifts are the tie effect described above. The d8 shifts are in the third
+significant figure and their cause was not isolated; numerical differences
+between thread counts are the likely one, since d8's exploitation still
+reproduces the audit per draw. **Every conclusion FINDINGS draws from the sweep
+holds**: VQ sits at its representation's ceiling (x0.94, x1.05), plain CEM sits
+x18.64 from its own, Hi-LeWM-C keeps the continuous accuracy floor (15.16) and
+closes about two thirds of the gap, and reachability splits constrained from
+unconstrained search (0.02-0.03 against 0.08).
+
+**The pairing check prints FAIL, and the pairing holds.** It requires the
+expert's first-waypoint error to agree within 1e-9 between d32 and Hi-LeWM-C on
+every draw. Five draws agree exactly; draw 1 differs in the seventh significant
+figure (7.7155867 against 7.7155786). Its d32 cell ran in the sweep interrupted
+on 2026-10-05 at 4 threads, its Hi-LeWM-C cell in the restarted sweep at 6, and a
+different thread count changes the order of floating-point reductions. The
+segments are the same. A future sweep should keep one thread count throughout.

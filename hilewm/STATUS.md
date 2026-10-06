@@ -141,10 +141,11 @@ what changed is that it no longer stands alone.
 
 **2026-10-05: regenerating the local CPU records whose files were lost.** Done and
 checked: every audit, the lambda_res sweep, the 20-iteration draws, the spectrum, the
-residual inspection and all four decoded panels (now 16 rows each). All exact except the
-VQ audit, where tied costs shift a few draws and move d32 vs VQ-128 to p = 0.11
-(`docs/RECONSTRUCTION.md`, *VQ and cost ties*). **Still running: the 30-cell axis-2 sweep**
-(a detached process; log in `.runlogs/`). The horizon-2 check was skipped by decision.
+residual inspection, all four decoded panels (now 16 rows each) and, on 2026-10-06, the
+30-cell axis-2 sweep. All exact except the VQ variants, where tied costs shift a few draws
+and move d32 vs VQ-128 to p = 0.11, and two third-digit d8 values in the sweep
+(`docs/RECONSTRUCTION.md`). No conclusion changes. The horizon-2 check was skipped by
+decision. **Nothing is running.**
 Nothing is running on Colab.
 
 The Colab pipeline works end to end and is no longer the bottleneck: six eval and diagnostic runs have finished through it, and

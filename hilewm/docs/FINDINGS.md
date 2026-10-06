@@ -1528,7 +1528,10 @@ adds Hi-LeWM-C as a fifth variant, and reports six paired draws instead of one.
 `analysis/run_subgoal_sweep.py` (30 cells, 11 h 20 min, 0 failures) then
 `analysis/compare_subgoal_sweep.py`; records in `results/measure_subgoal/` and
 `results/subgoal_sweep/20260923-194639_index.jsonl`, analysis in
-`results/compare_subgoal_sweep/`. Commit `bdfeec1`, clean tree.
+`results/compare_subgoal_sweep/`. Commit `bdfeec1`, clean tree. [Regenerated 2026-10-05/06:
+index `20261005-174557_index.jsonl`, analysis `20261006-083906_d50_paired_5variants.json`.
+d32 and Hi-LeWM-C identical, d8 and VQ slightly different, every conclusion below holds;
+`docs/RECONSTRUCTION.md`, *The axis-2 sweep*.]
 
 **Two verification gates passed before any number below was read.** The expert's
 first-waypoint error is identical for d32 and Hi-LeWM-C on all six draws, so the
