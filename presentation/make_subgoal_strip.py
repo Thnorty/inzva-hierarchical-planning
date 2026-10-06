@@ -22,12 +22,8 @@ SOURCE = (
 OUT = Path(__file__).resolve().parent / 'assets' / 'subgoal-strip.png'
 
 N_COLS, N_ROWS = 7, 16
-KEEP = [
-    2,
-    3,
-    4,
-    5,
-]  # probe(z_true), probe(expert), probe(CEM), probe(Hi-LeWM-C)
+# probe(z_true), probe(expert), probe(CEM), probe(Hi-LeWM-C)
+KEEP = [2, 3, 4, 5]
 CELL, INSET, GAP = 120, 4, 6
 
 
