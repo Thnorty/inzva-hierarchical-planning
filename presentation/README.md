@@ -5,14 +5,17 @@ decks that came before it.
 
 | path | what it is |
 | --- | --- |
-| `index.html` | **the final deck**: 11 slides, 8 minutes of a 15-minute slot |
+| `refined.html` | **the refined deck**: the same story for a general audience, 11 slides, 8 minutes. Opens on real footage, introduces the team, explains why a VLA is not enough before world models, and keeps statistics off the slides |
+| `index.html` | the detailed deck: the same results with intervals and p-values; backup for questions |
+| `assets/pusht-wall.gif`, `assets/pusht-episode.gif` | real episodes of our planner, made by `make_gifs.py` from the Experiment A sweep's videos (600 samples, seed 4, successful episodes only; run it with `--videos` and `--results` pointing into `$STABLEWM_HOME/checkpoints/`) |
+| `assets/team/` | **put `defne.jpg`, `oguz.jpg` and `arda.jpg` here**, square crops work best. Until then the refined deck shows initials |
 | `assets/subgoal-strip.png` | slide 9's figure, made by `make_subgoal_strip.py` from hilewm's own 16-row panel |
 | `previous/presentation-3.pptx` | presentation 3, as given ("Proj Presentation #3"): Push-T, VLA vs world models, the GRU predictor, CEM, MPC, temporal hierarchy |
 | `../notes/inzva-report-4.html` | the spec sent before presentation 4. Frozen, never edited; its 40-step horizon and stride 8 are out of date (`INZVA_README.md` §13) |
 
 ## Presenting
 
-Open `index.html` in a browser, from this folder so it finds `assets/`. It needs
+Open `refined.html` (or `index.html`) in a browser, from this folder so it finds `assets/`. GIFs play and loop on their own. It needs
 the internet only for its two fonts, and falls back to Georgia and Consolas
 without it.
 

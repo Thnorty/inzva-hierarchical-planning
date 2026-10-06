@@ -37,7 +37,8 @@ d=50, the paper's released checkpoints, seed 42. Lives in `hilewm/`.
 
 | path | what |
 | --- | --- |
-| `presentation/` | the final deck, and a map of each headline number to its record |
+| `presentation/refined.html` | the final deck, for a general audience |
+| `presentation/index.html` | the detailed version, with every number's interval and test; `presentation/README.md` maps each number to its record |
 | `presentation/previous/presentation-3.pptx` | presentation 3 |
 
 ## Not ours
