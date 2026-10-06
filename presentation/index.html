@@ -282,18 +282,18 @@ ol.take{list-style:none;padding:0}
 
 <!-- 6 -->
 <section class="slide" data-time="60">
-  <p class="eyebrow">Part 1 · <b>Experiments C and A</b></p>
-  <h2>The hierarchy beats flat planning by 7 points. Refining <em>adds nothing yet</em>.</h2>
-  <div class="row" style="margin-top:36px">
-    <div class="grow" id="fig-expa"></div>
+  <p class="eyebrow">Part 1 · <b>Experiment A, the budget sweep</b></p>
+  <h2>Bigger steps win most when compute is <em>scarce</em>. Refining adds nothing.</h2>
+  <div class="row" style="margin-top:30px">
+    <div class="grow" id="fig-sweep"></div>
     <div class="side">
-      <div><div class="k">Control passes</div><p>With the stride set to 1, our planner must collapse to plain CEM. It does: <b>70.0%</b> against <b>69.3%</b>, inside rerun noise.</p></div>
-      <div><div class="k">Where the gain comes from</div><p>Planning with the coarse model alone also scores <b>76.0%</b>. The gain comes from searching 5 coarse decisions instead of 10 fine ones.</p></div>
-      <div><p class="dim">One budget: 300 samples, 30 iterations. The claim is about small budgets, so the budget sweep decides it.</p></div>
+      <div><div class="k">Same compute</div><p>The coarse model beats flat CEM by <b>+12.0 points</b> at 15,000 evaluations per plan (p = 0.0003) and <b>+9.6</b> at 7,500. Flat CEM stalls near 67% even at four times the compute.</p></div>
+      <div><div class="k">Refinement</div><p>Ours and the coarse model alone differ by at most 2.4 points at every budget, never significantly.</p></div>
+      <div><p class="dim">Control (Experiment C) passed first: with the stride set to 1, ours scores 70.0% against flat CEM's 69.3%.</p></div>
     </div>
   </div>
-  <div class="foot"><span class="src">notes/results/inzva_gru_results.md · expC_results.md · inzva_gru_coarse_results.md · inzva_gru_hier_results.md</span><span class="pg"></span></div>
-  <aside class="notes">Experiment C is the mandatory control: set the stride to one and our planner has to behave exactly like CEM. It does, 70.0 against 69.3, so the hierarchy is not winning through a bug. With stride two it scores 76, seven points above flat CEM. But planning with the coarse model alone also scores 76. So at this budget the whole gain is time abstraction; refining between waypoints adds nothing we can measure. That is one budget; the sweep across budgets is what settles it.</aside>
+  <div class="foot"><span class="src">notes/results/expA_sweep_results.md · 5 seeds × 50 episodes per point · paired McNemar · RTX A4000 · expC_results.md</span><span class="pg"></span></div>
+  <aside class="notes">Experiment C came first: with the stride set to one our planner must behave exactly like CEM, and it does, 70.0 against 69.3. Then the real experiment: we swept the planning budget for three planners, five seeds each. On the x axis is compute, how many times the model is called per plan. Planning with the coarse model, the dashed line, sits above flat CEM everywhere, and at equal compute it is 12 points ahead where compute is scarce. Flat CEM stalls around 67 percent. But our full planner, the green line, lies right on top of the coarse model alone. The refinement step adds nothing at any budget. So time abstraction pays, most when compute is scarce, and our refinement does not.</aside>
 </section>
 
 <!-- 7 -->
@@ -367,13 +367,13 @@ ol.take{list-style:none;padding:0}
   <p class="eyebrow">What we take away</p>
   <h2>Thinking in bigger steps helps. Good <em>subgoals</em> are the hard part.</h2>
   <ol class="take">
-    <li><span class="k">Part 1</span><span><b>Time abstraction beats flat CEM by 7 points</b>, and the control says the gain is real. Refining between waypoints has not yet paid for itself.</span></li>
+    <li><span class="k">Part 1</span><span><b>Planning in bigger steps beats flat CEM, most when compute is scarce:</b> +12 points at equal compute. Refining between the steps, our own addition, adds nothing at any budget.</span></li>
     <li><span class="k">Part 2</span><span><b>Hi-LeWM's high level is the bottleneck.</b> Its subgoals cost 22 points, because the search exploits the model. Keeping it on real data fixes the subgoals but not the success rate.</span></li>
     <li><span class="k">Both</span><span><b>Measure every inherited setting.</b> Two horizons nobody had measured were worth 47 and 32 points.</span></li>
   </ol>
-  <p class="next"><b>Next:</b> the budget sweep at 50, 100, 300 and 600 samples, where hierarchy should pull ahead; then Hi-LeWM at two more seeds.</p>
+  <p class="next"><b>Next:</b> a refinement stage that scales with the budget, the one variant we have not tested; Hi-LeWM at two more seeds.</p>
   <div class="foot"><span class="src">Every number in this deck has a record: presentation/README.md</span><span class="pg"></span></div>
-  <aside class="notes">Three things to remember. In our planner, thinking in bigger steps beats flat CEM, and the control says that's real; refinement hasn't earned its keep yet. In Hi-LeWM, the high level is the bottleneck: its subgoals cost 22 points, and fixing the subgoals in latent space did not fix success. And measure every setting you inherit. Next is the budget sweep, where the hierarchy's claim actually lives. Thank you.</aside>
+  <aside class="notes">Three things to remember. In our planner, thinking in bigger steps beats flat CEM, by twelve points at equal compute when compute is scarce; refining between the steps adds nothing. In Hi-LeWM, the high level is the bottleneck: its subgoals cost 22 points, and fixing the subgoals in latent space did not fix success. And measure every setting you inherit. Thank you.</aside>
 </section>
 
 </div>
@@ -481,33 +481,42 @@ ol.take{list-style:none;padding:0}
     el('text', {x:c25, y:y(24)-44, 'font-size':17, 'text-anchor':'middle', fill:C.soft}, s, 'goal distance');
   })();
 
-  // Experiments C and A: seeds as dots, mean as a tick.
+  // Experiment A: success against compute per plan, log x.
   (function(){
-    const W = 960, H = 390, L = 330, R = 840, T = 20;
-    const s = svg('fig-expa', W, H);
-    const lo = 55, hi = 90, x = v => L + (R - L) * (v - lo) / (hi - lo);
-    const rows = [
-      ['Flat CEM', 'fine model', 69.3, [72,74,62], false],
-      ['Ours, stride 1', 'the control', 70.0, [72,78,60], false],
-      ['Coarse model alone', 'no refinement', 76.0, [78,76,74], true],
-      ['Ours, stride 2', 'coarse, then fine', 76.0, [78,82,68], true],
+    const W = 900, H = 500, L = 74, R = 870, T = 24, B = 410;
+    const s = svg('fig-sweep', W, H);
+    const lx0 = Math.log10(3000), lx1 = Math.log10(200000);
+    const x = c => L + (R - L) * (Math.log10(c) - lx0) / (lx1 - lx0);
+    const y = v => B - (B - T) * (v - 40) / 40;
+    [40,50,60,70,80].forEach(v => {
+      el('line', {x1:L, x2:R, y1:y(v), y2:y(v), stroke:C.rule}, s);
+      el('text', {x:L-14, y:y(v)+6, 'font-size':17, 'text-anchor':'end', fill:C.soft}, s, v + '%');
+    });
+    [[5000,'5k'],[10000,'10k'],[20000,'20k'],[50000,'50k'],[100000,'100k'],[200000,'200k']].forEach(([c, t]) => {
+      el('line', {x1:x(c), x2:x(c), y1:B, y2:B+8, stroke:C.soft}, s);
+      el('text', {x:x(c), y:B+32, 'font-size':17, 'text-anchor':'middle', fill:C.soft}, s, t);
+    });
+    el('text', {x:(L+R)/2, y:B+70, 'font-size':17, 'text-anchor':'middle', fill:C.soft}, s, 'model evaluations per plan (log scale) · 25 to 600 CEM samples');
+    const series = [
+      {name:'Flat CEM', color:C.soft, dash:null, pts:[[7500,46.8],[15000,54.0],[30000,61.2],[90000,67.2],[180000,65.6]]},
+      {name:'Coarse model alone', color:C.ref, dash:'7 6', pts:[[3750,48.8],[7500,56.4],[15000,66.0],[45000,73.2],[90000,73.6]]},
+      {name:'Ours', color:C.ac, dash:null, pts:[[7615,51.2],[11365,56.4],[18865,66.0],[48865,70.8],[93865,74.0]]},
     ];
-    const rowY = i => T + 40 + i * 78, axisY = T + 40 + 3 * 78 + 54;
-    [60,70,80,90].forEach(v => {
-      el('line', {x1:x(v), x2:x(v), y1:T, y2:axisY-14, stroke:C.rule}, s);
-      el('text', {x:x(v), y:axisY+10, 'font-size':17, 'text-anchor':'middle', fill:C.soft}, s, v + '%');
+    // equal-compute gap at 15,000
+    el('line', {x1:x(15000), x2:x(15000), y1:y(54.0), y2:y(66.0), stroke:C.ac, 'stroke-width':2, 'stroke-dasharray':'2 4'}, s);
+    el('line', {x1:x(15000), x2:x(15000), y1:y(54.0), y2:y(46.5), stroke:C.ac, 'stroke-width':1, opacity:.6}, s);
+    el('text', {x:x(15000), y:y(43.5), 'font-size':18, 'text-anchor':'middle', fill:C.ac, 'font-weight':500}, s, '+12 at equal compute');
+    series.forEach(sr => {
+      const d = sr.pts.map(([c, v], i) => `${i ? 'L' : 'M'}${x(c).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+      const at = {d, fill:'none', stroke:sr.color, 'stroke-width':sr.color === C.ac ? 4 : 3};
+      if (sr.dash) at['stroke-dasharray'] = sr.dash;
+      el('path', at, s);
+      sr.pts.forEach(([c, v]) => el('circle', {cx:x(c), cy:y(v), r:6, fill:sr.color === C.ref ? C.paper : sr.color, stroke:sr.color, 'stroke-width':2.5}, s));
     });
-    el('text', {x:(L+R)/2, y:axisY+42, 'font-size':16, 'text-anchor':'middle', fill:C.soft}, s, 'success rate · dots are seeds 0, 1, 2 · bar is the mean');
-    rows.forEach(([name, sub, mean, seeds, hot], i) => {
-      const cy = rowY(i);
-      el('text', {x:0, y:cy-2, 'font-size':23, fill:C.ink, style:'font-family:var(--serif);font-weight:600'}, s, name);
-      el('text', {x:0, y:cy+22, 'font-size':16, fill:C.soft}, s, sub);
-      const mn = Math.min(...seeds), mx = Math.max(...seeds);
-      el('line', {x1:x(mn), x2:x(mx), y1:cy, y2:cy, stroke:hot ? C.ac : C.soft, 'stroke-width':2, opacity:.5}, s);
-      seeds.forEach(v => el('circle', {cx:x(v), cy, r:10, fill:hot ? C.wash : C.paper, stroke:hot ? C.ac : C.soft, 'stroke-width':2.5}, s));
-      el('rect', {x:x(mean)-3, y:cy-22, width:6, height:44, fill:hot ? C.ac : C.ink}, s);
-      el('text', {x:R+28, y:cy+8, 'font-size':24, fill:hot ? C.ac : C.ink, 'font-weight':500}, s, mean.toFixed(1) + '%');
-    });
+    // end labels
+    el('text', {x:x(180000)+10, y:y(65.6)+26, 'font-size':18, 'text-anchor':'end', fill:C.soft, 'font-weight':500}, s, 'Flat CEM');
+    el('text', {x:x(93865)+14, y:y(74.0)-22, 'font-size':18, fill:C.ac, 'font-weight':500}, s, 'Ours');
+    el('text', {x:x(90000)+14, y:y(73.6)+28, 'font-size':18, fill:C.ref, 'font-weight':500}, s, 'Coarse alone');
   })();
 
   // Hi-LeWM reproduction: ours with Wilson 95% vs the paper.

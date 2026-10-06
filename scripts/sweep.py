@@ -225,31 +225,43 @@ def collect(args) -> None:
     if missing:
         print('incomplete cells (not in the record):', missing)
 
+    # Same samples, then same compute: the coarse model plans half as many
+    # steps, so coarse at n samples costs exactly what flat costs at n / 2.
+    # Episodes depend only on the seed, so pairs across budgets are still
+    # paired episode by episode.
+    matchups = [
+        (a, samples, b, samples)
+        for samples in SAMPLES
+        for a, b in (('hier', 'flat'), ('hier', 'coarse'), ('coarse', 'flat'))
+    ] + [('coarse', n, 'flat', n // 2) for n in SAMPLES if n // 2 in SAMPLES]
+
     pairs = []
-    for samples in SAMPLES:
-        for a, b in (('hier', 'flat'), ('hier', 'coarse'), ('coarse', 'flat')):
-            if (a, samples) not in cells or (b, samples) not in cells:
-                continue
-            ca, cb = cells[(a, samples)], cells[(b, samples)]
-            only_a = only_b = 0
-            for oa, ob in zip(ca['outcomes'], cb['outcomes']):
-                if len(oa) != len(ob):
-                    raise SystemExit('episode counts differ; cannot pair')
-                only_a += sum(x and not y for x, y in zip(oa, ob))
-                only_b += sum(y and not x for x, y in zip(oa, ob))
-            pairs.append(
-                {
-                    'samples': samples,
-                    'a': a,
-                    'b': b,
-                    'difference': 100
-                    * (ca['successes'] - cb['successes'])
-                    / ca['episodes'],
-                    'only_a': only_a,
-                    'only_b': only_b,
-                    'mcnemar_p': mcnemar_exact(only_a, only_b),
-                }
-            )
+    for a, sa, b, sb in matchups:
+        if (a, sa) not in cells or (b, sb) not in cells:
+            continue
+        ca, cb = cells[(a, sa)], cells[(b, sb)]
+        only_a = only_b = 0
+        for oa, ob in zip(ca['outcomes'], cb['outcomes']):
+            if len(oa) != len(ob):
+                raise SystemExit('episode counts differ; cannot pair')
+            only_a += sum(x and not y for x, y in zip(oa, ob))
+            only_b += sum(y and not x for x, y in zip(oa, ob))
+        pairs.append(
+            {
+                'a': a,
+                'samples_a': sa,
+                'compute_a': ca['compute_per_plan'],
+                'b': b,
+                'samples_b': sb,
+                'compute_b': cb['compute_per_plan'],
+                'difference': 100
+                * (ca['successes'] - cb['successes'])
+                / ca['episodes'],
+                'only_a': only_a,
+                'only_b': only_b,
+                'mcnemar_p': mcnemar_exact(only_a, only_b),
+            }
+        )
 
     env = environment()
     OUT.mkdir(parents=True, exist_ok=True)
@@ -298,15 +310,18 @@ def collect(args) -> None:
         '## Paired differences',
         '',
         'Same seed, same episodes. Only-A and only-B are the episodes one planner '
-        'solved and the other did not.',
+        'solved and the other did not. The last rows match compute instead of '
+        'samples: coarse at n samples costs exactly what flat costs at n / 2.',
         '',
-        '| Samples | A | B | A - B, points | Only A | Only B | McNemar p |',
-        '|---|---|---|---|---|---|---|',
+        '| A | B | A - B, points | Only A | Only B | McNemar p |',
+        '|---|---|---|---|---|---|',
     ]
     for p in pairs:
         lines.append(
-            f'| {p["samples"]} | {p["a"]} | {p["b"]} | {p["difference"]:+.1f} '
-            f'| {p["only_a"]} | {p["only_b"]} | {p["mcnemar_p"]:.3g} |'
+            f'| {p["a"]} at {p["samples_a"]} ({p["compute_a"]:,}) '
+            f'| {p["b"]} at {p["samples_b"]} ({p["compute_b"]:,}) '
+            f'| {p["difference"]:+.1f} | {p["only_a"]} | {p["only_b"]} '
+            f'| {p["mcnemar_p"]:.3g} |'
         )
     lines += [
         '',

@@ -1243,8 +1243,8 @@ team reads and the one that carries the current numbers. This section is only
 the open list, so the two cannot disagree.
 
 Done, in one line: both world models trained, the coarse-to-fine solver
-written, Experiment C passed, and every planner setting measured rather than
-inherited. Sections 10, 13 and 14 have the detail and the evidence.
+written, Experiments C and A run, and every planner setting measured rather
+than inherited. Sections 10, 13 and 14 have the detail and the evidence.
 
 Open, in the order they block things:
 
@@ -1252,14 +1252,12 @@ Open, in the order they block things:
       a fresh Windows clone and cold on Ubuntu under WSL2, catching five
       documentation bugs between them (§9). What neither could change is macOS,
       a different GPU, and a reader who did not write the document.
-- [ ] **Run Experiment A**: sweep the sample budget (50, 100, 300, 600) over
-      flat CEM, coarse-only and the hierarchy. `scripts/sweep.py` is the last
-      unwritten file. At 300 samples the hierarchy ties coarse-only exactly
-      (§14), so the sweep is where the claim is settled
-- [ ] **Add coarse-only as a row in Experiment A** (§14). It matches the
-      hierarchy at the default budget, so leaving it out would overstate what
-      the refinement contributes
-- [ ] How many seeds the compute allows (3 is the floor)
+- [x] **Run Experiment A** (2026-10-06): five budgets, three planners
+      including coarse-only, five seeds. Time abstraction wins most at small
+      budgets; refinement adds nothing at any (§14)
+- [ ] Optional: the same sweep with the fine stage scaled with the budget, the
+      one variant §14 leaves untested
+- [ ] Experiment B, dropped for compute as the spec allows
 
 One thing that is cheap to honour now and expensive to fix later:
 
@@ -1281,6 +1279,7 @@ Everything below is ours. The rest of the tree is upstream at `6f1e499`.
 | `scripts/check_env_matches_dataset.py` | Confirms the env still matches the one that generated the data | §6.1 |
 | `scripts/inzva_split.py` | Deterministic episode-level train/val split, with a fingerprint | §6.2 |
 | `scripts/collect_results.py` | Turns eval output into a tracked record with versions attached | §6.3 |
+| `scripts/sweep.py` | Experiment A: runs the budget sweep, resumably, and writes its record with paired tests | §14 |
 | `notes/results/` | The tracked records themselves | §6.3 |
 | `notes/README.md` | One map of every document, both parts | — |
 | `notes/inzva-progress.html` | The status page; ships with the work (rule 5) | §8 |
@@ -1998,7 +1997,7 @@ Experiment A sweeps the sample budget anyway. Nobody has checked whether our
 models want a different CEM budget than LeWM did. Expect the same pattern:
 settings picked for someone else's model are not automatically right for ours.
 
-## 14. Experiment C: passed, and a first look at A
+## 14. Experiments C and A: the control passes, refinement does not pay
 
 ### C: the solver collapses to CEM at k = 1
 
@@ -2068,6 +2067,54 @@ contribution (§0) and the reason coarse-only belongs in Experiment A as a row.
 about *small* budgets. Flat CEM at 300 samples over 20 dimensions is not
 starved. The hierarchy is supposed to win when the budget is tight, so the
 sweep is where the claim lives, not here.
+
+### Experiment A: the budget sweep (2026-10-06)
+
+```bash
+python scripts/sweep.py run        # resumable; ~50 min for all 75 runs on an A4000
+python scripts/sweep.py collect    # writes notes/results/expA_sweep_results.{md,json}
+```
+
+Three planners, five CEM populations (25, 50, 100, 300, 600), seeds 0 to 4, so
+250 episodes per cell. Everything else is the locked protocol; CEM keeps its
+best 10% at every budget, which at 300 is the configs' own `topk: 30`. The fine
+stage keeps its configured 64 x 6 per gap, so the record also gives **compute**:
+model transition evaluations per plan. Run on the RTX A4000 from a clean clone
+at `ed4bb49` plus `scripts/sweep.py`. Record: `notes/results/expA_sweep_results.md`.
+
+| CEM samples | 25 | 50 | 100 | 300 | 600 |
+|---|---|---|---|---|---|
+| Flat CEM | 46.8% | 54.0% | 61.2% | 67.2% | 65.6% |
+| Coarse model alone | 48.8% | 56.4% | 66.0% | 73.2% | 73.6% |
+| Ours, `k = 2` | 51.2% | 56.4% | 66.0% | 70.8% | 74.0% |
+
+**At equal compute, planning in coarse steps wins, and wins most when compute
+is scarce.** Coarse at n samples costs exactly what flat costs at n / 2:
+
+| Compute per plan | Coarse | Flat | Difference | McNemar p |
+|---|---|---|---|---|
+| 7,500 | 56.4% | 46.8% | **+9.6** | 0.0007 |
+| 15,000 | 66.0% | 54.0% | **+12.0** | 0.0003 |
+| 90,000 | 73.6% | 67.2% | +6.4 | 0.037 |
+
+Coarse planning at 45,000 evaluations (73.2%) also beats flat CEM at its best,
+which plateaus near 67% and does not improve from 300 to 600 samples at four
+times the compute.
+
+**Refinement adds nothing at any budget.** Ours against coarse-only, same
+samples: +2.4, 0.0, 0.0, -2.4, +0.4 points, none significant. Ours beats flat
+CEM at every budget only because its coarse stage does.
+
+So Experiment A answers the spec's claim with a split verdict: **time
+abstraction pays, most at small budgets; the coarse-to-fine refinement, our
+contribution as specified, does not.** That is the negative result §14 already
+anticipated, now at five budgets and five seeds.
+
+Two notes. The 300 column re-measures the table above: ours reproduces its
+three seeds exactly, flat CEM and coarse-only move by one or two episodes on
+one seed each, which is the rerun noise of §6.4. And the hierarchy's fine stage
+is a fixed ~3,900 evaluations, which is half its spend at 25 samples; a fine
+stage scaled with the budget is the one variant left untested.
 
 ---
 

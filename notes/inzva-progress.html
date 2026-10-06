@@ -153,8 +153,8 @@ footer{
 <div class="wrap">
 
 <header>
-  <h1 class="question">The method runs. The <em>refinement</em> has yet to earn its keep.</h1>
-  <p class="lede">Both of our world models are trained and our coarse-to-fine planner is written, and it passes the control experiment that says it is not winning through a bug. It beats the ordinary planner by about 7 points. It does not yet beat planning coarsely and never refining, which is what the budget sweep has to settle.</p>
+  <h1 class="question">Planning in bigger steps pays. The <em>refinement</em> does not.</h1>
+  <p class="lede">Both of our world models are trained, our coarse-to-fine planner passes the control experiment, and the budget sweep has run. At equal compute, planning in coarse steps beats the ordinary planner by up to 12 points, most when compute is scarce. Refining between the coarse steps, the part of the method that is our own, adds nothing at any budget.</p>
   <dl class="facts">
     <div><dt>Written</dt><dd>13 September 2026, updated 6 October</dd></div>
     <div><dt>LeWM, the reference model</dt><dd>87.3%</dd></div>
@@ -163,6 +163,7 @@ footer{
     <div><dt>Our model, flat planner</dt><dd>69.3%</dd></div>
     <div><dt>Our model, our planner</dt><dd>76.0%</dd></div>
     <div><dt>Experiment C</dt><dd>passed</dd></div>
+    <div><dt>Experiment A</dt><dd>run, 5 budgets</dd></div>
   </dl>
 </header>
 
@@ -246,14 +247,14 @@ footer{
         <tr><td><code>scripts/train_gru.py</code></td><td><b>Done.</b> Resumes after a cluster time limit; saves a loadable checkpoint every epoch</td></tr>
         <tr><td>the coarse world model</td><td><b>Done.</b> The same model with a longer stride, predicting 2 environment steps at a time over the fine model’s frozen latent. 2.5 hours to train</td></tr>
         <tr><td>the coarse-to-fine planner</td><td><b>Done.</b> Our contribution. Experiment C confirms it reduces to the standard planner when the abstraction is removed</td></tr>
-        <tr><td><code>scripts/sweep.py</code></td><td>Budget sweep driver for Experiment A</td></tr>
+        <tr><td><code>scripts/sweep.py</code></td><td><b>Done.</b> Runs the budget sweep for Experiment A and writes its record, with paired tests</td></tr>
         <tr><td><code>README.md</code></td><td>Write-up</td></tr>
       </tbody>
     </table>
     <div class="callout">
-      <p><b>The budget sweep is now the critical path.</b> Both models and the solver exist and pass their checks; what is missing is the script that runs Experiment A across compute budgets, which is where our claim is actually settled.</p>
+      <p><b>Five of the six files are done.</b> Both models, the trainer, the solver and the sweep exist, and Experiments C and A have run (section 06). What remains is the write-up.</p>
     </div>
-    <p>Experiment C has since passed (section 06). What is left is A, the claim itself, and then B if compute allows.</p>
+    <p>Experiment B is dropped for compute, as the spec allows.</p>
   </div>
 </section>
 
@@ -315,9 +316,9 @@ footer{
 <section>
   <div class="num">06</div>
   <div class="body">
-    <h2>Experiment C passed, and a first look at A</h2>
+    <h2>Experiments C and A: the control passes, refinement does not pay</h2>
     <p>Experiment C is the control the spec calls mandatory. Set the stride to one, so our planner has no abstraction left to exploit, and it must score like the ordinary planner. It does: <b>70.0%</b> against <b>69.3%</b>, four episodes apart out of 150 and inside our measured rerun noise. Our contribution is not winning through a bug or an unfair advantage.</p>
-    <p>With that cleared, here is one point of Experiment A, at the default compute budget. All four use the same protocol, the same lookahead and the same replanning interval.</p>
+    <p>With that cleared, here is the first point of Experiment A we measured, at the default budget, three seeds. All four use the same protocol, the same lookahead and the same replanning interval.</p>
     <table>
       <thead><tr><th>Planner</th><th>Seeds</th><th>Mean</th></tr></thead>
       <tbody>
@@ -332,7 +333,21 @@ footer{
       <p><b>We do not beat planning coarsely and never refining.</b> Both land on exactly 76.0%. At this budget our whole gain comes from searching 5 coarse decisions instead of 10 fine ones, and the refinement stage adds nothing we can measure.</p>
       <p>If that survives the budget sweep, our honest headline is that time abstraction helps and refinement does not. That is a result worth reporting, and it is why coarse-only planning now belongs in Experiment A as a row of its own.</p>
     </div>
-    <p>What this is not: the claim we are testing is about <em>small</em> budgets, and 300 samples over a 20-dimensional search does not starve the ordinary planner. One point is not a curve. The sweep is where this gets settled, and it is the last thing we have to build.</p>
+    <h3>The budget sweep</h3>
+    <p>The claim is about <em>small</em> budgets, so we swept the planner&rsquo;s sample count from 25 to 600 for all three planners, five seeds each, 250 episodes per cell. Our planner&rsquo;s refinement stage costs extra model evaluations, so we also count compute: model evaluations per plan.</p>
+    <table>
+      <thead><tr><th>Samples</th><th>25</th><th>50</th><th>100</th><th>300</th><th>600</th></tr></thead>
+      <tbody>
+        <tr><td>Ordinary planner</td><td>46.8%</td><td>54.0%</td><td>61.2%</td><td>67.2%</td><td>65.6%</td></tr>
+        <tr><td>Coarse model alone</td><td>48.8%</td><td>56.4%</td><td>66.0%</td><td>73.2%</td><td>73.6%</td></tr>
+        <tr><td class="ours">Ours, stride two</td><td class="ours">51.2%</td><td class="ours">56.4%</td><td class="ours">66.0%</td><td class="ours">70.8%</td><td class="ours">74.0%</td></tr>
+      </tbody>
+    </table>
+    <p><b>At equal compute, coarse steps win, and win most when compute is scarce:</b> 12.0 points ahead of the ordinary planner at 15,000 evaluations per plan (p = 0.0003), 9.6 at 7,500 (p = 0.0007), 6.4 at 90,000 (p = 0.04). The ordinary planner stops improving near 67% even at four times the compute.</p>
+    <div class="callout">
+      <p><b>Refinement adds nothing at any budget.</b> Our planner and the coarse model alone differ by at most 2.4 points at every budget, never significantly. Our planner beats the ordinary one only because its coarse stage does.</p>
+      <p>So the spec&rsquo;s claim splits in two. Time abstraction pays, most at small budgets, as predicted. The coarse-to-fine refinement, our contribution as specified, does not. That is the negative result section 06 anticipated, now at five budgets and five seeds.</p>
+    </div>
   </div>
 </section>
 

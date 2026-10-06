@@ -32,7 +32,7 @@ The timer starts on the first move. The slide budgets add up to 8:00:
 | 3 two parts | 30 | | 9 why subgoals are wrong | 60 |
 | 4 test bench | 40 | | 10 same lesson twice | 30 |
 | 5 horizon | 50 | | 11 takeaways | 30 |
-| 6 Experiments C and A | 60 | | | |
+| 6 Experiment A, budget sweep | 60 | | | |
 
 `index.html#6` opens on slide 6.
 
@@ -51,6 +51,9 @@ Seeds 0, 1, 2; 50 episodes each; d=25, horizon 10.
 
 | claim | number | record | context |
 | --- | --- | --- | --- |
+| Experiment A: success against budget, three planners | 25 to 600 samples, 5 seeds, 250 episodes per point | `notes/results/expA_sweep_results.md` | §14 |
+| coarse beats flat at equal compute | +12.0 at 15,000 evaluations (p = 0.0003), +9.6 at 7,500 (p = 0.0007), +6.4 at 90,000 (p = 0.04) | `expA_sweep_results.md`, last three paired rows | §14 |
+| refinement adds nothing | ours vs coarse alone: +2.4, 0.0, 0.0, -2.4, +0.4, none significant | `expA_sweep_results.md` | §14 |
 | flat CEM on our GRU | 69.3 % | `notes/results/inzva_gru_results.md` | §14 |
 | Experiment C, ours at k = 1 (the control) | 70.0 %, passed | `notes/results/expC_results.md` | §14 |
 | coarse model alone | 76.0 % | `notes/results/inzva_gru_coarse_results.md` | §14 |
@@ -60,9 +63,9 @@ Seeds 0, 1, 2; 50 episodes each; d=25, horizon 10.
 | LeWM baseline of record | 87.3 % ± 7.6 (never the published 96 %) | `notes/results/inzva_pusht_results.md` | §6.1b |
 | three machines agree | 87.3 / 86.7 / 87.3 % | `inzva_pusht_results.md` (RTX 3060), `truba_results.md` (V100, its first three rows), `a4000_results.md` | §6.4 |
 
-The story so far, in the progress page's words: the method runs, and the
-refinement has yet to earn its keep. One budget only; Experiment A's budget
-sweep is where the claim lives.
+The story, in the progress page's words: planning in bigger steps pays, most
+when compute is scarce; the refinement does not. Slide 6 shows the sweep; the
+three-seed numbers at 300 samples above are the earlier single point.
 
 ### Part 2: the Hi-LeWM diagnosis (`hilewm/`)
 
