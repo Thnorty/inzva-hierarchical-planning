@@ -169,13 +169,13 @@ DEMO = """<section class="slide" data-time="40">
   <h2>Six episodes, start to finish. <em>Nothing sped up.</em></h2>
   <div class="demo">
     <figure class="film" style="margin:0">
-      <img src="assets/pusht-wall.gif" alt="Six test episodes running side by side, each pushing a blue-grey T-shaped block onto a pale green T that marks the goal pose." width="668" height="442">
-      <figcaption>Six held-out test episodes from the Experiment A sweep, at real speed.</figcaption>
+      <img src="assets/pusht-wall.gif" alt="Six test episodes running side by side. In each, a solid blue-grey T-shaped block is pushed onto the goal pose, which is marked twice over: a pale green T, and a faint grey copy of the block behind it." width="668" height="442">
+      <figcaption>Six held-out test episodes from the Experiment A sweep, at real speed. Two markers, one target.</figcaption>
     </figure>
     <div class="side">
       <div>
         <div class="k">What you are seeing</div>
-        <p>The blue dot is the pusher, the <b>pale green T</b> is where the block has to end up. The planner imagines ahead, makes ten pushes, looks again, then imagines from scratch.</p>
+        <p>The blue dot is the pusher and the solid T is the block. The goal pose is drawn twice: a <b>pale green T</b>, with a <b>faint grey copy</b> of the block behind it. The planner imagines ahead, makes ten pushes, looks again, then imagines from scratch.</p>
       </div>
       <div>
         <div class="k">Honestly</div>
@@ -185,7 +185,7 @@ DEMO = """<section class="slide" data-time="40">
     </div>
   </div>
   <div class="foot"><span class="src">assets/pusht-wall.gif, made by make_gifs.py from the sweep's own videos · notes/results/expA_sweep_results.md</span><span class="pg"></span></div>
-  <aside class="notes">This is the planner actually running. Blue dot is the pusher, the pale green T is the goal pose. It plans ten pushes, executes them, looks at the real scene and replans. Being straight with you: these six are the successful episodes. At this budget it succeeds about 74 percent of the time over 250 episodes, which is the number on the earlier chart.</aside>
+  <aside class="notes">This is the planner actually running. Blue dot is the pusher, the solid T is the block. If the goal looks like it is marked twice, it is: the environment draws a pale green T at the goal pose, and our footage lays a faint grey copy of the block at that same pose over the top. One target, two markers. It plans ten pushes, executes them, looks at the real scene and replans. Being straight with you: these six are the successful episodes. At this budget it succeeds about 74 percent of the time over 250 episodes, which is the number on the earlier chart.</aside>
 </section>"""
 
 FUTURE = """<section class="slide" data-time="35">
