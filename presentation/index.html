@@ -212,7 +212,9 @@ ol.take{list-style:none;padding:0}
 .step .n{font-family:var(--mono);font-size:17px;color:var(--accent);letter-spacing:.06em}
 .step h3{font-size:32px;font-weight:600;margin:8px 0 12px}
 .step p{font-size:22px;line-height:1.45;color:var(--ink-soft)}
-.loopnote{margin-top:44px;font-size:24px;color:var(--ink-soft);max-width:60ch}
+.loopnote{margin-top:32px;font-size:24px;color:var(--ink-soft);max-width:60ch}
+/* Under a full-width figure, a 60ch measure both looks narrow and costs a line. */
+.loopnote.wide{max-width:76ch}
 .loopnote b{color:var(--ink);font-weight:600}
 
 .big2{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:8px}
@@ -328,7 +330,7 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:15px;max-width
   <p class="eyebrow">Why not a VLA?</p>
   <h2>A VLA reacts. It never asks <em>“what happens if I push here?”</em></h2>
   <div style="margin-top:34px" id="fig-vla"></div>
-  <p class="loopnote">Vision-language-action models learn to copy what they saw in demonstrations. That works on familiar ground. But a T's turn depends on exactly where you push, and a model that never predicts consequences can't check a push before making it, or notice it is heading somewhere bad.</p>
+  <p class="loopnote wide">Vision-language-action models learn to copy what they saw in demonstrations. That works on familiar ground. But a T's turn depends on exactly where you push, and a model that never predicts consequences can't check a push before making it, or notice it is heading somewhere bad.</p>
   <div class="foot"><span class="src">VLA: a model that maps camera image + instruction straight to an action</span><span class="pg"></span></div>
   <aside class="notes">The popular answer today is a VLA, a vision-language-action model. It looks at the image and outputs an action, learned by imitating lots of demonstrations. What it never does is predict consequences. Push-T is all about consequences: where exactly you push decides how the block turns. So instead of reacting, we want a robot that imagines first. That's a world model.</aside>
 </section>
@@ -645,7 +647,7 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:15px;max-width
 
   // VLA vs world model.
   (function(){
-    const s = svg('fig-vla', 1376, 400);
+    const s = svg('fig-vla', 1376, 356);
     // row 1: VLA
     const y1 = 30, w = 110;
     el('text', {x:0, y:y1+50, 'font-size':30, fill:C.ink, style:serif}, s, 'A VLA');
