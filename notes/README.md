@@ -38,6 +38,7 @@ d=50, the paper's released checkpoints, seed 42. Lives in `hilewm/`.
 | path | what |
 | --- | --- |
 | `presentation/index.html` | the deck, for a general audience, in the inzva house structure; `presentation/README.md` maps each number on it to its record |
+| `presentation/index-light.html` | the same deck pinned to its light palette, for a bright projector or a PDF; generated from `index.html` |
 | `presentation/previous/presentation-3.pptx` | presentation 3 |
 
 ## Not ours
