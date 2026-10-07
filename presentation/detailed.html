@@ -1,0 +1,669 @@
+<meta charset="utf-8">
+<title>Planning at Two Time Scales</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: a fixed 1600x900 stage scaled to the window; one claim per slide as its headline,
+   evidence under it, the record it came from in the footer. The inzva status pages' palette. */
+:root{
+  --paper:#f6f6f2;
+  --card:#ffffff;
+  --ink:#1b2422;
+  --ink-soft:#5d6764;
+  --rule:#dcdcd4;
+  --accent:#0f6e56;
+  --accent-wash:#e1f5ee;
+  --ref:#9a6b1f;
+  --muted:#c3c9c3;
+  --bar-bg:#ecece6;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#111715;--card:#19211e;--ink:#e4eae7;--ink-soft:#97a39e;--rule:#2b3632;
+    --accent:#4cc39b;--accent-wash:#173a2e;--ref:#d7aa5a;--muted:#46524d;--bar-bg:#222c28;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#111715;--card:#19211e;--ink:#e4eae7;--ink-soft:#97a39e;--rule:#2b3632;
+  --accent:#4cc39b;--accent-wash:#173a2e;--ref:#d7aa5a;--muted:#46524d;--bar-bg:#222c28;
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);overflow:hidden}
+
+.deck{position:fixed;inset:0}
+.stage{
+  position:absolute;left:50%;top:50%;width:1600px;height:900px;
+  transform:translate(-50%,-50%) scale(var(--s,.5));
+  background:var(--paper);
+}
+.slide{
+  position:absolute;inset:0;padding:76px 112px 0;
+  display:none;flex-direction:column;
+}
+.slide.active{display:flex}
+@media (prefers-reduced-motion:no-preference){
+  .slide.active{animation:in .35s ease-out}
+  @keyframes in{from{opacity:.4;transform:translateY(8px)}to{opacity:1;transform:none}}
+}
+
+.eyebrow{
+  font-family:var(--mono);font-size:19px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--accent);margin:0 0 22px;
+}
+.eyebrow b{font-weight:500;color:var(--ink-soft)}
+h1,h2{font-weight:600;letter-spacing:-.015em;text-wrap:balance;margin:0}
+h2{font-size:56px;line-height:1.12;max-width:1220px}
+h2 em,h1 em{font-style:normal;color:var(--accent)}
+.lede{font-size:28px;line-height:1.45;color:var(--ink-soft);max-width:60ch;margin:22px 0 0}
+p{margin:0}
+.body{font-size:25px;line-height:1.5}
+.small{font-size:20px;line-height:1.45;color:var(--ink-soft)}
+.mono{font-family:var(--mono)}
+.num{font-variant-numeric:tabular-nums lining-nums}
+
+.foot{
+  margin-top:auto;display:flex;justify-content:space-between;gap:24px;align-items:baseline;
+  border-top:1px solid var(--rule);padding:16px 0 26px;
+  font-family:var(--mono);font-size:15px;color:var(--ink-soft);
+}
+.foot .pg{white-space:nowrap;flex:none}
+.foot .src{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.row{display:flex;gap:64px;align-items:flex-start}
+.grow{flex:1;min-width:0}
+svg{display:block;overflow:visible;max-width:100%;height:auto}
+.slide aside.notes{display:none}
+svg text{font-family:var(--mono);fill:var(--ink)}
+
+/* title */
+.title-slide{justify-content:center;padding-top:0}
+.title-slide h1{font-size:112px;line-height:1.02;max-width:12ch}
+.title-slide .lede{font-size:32px;margin-top:34px;max-width:40ch}
+.title-art{position:absolute;right:112px;top:50%;transform:translateY(-50%);width:560px}
+.title-meta{display:flex;gap:56px;margin-top:64px;font-family:var(--mono);font-size:19px;color:var(--ink-soft)}
+.title-meta dt{text-transform:uppercase;letter-spacing:.08em;font-size:15px;margin-bottom:6px}
+.title-meta dd{margin:0;color:var(--ink)}
+
+/* two parts */
+.parts{display:grid;grid-template-columns:1fr 1fr;gap:48px;margin-top:52px}
+.part{border-top:3px solid var(--accent);padding-top:26px;min-width:0}
+.part h3{font-size:36px;font-weight:600;margin:6px 0 16px}
+.part .tag{font-family:var(--mono);font-size:17px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.part dl{display:grid;grid-template-columns:auto 1fr;gap:10px 24px;margin:22px 0 0;font-size:22px}
+.part dt{font-family:var(--mono);font-size:16px;color:var(--ink-soft);padding-top:5px;text-transform:uppercase;letter-spacing:.06em}
+.part dd{margin:0}
+.note-line{margin-top:40px;font-size:22px;color:var(--ink-soft)}
+.note-line b{color:var(--ink);font-weight:600}
+
+/* stat trio */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:56px;margin-top:64px}
+.stat{min-width:0}
+.stat .big{font-size:104px;font-weight:600;line-height:1;letter-spacing:-.02em;font-variant-numeric:lining-nums}
+.stat .big small{font-size:48px;color:var(--ink-soft);font-weight:400}
+.stat .what{font-family:var(--mono);font-size:17px;text-transform:uppercase;letter-spacing:.07em;color:var(--accent);margin:18px 0 10px}
+.stat p{font-size:22px;line-height:1.45;color:var(--ink-soft)}
+.stat p b{color:var(--ink);font-weight:600}
+
+/* side notes next to charts */
+.side{width:430px;flex:none;display:flex;flex-direction:column;gap:30px;padding-top:8px}
+.side .k{font-family:var(--mono);font-size:16px;text-transform:uppercase;letter-spacing:.07em;color:var(--accent);margin-bottom:8px}
+.side p{font-size:23px;line-height:1.45}
+.side p.dim{color:var(--ink-soft)}
+
+/* meters */
+.meter{display:grid;grid-template-columns:200px 1fr 70px;gap:16px;align-items:center;font-size:21px}
+.meter .track{height:22px;background:var(--bar-bg);border-radius:2px;overflow:hidden}
+.meter .fill{height:100%;background:var(--accent)}
+.meter .fill.bad{background:var(--muted)}
+.meter .v{font-family:var(--mono);font-size:20px;text-align:right}
+
+/* subgoal strip */
+.strip{display:grid;grid-template-columns:200px 1fr;gap:18px;align-items:stretch;margin-top:34px}
+.strip .labels{display:grid;grid-template-rows:repeat(4,1fr);font-family:var(--mono);font-size:16px;color:var(--ink-soft);gap:4px}
+.strip .labels div{display:flex;align-items:center;justify-content:flex-end;text-align:right;line-height:1.25}
+.strip .labels .hot{color:var(--ink);font-weight:500}
+.strip .img{background:#fff;border:1px solid var(--rule);padding:6px;min-width:0}
+.strip img{display:block;width:100%;height:auto}
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:48px;margin-top:34px}
+.trio .n{font-size:58px;font-weight:600;line-height:1;font-variant-numeric:lining-nums}
+.trio .n.ac{color:var(--accent)}
+.trio p{font-size:21px;line-height:1.42;color:var(--ink-soft);margin-top:10px}
+
+/* same lesson */
+.twin{display:grid;grid-template-columns:1fr 1fr;gap:72px;margin-top:56px}
+.twin .card{border-top:1px solid var(--rule);padding-top:26px;min-width:0}
+.twin .k{font-family:var(--mono);font-size:17px;text-transform:uppercase;letter-spacing:.08em;color:var(--accent)}
+.twin h3{font-size:30px;font-weight:600;margin:10px 0 24px;min-height:2.6em;line-height:1.3}
+.jump{display:flex;align-items:baseline;gap:26px;font-variant-numeric:lining-nums}
+.jump .from{font-size:76px;color:var(--ink-soft);font-weight:400}
+.jump .arrow{font-size:46px;color:var(--ink-soft)}
+.jump .to{font-size:100px;font-weight:600;color:var(--accent);letter-spacing:-.02em}
+.twin p{font-size:22px;line-height:1.45;color:var(--ink-soft);margin-top:18px}
+.quote{margin-top:56px;font-size:38px;line-height:1.3;font-style:italic;max-width:40ch}
+
+/* takeaways */
+.take{display:grid;gap:30px;margin-top:44px;max-width:1240px}
+.take li{display:grid;grid-template-columns:150px 1fr;gap:28px;font-size:27px;line-height:1.42}
+.take .k{font-family:var(--mono);font-size:17px;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);padding-top:8px}
+.take b{font-weight:600}
+ol.take{list-style:none;padding:0}
+.next{margin-top:40px;font-size:22px;color:var(--ink-soft);border-top:1px solid var(--rule);padding-top:22px;max-width:1240px}
+.next b{color:var(--ink);font-weight:600}
+
+/* controls, outside the stage */
+.bar{
+  position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;gap:8px;align-items:center;
+  padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));
+  font-family:var(--mono);font-size:13px;color:var(--ink-soft);transition:opacity .3s;
+}
+.bar.idle{opacity:0}
+.bar button{
+  font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--rule);
+  border-radius:4px;padding:6px 12px;cursor:pointer;
+}
+.bar button:hover{border-color:var(--accent)}
+.bar button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.bar .count{min-width:70px;text-align:center;font-variant-numeric:tabular-nums}
+.progress{position:fixed;left:0;top:0;height:3px;background:var(--accent);transition:width .3s}
+
+.notes-panel{
+  position:fixed;left:50%;bottom:calc(58px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);
+  width:min(880px,calc(100% - 32px));max-height:40vh;overflow:auto;
+  background:var(--card);border:1px solid var(--rule);border-radius:8px;padding:16px 20px;
+  font-size:16px;line-height:1.5;box-shadow:0 8px 30px rgba(0,0,0,.18);
+}
+.notes-panel .head{display:flex;justify-content:space-between;gap:16px;font-family:var(--mono);font-size:13px;color:var(--ink-soft);margin-bottom:8px;font-variant-numeric:tabular-nums}
+.notes-panel .late{color:var(--ref)}
+</style>
+
+<div class="progress" id="progress"></div>
+<div class="deck">
+<div class="stage" id="stage">
+
+<!-- 1 -->
+<section class="slide title-slide" data-time="20">
+  <p class="eyebrow">inzva · Final showcase</p>
+  <h1>Planning at two <em>time scales</em></h1>
+  <p class="lede">Does a world-model planner do better when it picks waypoints first and fills in the actions after? We built one, and we took apart a published one.</p>
+  <dl class="title-meta">
+    <div><dt>Task</dt><dd>Push-T</dd></div>
+    <div><dt>Built on</dt><dd>stable-worldmodel</dd></div>
+    <div><dt>Date</dt><dd>October 2026</dd></div>
+  </dl>
+  <div class="title-art" id="fig-title" aria-hidden="true"></div>
+  <aside class="notes">Our project asks one question: does a planner that thinks at two time scales beat one that thinks at one? We answered it two ways. We built our own hierarchical planner, and we dissected the published one.</aside>
+</section>
+
+<!-- 2 -->
+<section class="slide" data-time="50">
+  <p class="eyebrow">The idea</p>
+  <h2>Imagine first, then act. Hierarchy imagines in <em>bigger steps</em>.</h2>
+  <p class="lede">A world model predicts what an action will do. The planner, CEM, samples action sequences, imagines each one, keeps the best tenth and repeats. Every extra step of lookahead makes that search bigger and lets the model's errors compound.</p>
+  <div style="margin-top:44px" id="fig-timescales"></div>
+  <div class="foot"><span class="src">Push-T: push a T-shaped block onto its target. The pusher can only push, never grasp.</span><span class="pg"></span></div>
+  <aside class="notes">Push-T: a round pusher has to push a T-shaped block into a target pose. The world model imagines what an action will do, and CEM searches over action sequences: sample, imagine, keep the best ten percent, repeat. The top row is the usual flat planner: ten decisions, searched together. The bottom row is the hierarchical idea: choose five waypoints two steps apart, then fill in the actions between them. Five short searches instead of one long one.</aside>
+</section>
+
+<!-- 3 -->
+<section class="slide" data-time="30">
+  <p class="eyebrow">One question, two parts</p>
+  <h2>We built a hierarchical planner, and we stress-tested a published one.</h2>
+  <div class="parts">
+    <div class="part">
+      <span class="tag">Part 1 · Build</span>
+      <h3>Our coarse-to-fine planner</h3>
+      <dl>
+        <dt>Model</dt><dd>a small recurrent world model, ours, at two speeds</dd>
+        <dt>Goal</dt><dd>25 steps away</dd>
+        <dt>Runs</dt><dd>3 seeds × 50 episodes</dd>
+      </dl>
+    </div>
+    <div class="part">
+      <span class="tag">Part 2 · Diagnose</span>
+      <h3>Hi-LeWM, from “Mind the Gap”</h3>
+      <dl>
+        <dt>Model</dt><dd>the authors' released checkpoints</dd>
+        <dt>Goal</dt><dd>50 steps away, the paper's setting</dd>
+        <dt>Runs</dt><dd>50 episodes, seed 42, the paper's budget</dd>
+      </dl>
+    </div>
+  </div>
+  <p class="note-line"><b>The goals sit at different distances, so the two parts' success rates are never compared with each other.</b></p>
+  <div class="foot"><span class="src">Caselli et al., “Mind the Gap: Promises and Pitfalls of Hierarchical Planning in LeWorldModel”, arXiv 2607.12547</span><span class="pg"></span></div>
+  <aside class="notes">Two parts. Part one: we wrote our own two-speed world model and a coarse-to-fine planner. Part two: a recent paper, Mind the Gap, released a hierarchical planner called Hi-LeWM with its trained checkpoints, and we measured why it picks bad subgoals. One caution before any numbers: goals are 25 steps away in part one and 50 in part two, so never compare percentages across the two.</aside>
+</section>
+
+<!-- 4 -->
+<section class="slide" data-time="40">
+  <p class="eyebrow">Part 1 · <b>Before our own model</b></p>
+  <h2>First we checked the test bench gives <em>trustworthy numbers</em>.</h2>
+  <div class="stats">
+    <div class="stat">
+      <div class="big num">87.3<small>%</small></div>
+      <div class="what">LeWM, measured by us</div>
+      <p>Published as 96%. Every team that reran it independently landed between <b>82% and 90%</b>. We ruled out six mechanical explanations, then accepted 87.3 ± 7.6 over 3 seeds.</p>
+    </div>
+    <div class="stat">
+      <div class="big num">0.6<small> pts</small></div>
+      <div class="what">Three machines agree</div>
+      <p>Same seeds on an RTX 3060 under Windows, a V100 on the cluster and an A4000 under Ubuntu: <b>87.3, 86.7 and 87.3%</b>. No seed moved by more than one episode.</p>
+    </div>
+    <div class="stat">
+      <div class="big num">84.0<small>%</small></div>
+      <div class="what">DINO-WM, measured by us</div>
+      <p>The other reference model, from a community checkpoint, after fixing three faults to load it. Inside the 84–92% other teams report on rerun.</p>
+    </div>
+  </div>
+  <div class="foot"><span class="src">notes/results/inzva_pusht_results.md · truba_results.md · a4000_results.md · dinowm_romer_results.md</span><span class="pg"></span></div>
+  <aside class="notes">Before trusting our own model we had to trust the bench. LeWM is published at 96 percent. We measured 87.3, and after ruling out six explanations we found that every team that reran it independently lands between 82 and 90. The same seeds on three machines and two operating systems agree within 0.6 points, so our numbers are portable. DINO-WM scored 84.</aside>
+</section>
+
+<!-- 5 -->
+<section class="slide" data-time="50">
+  <p class="eyebrow">Part 1 · <b>A setting we never measured</b></p>
+  <h2>Our first planning horizon came from the design. It cost us <em>47 points</em>.</h2>
+  <div class="row" style="margin-top:40px">
+    <div class="grow" id="fig-horizon"></div>
+    <div class="side">
+      <div><div class="k">Why 40 fails</div><p>The goal is 25 steps away, and a plan is scored only on its last imagined step. At 40 the planner aims to be in the right place 15 steps after the goal.</p></div>
+      <div><div class="k">Three seeds</div><p class="num">Horizon 40: <b>15.3%</b>. Horizon 10: <b>62.0%</b>, pooled over two runs. Fixing how often it replans later took it to <b>69.3%</b>.</p></div>
+    </div>
+  </div>
+  <div class="foot"><span class="src">INZVA_README.md §13 · notes/results/gru_horizon40_results.md · inzva_gru_results.md</span><span class="pg"></span></div>
+  <aside class="notes">We chose a 40-step horizon because 40 divides neatly into five waypoints. Nobody had measured it. On one seed, success falls from 60 percent at horizon 10 to 14 at 40. The reason: the goal is 25 steps ahead, and a plan is scored on where it ends, so at 40 the planner is aiming 15 steps past the goal. Over three seeds, 15 percent became 62. We locked horizon 10 and stride 2: still five waypoints, just closer together.</aside>
+</section>
+
+<!-- 6 -->
+<section class="slide" data-time="60">
+  <p class="eyebrow">Part 1 · <b>Experiment A, the budget sweep</b></p>
+  <h2>Bigger steps win most when compute is <em>scarce</em>. Refining adds nothing.</h2>
+  <div class="row" style="margin-top:30px">
+    <div class="grow" id="fig-sweep"></div>
+    <div class="side">
+      <div><div class="k">Same compute</div><p>The coarse model beats flat CEM by <b>+12.0 points</b> at 15,000 evaluations per plan (p = 0.0003) and <b>+9.6</b> at 7,500. Flat CEM stalls near 67% even at four times the compute.</p></div>
+      <div><div class="k">Refinement</div><p>Ours and the coarse model alone differ by at most 2.4 points at every budget, never significantly.</p></div>
+      <div><p class="dim">Control (Experiment C) passed first: with the stride set to 1, ours scores 70.0% against flat CEM's 69.3%.</p></div>
+    </div>
+  </div>
+  <div class="foot"><span class="src">notes/results/expA_sweep_results.md · 5 seeds × 50 episodes per point · paired McNemar · RTX A4000 · expC_results.md</span><span class="pg"></span></div>
+  <aside class="notes">Experiment C came first: with the stride set to one our planner must behave exactly like CEM, and it does, 70.0 against 69.3. Then the real experiment: we swept the planning budget for three planners, five seeds each. On the x axis is compute, how many times the model is called per plan. Planning with the coarse model, the dashed line, sits above flat CEM everywhere, and at equal compute it is 12 points ahead where compute is scarce. Flat CEM stalls around 67 percent. But our full planner, the green line, lies right on top of the coarse model alone. The refinement step adds nothing at any budget. So time abstraction pays, most when compute is scarce, and our refinement does not.</aside>
+</section>
+
+<!-- 7 -->
+<section class="slide" data-time="50">
+  <p class="eyebrow">Part 2 · <b>Reproducing Hi-LeWM</b></p>
+  <h2>The paper's planner reproduces. <em>Its two fixes do not.</em></h2>
+  <div style="margin-top:34px" id="fig-repro"></div>
+  <div class="foot"><span class="src">hilewm/results/runs.csv · summarize_eval_runs/ · Wilson 95% intervals · d = 50, 50 episodes, the paper's Table 5 CEM budget</span><span class="pg"></span></div>
+  <aside class="notes">Part two. Hi-LeWM adds a high level that proposes subgoals for the low-level planner. We ran the paper's own checkpoints at its own budget. Plain Hi-LeWM reproduces: 36 against 38.7. Feeding it the expert's subgoals reproduces too: 70 against 73. But the paper's two fixes, constraining the search to real data, online and staged, give 34 and 46 where the paper reports 49 and 64. The 64 sits outside our interval.</aside>
+</section>
+
+<!-- 8 -->
+<section class="slide" data-time="60">
+  <p class="eyebrow">Part 2 · <b>Splitting the gap</b></p>
+  <h2>The model's own subgoals cost <em>22 points</em>.</h2>
+  <div class="row" style="margin-top:30px">
+    <div class="grow" id="fig-waterfall"></div>
+    <div class="side" style="width:480px">
+      <div><div class="k">Wrong, not unreachable</div><p>How much of the distance to the goal a <b>failed</b> episode still covered:</p></div>
+      <div class="meter"><span>Expert's subgoals</span><span class="track"><span class="fill" style="width:76%;display:block"></span></span><span class="v">0.76</span></div>
+      <div class="meter"><span>Model's subgoals</span><span class="track"><span class="fill bad" style="width:12%;display:block"></span></span><span class="v">0.12</span></div>
+      <p class="dim">Failures under the expert's subgoals are near misses. Under the model's own, the block barely moved toward the goal.</p>
+    </div>
+  </div>
+  <div class="foot"><span class="src">hilewm/results/compare_eval_runs/ · paired McNemar tests on the same 50 episodes · analyse_acting_npz/</span><span class="pg"></span></div>
+  <aside class="notes">The 34-point gap between plain Hi-LeWM and expert subgoals mixed two things, so we added the missing cell. Committing to a plan instead of replanning is worth 12 points, not significant. Swapping the model's subgoals for the expert's, with everything else fixed, is worth 22, p equals 0.035. And the subgoals are wrong, not out of reach: failed episodes covered three quarters of the way with expert subgoals, one eighth with the model's.</aside>
+</section>
+
+<!-- 9 -->
+<section class="slide" data-time="60">
+  <p class="eyebrow">Part 2 · <b>Why the subgoals are wrong</b></p>
+  <h2>The planner finds plans the model <em>overrates</em>, and its waypoints blur.</h2>
+  <div class="trio">
+    <div><div class="n num ac">×9.5</div><p>how much better the model scores the plans CEM picks than the expert's own actions. Better than real means it is exploiting the model's errors.</p></div>
+    <div><div class="n num">5–7 <span style="font-size:30px;color:var(--ink-soft)">of 32</span></div><p>dimensions the real macro-actions occupy. The search wanders into the empty rest, outside anything seen in training.</p></div>
+    <div><div class="n num">76.4 → 22.1</div><p>subgoal error, plain CEM against Hi-LeWM-C. The fix brings subgoals 3.5× closer, yet <b style="color:var(--ink)">success does not move</b>.</p></div>
+  </div>
+  <div class="strip">
+    <div class="labels"><div>Real next state</div><div>Model, expert's actions</div><div class="hot">Plain CEM</div><div>Hi-LeWM-C</div></div>
+    <div class="img"><img src="assets/subgoal-strip.png" alt="Decoded subgoals for 16 segments. Top row: the real next state, sharp. Second: the model's prediction with expert actions, slightly blurred. Third: plain CEM's subgoal, often a grey smear instead of a T. Fourth: Hi-LeWM-C's subgoal, mostly a recognisable but blurred T." width="2010" height="498"></div>
+  </div>
+  <div class="foot"><span class="src">audit_dimensionality/*_draws_hilewm_c_d32_lam0.1_d50.json · 10 draws, 10 of 10, p = 0.002 · all 16 segments of draw 0, Phase B decoder, none selected</span><span class="pg"></span></div>
+  <aside class="notes">Why are the subgoals bad? The high-level search finds plans that the model scores nine and a half times better than the expert's own actions. Nothing real is better than the expert, so the planner is mining the model's mistakes. Real macro-actions use only five to seven of their 32 dimensions; the search walks into the empty ones. Decoded, plain CEM's subgoals often smear the T into a grey cloud. The constrained fix, Hi-LeWM-C, keeps the block recognisable and its subgoals three and a half times closer, but success does not move. That is the result we did not expect.</aside>
+</section>
+
+<!-- 10 -->
+<section class="slide" data-time="30">
+  <p class="eyebrow">Both parts</p>
+  <h2>The same lesson, found twice.</h2>
+  <div class="twin">
+    <div class="card">
+      <span class="k">Part 1 · our planner</span>
+      <h3>Horizon 40, from our design, against 10</h3>
+      <div class="jump num"><span class="from">15.3%</span><span class="arrow">→</span><span class="to">62.0%</span></div>
+      <p>Three seeds, same model.</p>
+    </div>
+    <div class="card">
+      <span class="k">Part 2 · Hi-LeWM</span>
+      <h3>Low-level horizon 5, as shipped, against the authors' 2</h3>
+      <div class="jump num"><span class="from">26.0%</span><span class="arrow">→</span><span class="to">58.0%</span></div>
+      <p>Expert subgoals held fixed, 50-step budget, p = 0.0015. The largest single effect in Part 2.</p>
+    </div>
+  </div>
+  <p class="quote">A planner setting copied from somewhere is a measurement nobody has made yet.</p>
+  <div class="foot"><span class="src">notes/results/gru_horizon40_results.md · hilewm/results/compare_eval_runs/*_lh5_vs_lh2_rerun_manifest.json</span><span class="pg"></span></div>
+  <aside class="notes">Both parts taught us the same thing. Our own horizon, chosen for neat arithmetic, cost us 47 points. The paper's shipped config sets the low-level horizon to 5 while its authors ran 2, and with expert subgoals that difference alone is 32 points. Settings copied from a design or a config file are measurements nobody has made yet.</aside>
+</section>
+
+<!-- 11 -->
+<section class="slide" data-time="30">
+  <p class="eyebrow">What we take away</p>
+  <h2>Thinking in bigger steps helps. Good <em>subgoals</em> are the hard part.</h2>
+  <ol class="take">
+    <li><span class="k">Part 1</span><span><b>Planning in bigger steps beats flat CEM, most when compute is scarce:</b> +12 points at equal compute. Refining between the steps, our own addition, adds nothing at any budget.</span></li>
+    <li><span class="k">Part 2</span><span><b>Hi-LeWM's high level is the bottleneck.</b> Its subgoals cost 22 points, because the search exploits the model. Keeping it on real data fixes the subgoals but not the success rate.</span></li>
+    <li><span class="k">Both</span><span><b>Measure every inherited setting.</b> Two horizons nobody had measured were worth 47 and 32 points.</span></li>
+  </ol>
+  <p class="next"><b>Next:</b> a refinement stage that scales with the budget, the one variant we have not tested; Hi-LeWM at two more seeds.</p>
+  <div class="foot"><span class="src">Every number in this deck has a record: presentation/README.md</span><span class="pg"></span></div>
+  <aside class="notes">Three things to remember. In our planner, thinking in bigger steps beats flat CEM, by twelve points at equal compute when compute is scarce; refining between the steps adds nothing. In Hi-LeWM, the high level is the bottleneck: its subgoals cost 22 points, and fixing the subgoals in latent space did not fix success. And measure every setting you inherit. Thank you.</aside>
+</section>
+
+</div>
+</div>
+
+<div class="notes-panel" id="notes" hidden>
+  <div class="head"><span id="notes-slide"></span><span id="notes-time"></span></div>
+  <div id="notes-text"></div>
+</div>
+<nav class="bar" id="bar" aria-label="Slide controls">
+  <button type="button" id="prev" aria-label="Previous slide">←</button>
+  <span class="count" id="count"></span>
+  <button type="button" id="next" aria-label="Next slide">→</button>
+  <button type="button" id="toggle-notes" aria-pressed="false">Notes (N)</button>
+  <button type="button" id="toggle-full">Full screen (F)</button>
+</nav>
+
+<script>
+(function(){
+  const NS = 'http://www.w3.org/2000/svg';
+  function el(tag, attrs, parent, text){
+    const e = document.createElementNS(NS, tag);
+    let style = attrs.style || '';
+    for (const k in attrs){
+      const v = attrs[k];
+      if (k === 'style') continue;
+      if ((k === 'fill' || k === 'stroke') && String(v).startsWith('var(')) style += `;${k}:${v}`;
+      else e.setAttribute(k, v);
+    }
+    if (style) e.setAttribute('style', style);
+    if (text !== undefined) e.textContent = text;
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function svg(id, w, h){
+    const s = el('svg', {viewBox:`0 0 ${w} ${h}`, width:w, height:h, role:'img'});
+    document.getElementById(id).appendChild(s);
+    return s;
+  }
+  const C = {ink:'var(--ink)', soft:'var(--ink-soft)', rule:'var(--rule)', ac:'var(--accent)',
+             wash:'var(--accent-wash)', ref:'var(--ref)', muted:'var(--muted)', paper:'var(--paper)'};
+
+  // Two time scales: 10 fine decisions vs 5 waypoints at stride 2.
+  (function(){
+    const s = svg('fig-timescales', 1376, 270);
+    const x0 = 330, dx = 100;
+    const rows = [{y:70, t:'One time scale', d:'10 actions, searched together'},
+                  {y:190, t:'Two time scales', d:'5 waypoints first, then the gaps'}];
+    rows.forEach((r, ri) => {
+      el('text', {x:0, y:r.y-6, 'font-size':24, fill:C.ink, style:'font-family:var(--serif);font-weight:600'}, s, r.t);
+      el('text', {x:0, y:r.y+24, 'font-size':17, fill:C.soft}, s, r.d);
+      el('line', {x1:x0, y1:r.y, x2:x0+10*dx, y2:r.y, stroke:C.rule, 'stroke-width':3}, s);
+      el('rect', {x:x0-12, y:r.y-12, width:24, height:24, fill:C.ink}, s);
+      for (let i = 1; i <= 10; i++){
+        const x = x0 + i*dx;
+        if (ri === 0) el('circle', {cx:x, cy:r.y, r:12, fill:C.soft}, s);
+        else if (i % 2 === 0) el('circle', {cx:x, cy:r.y, r:20, fill:C.ac}, s);
+        else el('circle', {cx:x, cy:r.y, r:9, fill:C.paper, stroke:C.ac, 'stroke-width':3}, s);
+      }
+    });
+    el('text', {x:x0, y:250, 'font-size':16, fill:C.soft, 'text-anchor':'middle'}, s, 'now');
+    el('text', {x:x0+10*dx, y:250, 'font-size':16, fill:C.soft, 'text-anchor':'middle'}, s, '10 steps ahead');
+    el('text', {x:x0+5*dx, y:250, 'font-size':16, fill:C.soft, 'text-anchor':'middle'}, s, 'horizon 10, stride 2');
+  })();
+
+  // Title motif: a T's path, waypoints large, fills small.
+  (function(){
+    const s = svg('fig-title', 560, 560);
+    const pts = [];
+    for (let i = 0; i <= 10; i++){
+      const t = i / 10;
+      pts.push([60 + 440 * t, 470 - 380 * t + 120 * Math.sin(Math.PI * t)]);
+    }
+    el('polyline', {points:pts.map(p => p.join(',')).join(' '), fill:'none', stroke:C.rule, 'stroke-width':3}, s);
+    pts.forEach(([x, y], i) => {
+      if (i === 0) el('rect', {x:x-14, y:y-14, width:28, height:28, fill:C.ink}, s);
+      else if (i % 2 === 0) el('circle', {cx:x, cy:y, r:22, fill:C.ac}, s);
+      else el('circle', {cx:x, cy:y, r:10, fill:C.paper, stroke:C.ac, 'stroke-width':3}, s);
+    });
+  })();
+
+  // Horizon sweep, one seed.
+  (function(){
+    const W = 900, H = 470, L = 70, R = 880, T = 30, B = 400;
+    const s = svg('fig-horizon', W, H);
+    const y = v => B - (B - T) * v / 100;
+    [0,25,50,75,100].forEach(v => {
+      el('line', {x1:L, x2:R, y1:y(v), y2:y(v), stroke:C.rule, 'stroke-width':1}, s);
+      el('text', {x:L-14, y:y(v)+6, 'font-size':17, fill:C.soft, 'text-anchor':'end'}, s, v + '%');
+    });
+    const data = [[5,50],[10,60],[15,40],[20,22],[25,24],[40,14]];
+    const step = (R - L) / data.length, bw = 78;
+    data.forEach(([h, v], i) => {
+      const cx = L + step * (i + .5);
+      const fill = h === 10 ? C.ac : h === 40 ? C.ref : C.muted;
+      el('rect', {x:cx-bw/2, y:y(v), width:bw, height:B-y(v), fill}, s);
+      el('text', {x:cx, y:y(v)-12, 'font-size':22, 'text-anchor':'middle', fill:C.ink, 'font-weight':500}, s, v + '%');
+      el('text', {x:cx, y:B+30, 'font-size':20, 'text-anchor':'middle', fill:C.ink}, s, h);
+    });
+    el('text', {x:(L+R)/2, y:B+64, 'font-size':17, 'text-anchor':'middle', fill:C.soft}, s, 'planning horizon, steps · one seed, 50 episodes');
+    const c10 = L + step * 1.5, c40 = L + step * 5.5;
+    el('text', {x:c10, y:y(60)-44, 'font-size':17, 'text-anchor':'middle', fill:C.ac}, s, 'locked');
+    el('text', {x:c40, y:y(14)-44, 'font-size':17, 'text-anchor':'middle', fill:C.ref}, s, 'our first choice');
+    const c25 = L + step * 4.5;
+    el('text', {x:c25, y:y(24)-44, 'font-size':17, 'text-anchor':'middle', fill:C.soft}, s, 'goal distance');
+  })();
+
+  // Experiment A: success against compute per plan, log x.
+  (function(){
+    const W = 900, H = 500, L = 74, R = 870, T = 24, B = 410;
+    const s = svg('fig-sweep', W, H);
+    const lx0 = Math.log10(3000), lx1 = Math.log10(200000);
+    const x = c => L + (R - L) * (Math.log10(c) - lx0) / (lx1 - lx0);
+    const y = v => B - (B - T) * (v - 40) / 40;
+    [40,50,60,70,80].forEach(v => {
+      el('line', {x1:L, x2:R, y1:y(v), y2:y(v), stroke:C.rule}, s);
+      el('text', {x:L-14, y:y(v)+6, 'font-size':17, 'text-anchor':'end', fill:C.soft}, s, v + '%');
+    });
+    [[5000,'5k'],[10000,'10k'],[20000,'20k'],[50000,'50k'],[100000,'100k'],[200000,'200k']].forEach(([c, t]) => {
+      el('line', {x1:x(c), x2:x(c), y1:B, y2:B+8, stroke:C.soft}, s);
+      el('text', {x:x(c), y:B+32, 'font-size':17, 'text-anchor':'middle', fill:C.soft}, s, t);
+    });
+    el('text', {x:(L+R)/2, y:B+70, 'font-size':17, 'text-anchor':'middle', fill:C.soft}, s, 'model evaluations per plan (log scale) · 25 to 600 CEM samples');
+    const series = [
+      {name:'Flat CEM', color:C.soft, dash:null, pts:[[7500,46.8],[15000,54.0],[30000,61.2],[90000,67.2],[180000,65.6]]},
+      {name:'Coarse model alone', color:C.ref, dash:'7 6', pts:[[3750,48.8],[7500,56.4],[15000,66.0],[45000,73.2],[90000,73.6]]},
+      {name:'Ours', color:C.ac, dash:null, pts:[[7615,51.2],[11365,56.4],[18865,66.0],[48865,70.8],[93865,74.0]]},
+    ];
+    // equal-compute gap at 15,000
+    el('line', {x1:x(15000), x2:x(15000), y1:y(54.0), y2:y(66.0), stroke:C.ac, 'stroke-width':2, 'stroke-dasharray':'2 4'}, s);
+    el('line', {x1:x(15000), x2:x(15000), y1:y(54.0), y2:y(46.5), stroke:C.ac, 'stroke-width':1, opacity:.6}, s);
+    el('text', {x:x(15000), y:y(43.5), 'font-size':18, 'text-anchor':'middle', fill:C.ac, 'font-weight':500}, s, '+12 at equal compute');
+    series.forEach(sr => {
+      const d = sr.pts.map(([c, v], i) => `${i ? 'L' : 'M'}${x(c).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+      const at = {d, fill:'none', stroke:sr.color, 'stroke-width':sr.color === C.ac ? 4 : 3};
+      if (sr.dash) at['stroke-dasharray'] = sr.dash;
+      el('path', at, s);
+      sr.pts.forEach(([c, v]) => el('circle', {cx:x(c), cy:y(v), r:6, fill:sr.color === C.ref ? C.paper : sr.color, stroke:sr.color, 'stroke-width':2.5}, s));
+    });
+    // end labels
+    el('text', {x:x(180000)+10, y:y(65.6)+26, 'font-size':18, 'text-anchor':'end', fill:C.soft, 'font-weight':500}, s, 'Flat CEM');
+    el('text', {x:x(93865)+14, y:y(74.0)-22, 'font-size':18, fill:C.ac, 'font-weight':500}, s, 'Ours');
+    el('text', {x:x(90000)+14, y:y(73.6)+28, 'font-size':18, fill:C.ref, 'font-weight':500}, s, 'Coarse alone');
+  })();
+
+  // Hi-LeWM reproduction: ours with Wilson 95% vs the paper.
+  (function(){
+    const W = 1376, H = 470, L = 470, R = 1180, T = 40;
+    const s = svg('fig-repro', W, H);
+    const x = v => L + (R - L) * v / 100;
+    const rows = [
+      ['Hi-LeWM, plain CEM', 'replanning online', 36.0, [24.1,49.9], 38.7, true],
+      ['Hi-LeWM-C, online', 'fix 1: search kept on real data', 34.0, [22.4,47.8], 48.7, false],
+      ['Hi-LeWM-C, staged', 'fix 2: also commit to the plan', 46.0, [33.0,59.6], 64.0, false],
+      ['Expert subgoals', 'the ceiling, staged', 70.0, [56.2,80.9], 73.3, true],
+    ];
+    const rowY = i => T + 56 + i * 86, axisY = T + 56 + 3 * 86 + 62;
+    [0,25,50,75,100].forEach(v => {
+      el('line', {x1:x(v), x2:x(v), y1:T+10, y2:axisY-16, stroke:C.rule}, s);
+      el('text', {x:x(v), y:axisY+8, 'font-size':17, 'text-anchor':'middle', fill:C.soft}, s, v + '%');
+    });
+    // legend
+    el('circle', {cx:L, cy:T-12, r:9, fill:C.ac}, s);
+    el('text', {x:L+18, y:T-6, 'font-size':17, fill:C.ink}, s, 'ours, with 95% interval');
+    el('circle', {cx:L+300, cy:T-12, r:9, fill:C.paper, stroke:C.ref, 'stroke-width':3}, s);
+    el('text', {x:L+318, y:T-6, 'font-size':17, fill:C.ink}, s, 'the paper');
+    rows.forEach(([name, sub, ours, ci, paper, ok], i) => {
+      const cy = rowY(i);
+      el('text', {x:0, y:cy-2, 'font-size':24, fill:C.ink, style:'font-family:var(--serif);font-weight:600'}, s, name);
+      el('text', {x:0, y:cy+22, 'font-size':16, fill:C.soft}, s, sub);
+      el('line', {x1:x(ci[0]), x2:x(ci[1]), y1:cy, y2:cy, stroke:C.ac, 'stroke-width':6, opacity:.28, 'stroke-linecap':'round'}, s);
+      el('circle', {cx:x(paper), cy, r:11, fill:C.paper, stroke:C.ref, 'stroke-width':3.5}, s);
+      el('circle', {cx:x(ours), cy, r:11, fill:C.ac}, s);
+      el('text', {x:x(ours), y:cy+36, 'font-size':18, 'text-anchor':'middle', fill:C.ac, 'font-weight':500}, s, ours.toFixed(1));
+      el('text', {x:x(paper), y:cy-20, 'font-size':18, 'text-anchor':'middle', fill:C.ref, 'font-weight':500}, s, paper.toFixed(1));
+      el('text', {x:R+60, y:cy+7, 'font-size':19, fill:ok ? C.ac : C.ref, 'font-weight':500}, s, ok ? 'reproduces' : 'does not');
+    });
+  })();
+
+  // Waterfall: 36 -> +12 execution -> +22 subgoals -> 70.
+  (function(){
+    const W = 820, H = 500, L = 60, T = 40, B = 390;
+    const s = svg('fig-waterfall', W, H);
+    const y = v => B - (B - T) * v / 80;
+    [0,20,40,60,80].forEach(v => {
+      el('line', {x1:L, x2:W, y1:y(v), y2:y(v), stroke:C.rule}, s);
+      el('text', {x:L-12, y:y(v)+6, 'font-size':16, 'text-anchor':'end', fill:C.soft}, s, v + '%');
+    });
+    const bw = 120, xs = [L+40, L+230, L+420, L+610];
+    const bars = [
+      [0, 36, C.muted, '36.0', ['Plain CEM,', 'replanning online']],
+      [36, 48, C.wash, '+12', ['Commit to the', 'plan · p = 0.21']],
+      [48, 70, C.ac, '+22', ['Expert subgoals', 'instead · p = 0.035']],
+      [0, 70, C.soft, '70.0', ['Expert subgoals,', 'committed']],
+    ];
+    bars.forEach(([a, b, fill, lab, sub], i) => {
+      const x0 = xs[i];
+      el('rect', {x:x0, y:y(b), width:bw, height:y(a)-y(b), fill, stroke:i === 1 ? C.ac : 'none', 'stroke-width':2}, s);
+      el('text', {x:x0+bw/2, y:y(b)-12, 'font-size':24, 'text-anchor':'middle', fill:i === 2 ? C.ac : C.ink, 'font-weight':500}, s, lab);
+      sub.forEach((t, j) => el('text', {x:x0+bw/2, y:B+30+j*22, 'font-size':16, 'text-anchor':'middle', fill:j ? C.soft : C.ink}, s, t));
+      if (i < 3){
+        const top = i === 2 ? 70 : b;
+        el('line', {x1:x0+bw, x2:xs[i+1], y1:y(top), y2:y(top), stroke:C.soft, 'stroke-dasharray':'5 5'}, s);
+      }
+    });
+  })();
+
+  // Navigation, notes and timer.
+  const stage = document.getElementById('stage');
+  const slides = [...document.querySelectorAll('.slide')];
+  const N = slides.length;
+  const budget = slides.map(sl => +sl.dataset.time || 0);
+  const total = budget.reduce((a, b) => a + b, 0);
+  slides.forEach((sl, i) => { const pg = sl.querySelector('.pg'); if (pg) pg.textContent = `${i+1} / ${N}`; });
+
+  let cur = 0, started = null;
+  const notes = document.getElementById('notes');
+  const fmt = sec => `${Math.floor(sec/60)}:${String(Math.round(sec%60)).padStart(2,'0')}`;
+
+  function fit(){
+    const s = Math.min(window.innerWidth / 1600, window.innerHeight / 900);
+    stage.style.setProperty('--s', s);
+  }
+  function show(i){
+    cur = Math.max(0, Math.min(N - 1, i));
+    slides.forEach((sl, j) => sl.classList.toggle('active', j === cur));
+    document.getElementById('count').textContent = `${cur+1} / ${N}`;
+    document.getElementById('progress').style.width = `${(cur+1)/N*100}%`;
+    const n = slides[cur].querySelector('.notes');
+    document.getElementById('notes-text').textContent = n ? n.textContent.trim() : '';
+    const until = budget.slice(0, cur + 1).reduce((a, b) => a + b, 0);
+    document.getElementById('notes-slide').textContent = `Slide ${cur+1}: ${budget[cur]} s · be done by ${fmt(until)} of ${fmt(total)}`;
+    if (location.hash !== '#' + (cur + 1)) history.replaceState(null, '', '#' + (cur + 1));
+    tick();
+  }
+  function tick(){
+    const t = document.getElementById('notes-time');
+    if (started === null){ t.textContent = 'timer starts on the first move'; t.className = ''; return; }
+    const el = (Date.now() - started) / 1000;
+    const until = budget.slice(0, cur + 1).reduce((a, b) => a + b, 0);
+    t.textContent = `elapsed ${fmt(el)}`;
+    t.className = el > until ? 'late' : '';
+  }
+  function go(d){ if (started === null && d) started = Date.now(); show(cur + d); }
+  function toggleNotes(){
+    notes.hidden = !notes.hidden;
+    document.getElementById('toggle-notes').setAttribute('aria-pressed', String(!notes.hidden));
+  }
+  function toggleFull(){
+    try {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else document.documentElement.requestFullscreen().catch(() => {});
+    } catch (e) {}
+  }
+
+  document.getElementById('prev').onclick = () => go(-1);
+  document.getElementById('next').onclick = () => go(1);
+  document.getElementById('toggle-notes').onclick = toggleNotes;
+  document.getElementById('toggle-full').onclick = toggleFull;
+  document.addEventListener('keydown', e => {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    const k = e.key;
+    if (k === 'ArrowRight' || k === 'PageDown' || k === ' ' || k === 'ArrowDown'){ e.preventDefault(); go(1); }
+    else if (k === 'ArrowLeft' || k === 'PageUp' || k === 'ArrowUp'){ e.preventDefault(); go(-1); }
+    else if (k === 'Home') show(0);
+    else if (k === 'End') show(N - 1);
+    else if (k === 'n' || k === 'N') toggleNotes();
+    else if (k === 'f' || k === 'F') toggleFull();
+  });
+
+  const bar = document.getElementById('bar');
+  let idle;
+  function wake(){ bar.classList.remove('idle'); clearTimeout(idle); idle = setTimeout(() => bar.classList.add('idle'), 2500); }
+  document.addEventListener('mousemove', wake);
+  document.addEventListener('touchstart', wake, {passive:true});
+
+  let tx = null;
+  document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, {passive:true});
+  document.addEventListener('touchend', e => {
+    if (tx === null) return;
+    const dx = e.changedTouches[0].clientX - tx;
+    if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
+    tx = null;
+  });
+
+  window.addEventListener('resize', fit);
+  setInterval(tick, 1000);
+  fit();
+  const h = parseInt(location.hash.slice(1), 10);
+  show(Number.isFinite(h) ? h - 1 : 0);
+  wake();
+})();
+</script>

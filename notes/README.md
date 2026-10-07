@@ -37,8 +37,9 @@ d=50, the paper's released checkpoints, seed 42. Lives in `hilewm/`.
 
 | path | what |
 | --- | --- |
-| `presentation/refined.html` | the final deck, for a general audience |
-| `presentation/index.html` | the detailed version, with every number's interval and test; `presentation/README.md` maps each number to its record |
+| `presentation/index.html` | the final deck, for a general audience |
+| `presentation/showcase.html` | the same deck in the inzva house structure, with the agenda, literature review, dataset, methods, demo and future-directions sections the others have; generated from `index.html` |
+| `presentation/detailed.html` | the detailed version, with every number's interval and test; `presentation/README.md` maps each number to its record |
 | `presentation/previous/presentation-3.pptx` | presentation 3 |
 
 ## Not ours
