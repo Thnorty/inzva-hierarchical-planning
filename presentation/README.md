@@ -106,7 +106,7 @@ Seeds 0, 1, 2; 50 episodes each; d=25, horizon 10.
 | three machines agree | 87.3 / 86.7 / 87.3 % | `inzva_pusht_results.md` (RTX 3060), `truba_results.md` (V100, its first three rows), `a4000_results.md` | §6.4 |
 
 The story, in the progress page's words: planning in bigger steps pays, most
-when compute is scarce; the refinement does not. Slide 6 shows the sweep; the
+when compute is scarce; the refinement does not. Slide 11 shows the sweep; the
 three-seed numbers at 300 samples above are the earlier single point.
 
 ### Part 2: the Hi-LeWM diagnosis (`hilewm/`)
@@ -126,7 +126,7 @@ inventory in `hilewm/docs/STATUS.md` (*Presentation material*).
 | failed episodes' progress to the goal | 0.76 with expert subgoals, 0.12 with the model's | `hilewm/results/analyse_acting_npz/`; STATUS *Where we are* |
 | the search exploits the model | plans scored x9.5 better than the expert's actions; macro-actions use 5-7 of 32 dimensions | `audit_dimensionality/`; FINDINGS *Synthesis so far* |
 | low-level horizon 2 vs the shipped 5 | 58.0 vs 26.0 %, expert subgoals, 50-step budget | `runs.csv` rows `oracle_staged_hh2_lh2_steps50_rerun`, `oracle_staged_hh2_lh5_steps50` |
-| decoded subgoals | 16-row panels, Phase A and B; slide 9 shows all 16 of the Phase B one | `hilewm/analysis/figures/*.png` |
+| decoded subgoals | 16-row panels, Phase A and B; slide 13 shows all 16 of the Phase B one | `hilewm/analysis/figures/*.png` |
 
 The +34 is never shown as a subgoal effect on its own: it is +22 subgoals and
 +12 execution mode (`hilewm/docs/FINDINGS.md`). Likewise, d32 exploiting more
