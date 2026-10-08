@@ -278,7 +278,7 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:15px;max-width
 <!-- 2 -->
 <section class="slide" data-time="20">
   <p class="eyebrow">Agenda</p>
-  <h2>Eight stops, and the two we care about are <em>6 and 7</em>.</h2>
+  <h2>Eight stops. The <em>results</em> are where we spend the time.</h2>
   <ol class="agenda">
     <li><span class="nn">01</span><span>The team<small>Three of us, and who did what</small></span></li>
     <li><span class="nn">02</span><span>The task, and the problem<small>Pushing a T, and why reacting is not enough</small></span></li>
@@ -366,7 +366,7 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:15px;max-width
       <span class="got">unmodified</span>
     </li>
   </ul>
-  <div class="foot"><span class="src">All of it through the open-source stable-worldmodel library, at one pinned commit · INZVA_README.md §6, §11, §15</span><span class="pg"></span></div>
+  <div class="foot"><span class="src">All of it through the open-source stable-worldmodel library</span><span class="pg"></span></div>
   <aside class="notes">We deliberately borrowed almost everything. The model recipe is LeWM's. The planner is the standard cross-entropy method, unchanged. The task and its data are the standard Push-T benchmark. Hi-LeWM is the published hierarchical planner that part two diagnoses, and DINO-WM is a second reference point. The only thing we changed is what the planner searches over.</aside>
 </section>
 
@@ -392,7 +392,7 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:15px;max-width
     </div>
   </div>
   <p class="loopnote">The model only ever sees <b>pictures and pushes</b>. It is never told where the T really is, and never told during training whether a push was a good one. 43 GB on disk, and the same file the benchmark's own authors convert from.</p>
-  <div class="foot"><span class="src">quentinll/lewm-pusht · verified by scripts/verify_dataset.py · split fingerprint 2d5f8c4f85e918f8 · INZVA_README.md §5</span><span class="pg"></span></div>
+  <div class="foot"><span class="src"></span><span class="pg"></span></div>
   <aside class="notes">The data is 18,685 expert episodes of this task, about 2.3 million frames. Crucially the model is never given the T's true position and never given a reward: it only sees pictures and the pushes that were made. We hold back 934 episodes, split at episode level, because consecutive frames in an episode are almost identical and a frame-level split would just measure memorisation.</aside>
 </section>
 
@@ -430,7 +430,7 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:15px;max-width
       <p>better at predicting the next scene than assuming nothing moves at all.</p>
     </div>
   </div>
-  <div class="foot"><span class="src">stable_worldmodel/wm/gru/gru_wm.py · trained by scripts/train_gru.py · INZVA_README.md §10</span><span class="pg"></span></div>
+  <div class="foot"><span class="src"></span><span class="pg"></span></div>
   <aside class="notes">Here is the model. A small vision transformer turns the picture into 192 numbers. A GRU step takes those numbers and a push and predicts the next 192 numbers. That is the whole thing, under seven million weights. Two details matter. There is no decoder, so planning never generates pictures, only compares numbers. And the prediction depends only on the current numbers and the push, which is what lets a waypoint from the coarse model be handed to the fine one as a starting point.</aside>
 </section>
 
@@ -456,7 +456,7 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:15px;max-width
       <div><p class="dim">Five budgets, five seeds each, 250 test episodes per point.</p></div>
     </div>
   </div>
-  <div class="foot"><span class="src">notes/results/expA_sweep_results.md · run on an RTX A4000</span><span class="pg"></span></div>
+  <div class="foot"><span class="src"></span><span class="pg"></span></div>
   <aside class="notes">We tested this across five computing budgets. The grey line plans one step at a time; the dashed line plans in bigger steps; green is our full method. Bigger steps win everywhere, and at the same budget the gap reaches 12 points, biggest when compute is tight. The surprise: our refinement step, filling in details afterwards, added nothing. The green line sits right on the dashed one.</aside>
 </section>
 
@@ -472,7 +472,7 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:15px;max-width
       <div><p class="dim">Its two published fixes also failed to reproduce when we reran them.</p></div>
     </div>
   </div>
-  <div class="foot"><span class="src">hilewm/results/ · the paper's own released models and settings · 50 test episodes, goal 50 steps away</span><span class="pg"></span></div>
+  <div class="foot"><span class="src">The paper's own released models and settings · 50 test episodes</span><span class="pg"></span></div>
   <aside class="notes">In the second part we took a published hierarchical planner, Hi-LeWM, with the authors' own trained models, and asked where it goes wrong. We kept everything fixed and only swapped its waypoints for an expert's. Success went from 48 to 70 percent. The waypoints are the weak spot.</aside>
 </section>
 
@@ -513,7 +513,7 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:15px;max-width
       <div><p class="dim">Recorded, not live: 600 samples, seed 4. A live run needs a GPU and about a minute an episode.</p></div>
     </div>
   </div>
-  <div class="foot"><span class="src">assets/pusht-wall.gif, made by make_gifs.py from the sweep's own videos · notes/results/expA_sweep_results.md</span><span class="pg"></span></div>
+  <div class="foot"><span class="src"></span><span class="pg"></span></div>
   <aside class="notes">This is the planner actually running. Blue dot is the pusher, the solid T is the block. If the goal looks like it is marked twice, it is: the environment draws a pale green T at the goal pose, and our footage lays a faint grey copy of the block at that same pose over the top. One target, two markers. It plans ten pushes, executes them, looks at the real scene and replans. Being straight with you: these six are the successful episodes. At this budget it succeeds about 74 percent of the time over 250 episodes, which is the number on the earlier chart.</aside>
 </section>
 
@@ -534,7 +534,7 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:15px;max-width
     </div>
   </div>
   <p class="quote">A setting nobody had measured mattered more than our cleverest idea.</p>
-  <div class="foot"><span class="src">notes/results/gru_horizon40_results.md · hilewm/results/compare_eval_runs/</span><span class="pg"></span></div>
+  <div class="foot"><span class="src"></span><span class="pg"></span></div>
   <aside class="notes">Both parts taught us the same thing. Our first guess for how far ahead to plan gave 15 percent; measuring it gave 62. The published planner ships one setting that differs from what its authors actually ran, and that alone is 26 versus 58 percent. Measure everything you inherit.</aside>
 </section>
 
@@ -563,7 +563,7 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:15px;max-width
     </div>
   </div>
   <p class="next"><b>The one we would run first:</b> in both parts the waypoints are the weak spot. Forcing them to look like scenes that can really happen, rather than sharpening them after the fact, is the experiment we would do next.</p>
-  <div class="foot"><span class="src">INZVA_README.md §13 (what is still unmeasured), §14 · hilewm/docs/STATUS.md (open questions)</span><span class="pg"></span></div>
+  <div class="foot"><span class="src"></span><span class="pg"></span></div>
   <aside class="notes">Three directions. First, the thing we cannot explain: refinement added nothing. Our best guess is that we ask it to hit waypoints exactly when following them loosely is what matters. Second, we only tested two levels on one task; deeper hierarchies and other tasks are unmeasured. Third, part two leaves three open questions we would genuinely like to ask the paper's authors. And if we could run one experiment: constrain the waypoints to be scenes that can actually happen.</aside>
 </section>
 
@@ -583,7 +583,7 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:15px;max-width
       <div><div class="face small"><span>AA</span><img src="assets/team/arda.jpg" alt="" onerror="this.remove()"></div>Arda</div>
     </div>
   </div>
-  <div class="foot"><span class="src">Every number has a record: presentation/README.md · the intervals and tests behind them: notes/results/ and hilewm/results/</span><span class="pg"></span></div>
+  <div class="foot"><span class="src">Every number on these slides comes from a recorded run</span><span class="pg"></span></div>
   <aside class="notes">Two things to remember. Planning in bigger steps beats planning step by step, especially when compute is tight. And for hierarchical planners, the hard part is good waypoints: the published one loses 22 points to its own, because it fools its own imagination. Thank you, happy to take questions.</aside>
 </section>
 

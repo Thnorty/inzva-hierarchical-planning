@@ -80,6 +80,11 @@ snippet. The project's two parts keep their records in different places and
 use different goal offsets (d=25 for our planner, d=50 for Hi-LeWM), so **their
 success rates never share an axis**.
 
+The slides themselves no longer print those paths. The footers used to carry
+them and now carry a plain line for the audience, or nothing, so **this file is
+the only map** from a number on a slide to the record behind it. Keep the
+tables below in step with the deck.
+
 ## Where each headline number lives
 
 ### Part 1: coarse-to-fine planning (`notes/`, `INZVA_README.md`)
