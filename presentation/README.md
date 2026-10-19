@@ -17,17 +17,18 @@ decks that came before it.
 
 ### Light and dark
 
-The deck is both. `:root` carries the light palette and the dark one comes from
-`@media (prefers-color-scheme: dark)`, so `index.html` follows whatever the
-machine running it is set to — usually what you want, and wrong on a bright
-projector or printing to PDF. For those, set `data-theme="light"` on `<html>`
-before the first paint: the dark rules sit behind a
-`:root:not([data-theme="light"])` guard that honours it whatever the machine
-prefers, and `data-theme="dark"` pins the other way. There used to be a
-generated `index-light.html` for this, written by a `make_light.py`; both are
-gone, and one deck with a one-attribute switch replaces them.
+The deck carries both palettes: `:root` is the light one, and the dark one
+comes from `@media (prefers-color-scheme: dark)` behind a
+`:root:not([data-theme="light"])` guard. `index.html` is **pinned light**, by
+`data-theme="light"` on its `<html>` tag, because it is shown on projectors and
+printed to PDF, where following the machine running it is wrong. It is an
+attribute rather than a script so that it holds before the first paint and with
+JavaScript off. Delete it and the deck follows the machine again; set it to
+`"dark"` to pin it the other way. There used to be a generated
+`index-light.html` for this, written by a `make_light.py`; both are gone,
+because one attribute does the same job.
 
-A caveat worth knowing before judging either file: a browser dark-mode
+A caveat worth knowing before judging the result: a browser dark-mode
 extension will re-darken a light page, and it does so unevenly — inline SVG
 fills survive while the page background does not. If the deck looks half dark,
 check the extension before changing the CSS.
