@@ -23,8 +23,8 @@ Three documents, in reading order. Do not start with this one.
 Open both HTML files in a browser; they are self-contained pages.
 
 **Lost?** `notes/README.md` maps every document in the repository, for both
-parts of the project, and `presentation/` holds the decks and the record behind each
-number on their slides.
+parts of the project, and `presentation/` holds the deck and the record behind each
+number on its slides.
 
 `hilewm/` is the project's second part, the diagnosis of the Hi-LeWM paper's
 hierarchy. It has its own environment, documents and goal offset (d=50 against
@@ -1294,7 +1294,7 @@ Everything below is ours. The rest of the tree is upstream at `6f1e499`.
 | `scripts/adapt_dinowm.py` | Prepares the published DINO-WM checkpoint so it loads | §11 |
 | `slurm/` | Cluster job scripts and the submit wrapper | §12 |
 | `tests/wm/test_gru_wm.py`, `tests/planning/solver/test_hierarchical.py` | Contract tests for the model and the solver | §10, §14 |
-| `presentation/` | The decks, and the record behind each headline number | — |
+| `presentation/` | The deck, and the record behind each headline number | — |
 | `hilewm/` | Part 2, the Hi-LeWM diagnosis, self-contained | §15 |
 
 Two upstream files carry local edits, both deliberate and both documented:
