@@ -1,0 +1,998 @@
+<meta charset="utf-8">
+<title>Hierarchical World Models</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Hi-LeWM final sunumu. Türkçe deste, teknik terimler İngilizce.
+   Yerleşim ve palet index.html ile aynı: 1600x900 sabit sahne, pencereye göre
+   ölçekleniyor; slayt başına tek iddia, altında kanıt, kaynak en altta.
+   Köşe numarası destenin sırası değil, pptx'teki numara (kapak ve ekip numarasız),
+   çünkü konuşma metni o numaralara atıf yapıyor. */
+:root{
+  --paper:#f6f6f2;
+  --card:#ffffff;
+  --ink:#1b2422;
+  --ink-soft:#5d6764;
+  --rule:#dcdcd4;
+  --accent:#0f6e56;
+  --accent-wash:#e1f5ee;
+  --ref:#9a6b1f;
+  --muted:#c3c9c3;
+  --bar-bg:#ecece6;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;
+}
+/* Deste her zaman açık temada: projeksiyonda ve PDF'te doğru olan bu, ve
+   makinenin koyu mod ayarı desteyi değiştirmesin istiyoruz. Bu yüzden burada
+   prefers-color-scheme yok. Koyu olan tek şey soru slaytları: .slide.dark
+   aynı değişkenleri kendi üzerinde yeniden tanımlıyor, o kadar. */
+.slide.dark{
+  --paper:#111715;--card:#19211e;--ink:#e4eae7;--ink-soft:#97a39e;--rule:#2b3632;
+  --accent:#4cc39b;--accent-wash:#173a2e;--ref:#d7aa5a;--muted:#46524d;--bar-bg:#222c28;
+  background:var(--paper);color:var(--ink);color-scheme:dark;
+}
+/* Sahne 1600x900; pencere bundan geniş olunca sağda solda kağıt rengi kalıyor.
+   Koyu bir slayt açıkken sayfanın tamamı da koyu olsun diye JS bu sınıfı
+   <html>'e koyuyor — alt barın da onunla birlikte dönmesi isteniyor. */
+:root.dark-page{
+  --paper:#111715;--card:#19211e;--ink:#e4eae7;--ink-soft:#97a39e;--rule:#2b3632;
+  --accent:#4cc39b;--accent-wash:#173a2e;--ref:#d7aa5a;--muted:#46524d;--bar-bg:#222c28;
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);overflow:hidden}
+
+.deck{position:fixed;inset:0}
+.stage{
+  position:absolute;left:50%;top:50%;width:1600px;height:900px;
+  transform:translate(-50%,-50%) scale(var(--s,.5));
+  background:var(--paper);
+}
+.slide{
+  position:absolute;inset:0;padding:76px 112px 0;
+  display:none;flex-direction:column;
+}
+.slide.active{display:flex}
+@media (prefers-reduced-motion:no-preference){
+  .slide.active{animation:in .35s ease-out}
+  @keyframes in{from{opacity:.4;transform:translateY(8px)}to{opacity:1;transform:none}}
+}
+
+/* inzva logosu. Her slayta kopyalanmıyor: sahnenin içinde tek bir öğe,
+   slaytların üstünde sabit duruyor.
+   top: eyebrow satırının (76px'ten başlayan 19px'lik mono) optik ortası.
+   Dosya şeffaf zemin üzerine beyaz. Açık slaytlarda invert ile siyaha
+   çevriliyor, koyu slaytlarda olduğu gibi bırakılıyor; her iki durumda da
+   opacity zemine karışmasını sağlıyor, yani filigran gibi duruyor.
+   Hangi filtrenin uygulanacağını JS'in <html>'e koyduğu .dark-page söylüyor,
+   alt bardaki ile aynı mekanizma.
+   Not: burada CSS maskesi kullanmıyoruz. mask-image dosyayı CORS kurallarına
+   göre çekiyor ve file:// ile açılan bir sayfada sessizce boş kalıyor —
+   deste çoğunlukla çift tıklanarak açıldığı için logo hiç görünmüyordu.
+   <img> öyle bir kısıt tanımıyor. */
+.brand{position:absolute;top:74px;right:112px;height:30px;width:auto;opacity:.33;filter:invert(1)}
+:root.dark-page .brand{filter:none}
+
+.eyebrow{
+  font-family:var(--mono);font-size:19px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--accent);margin:0 0 22px;
+}
+.eyebrow b{font-weight:500;color:var(--ink-soft)}
+h1,h2{font-weight:600;letter-spacing:-.015em;text-wrap:balance;margin:0}
+h2{font-size:56px;line-height:1.12;max-width:1220px}
+h2 em,h1 em{font-style:normal;color:var(--accent)}
+.lede{font-size:28px;line-height:1.45;color:var(--ink-soft);max-width:60ch;margin:22px 0 0}
+p{margin:0}
+.small{font-size:20px;line-height:1.45;color:var(--ink-soft)}
+.mono{font-family:var(--mono)}
+.num{font-variant-numeric:tabular-nums lining-nums}
+
+.foot{
+  margin-top:auto;display:flex;justify-content:space-between;gap:24px;align-items:baseline;
+  border-top:1px solid var(--rule);padding:16px 0 26px;
+  font-family:var(--mono);font-size:15px;color:var(--ink-soft);
+}
+.foot .pg{white-space:nowrap;flex:none}
+.foot .src{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.row{display:flex;gap:64px;align-items:flex-start}
+.grow{flex:1;min-width:0}
+svg{display:block;overflow:visible;max-width:100%;height:auto}
+svg text{font-family:var(--mono);fill:var(--ink)}
+
+/* kapak */
+/* flex:1, height:100% değil — altta .foot'a (sayfa numarası) yer kalsın diye */
+.hook{display:grid;grid-template-columns:1fr 560px;gap:72px;align-items:center;flex:1;min-height:0;padding:0 0 52px}
+.hook h1{font-size:80px;line-height:1.04;max-width:11ch}
+.hook .lede{font-size:30px;margin-top:26px;max-width:36ch}
+.hook .names{margin-top:36px;font-family:var(--mono);font-size:19px;color:var(--ink-soft);line-height:1.7}
+.hook .names b{color:var(--ink);font-weight:500}
+.stages{display:grid;gap:12px;margin-top:30px;font-size:21px;color:var(--ink-soft);max-width:40ch}
+.stages div{display:grid;grid-template-columns:110px 1fr;gap:18px;align-items:baseline;line-height:1.35}
+.stages .k{font-family:var(--mono);font-size:15px;text-transform:uppercase;letter-spacing:.07em;color:var(--accent)}
+
+.film{background:#fff;border:1px solid var(--rule);padding:16px;min-width:0}
+.film img{display:block;width:100%;height:auto}
+.film figcaption,.cap{font-family:var(--mono);font-size:15px;color:var(--ink-soft);margin-top:12px;line-height:1.45}
+
+/* ekip */
+.team{display:grid;grid-template-columns:repeat(3,1fr);gap:56px;margin:70px auto 0;width:100%;max-width:1240px}
+.member{display:flex;flex-direction:column;align-items:center;text-align:center;gap:22px}
+.face{position:relative;width:260px;height:260px;border-radius:50%;background:var(--accent-wash);display:grid;place-items:center;overflow:hidden}
+.face span{font-size:88px;font-weight:600;color:var(--accent);letter-spacing:.02em}
+.face img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.member .bio{display:grid;gap:10px;justify-items:center}
+.member .who{font-size:34px;font-weight:600}
+.member .what{font-family:var(--mono);font-size:15px;line-height:1.55;color:var(--ink-soft);max-width:26ch}
+.face.small{width:120px;height:120px}
+.face.small span{font-size:42px}
+
+/* metin + görsel */
+.split{display:grid;grid-template-columns:1fr 520px;gap:72px;align-items:start;margin-top:40px}
+.points{display:grid;gap:26px;max-width:46ch}
+.points p{font-size:27px;line-height:1.45}
+.points p b{font-weight:600}
+.points .k{font-family:var(--mono);font-size:16px;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:6px}
+
+/* grafik yanı notlar */
+.side{width:430px;flex:none;display:flex;flex-direction:column;gap:30px;padding-top:8px}
+.side .k{font-family:var(--mono);font-size:16px;text-transform:uppercase;letter-spacing:.07em;color:var(--accent);margin-bottom:8px}
+.side p{font-size:23px;line-height:1.45}
+.side p.dim{color:var(--ink-soft)}
+
+/* sayı üçlüsü */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:56px;margin-top:56px}
+.stat{min-width:0}
+.stat .big{font-size:104px;font-weight:600;line-height:1;letter-spacing:-.02em;font-variant-numeric:lining-nums}
+/* üç sayı aynı boyda dursun diye: en uzunu (2,336,736) sütuna sığsın */
+.stats.even .big{font-size:84px}
+.stat .big small{font-size:48px;color:var(--ink-soft);font-weight:400}
+.stat .what{font-family:var(--mono);font-size:17px;text-transform:uppercase;letter-spacing:.07em;color:var(--accent);margin:18px 0 10px}
+.stat p{font-size:22px;line-height:1.45;color:var(--ink-soft)}
+.stat p b{color:var(--ink);font-weight:600}
+
+/* dört adım */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:40px;margin-top:50px}
+.step{border-top:3px solid var(--accent);padding-top:22px;min-width:0}
+/* adım ve madde numaraları: akıcı metinden ayrılsın diye kare rozet */
+.step .n{
+  font-family:var(--mono);font-size:18px;line-height:1;color:var(--paper);
+  background:var(--accent);width:34px;height:34px;border-radius:3px;
+  display:grid;place-items:center;
+}
+.step h3{font-size:32px;font-weight:600;margin:8px 0 12px}
+.step p{font-size:22px;line-height:1.45;color:var(--ink-soft)}
+.loopnote{margin-top:32px;font-size:24px;color:var(--ink-soft);max-width:60ch}
+.loopnote.wide{max-width:82ch}
+.loopnote b{color:var(--ink);font-weight:600}
+
+/* uyarı satırı */
+.warn{
+  margin-top:30px;display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:start;
+  border-left:3px solid var(--ref);padding:4px 0 4px 22px;font-size:24px;line-height:1.42;max-width:72ch;
+}
+.warn .k{font-family:var(--mono);font-size:16px;text-transform:uppercase;letter-spacing:.07em;color:var(--ref);padding-top:7px}
+.warn b{color:var(--ink);font-weight:600}
+
+/* iki kart */
+.twin{display:grid;grid-template-columns:1fr 1fr;gap:72px;margin-top:50px}
+.twin .card{border-top:1px solid var(--rule);padding-top:26px;min-width:0}
+.twin .k{font-family:var(--mono);font-size:17px;text-transform:uppercase;letter-spacing:.08em;color:var(--accent)}
+/* min-height: iki kartın sayı satırı aynı hizada dursun diye */
+.twin h3{font-size:30px;font-weight:600;margin:10px 0 22px;line-height:1.3;min-height:2.6em}
+.twin p{font-size:22px;line-height:1.45;color:var(--ink-soft);margin-top:18px}
+.pair{display:flex;align-items:baseline;gap:40px;font-variant-numeric:lining-nums}
+.pair .v{font-size:84px;font-weight:600;line-height:1;letter-spacing:-.02em}
+.pair .v.ac{color:var(--accent)}
+.pair .u{font-family:var(--mono);font-size:16px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-soft);margin-top:12px}
+
+/* iki büyük bulgu */
+.finding{display:grid;grid-template-columns:1fr 1fr;gap:72px;margin-top:44px}
+.finding .card{border-top:3px solid var(--accent);padding-top:24px;min-width:0}
+.finding .card.bad{border-top-color:var(--ref)}
+.finding .k{font-family:var(--mono);font-size:17px;text-transform:uppercase;letter-spacing:.08em;color:var(--accent)}
+.finding .card.bad .k{color:var(--ref)}
+.finding .lead{font-size:24px;line-height:1.4;color:var(--ink-soft);margin:14px 0 16px}
+.finding .big{font-size:96px;font-weight:600;line-height:1;letter-spacing:-.02em;font-variant-numeric:lining-nums}
+.finding .big small{font-size:40px;font-weight:400;color:var(--ink-soft);margin-left:14px}
+.finding .card.bad .big{color:var(--ref)}
+.finding .card:not(.bad) .big{color:var(--accent)}
+.finding p.fine{font-size:20px;line-height:1.45;color:var(--ink-soft);margin-top:18px}
+
+/* soru kartları */
+.qs{display:grid;grid-template-columns:1fr 1fr;gap:64px;margin-top:44px}
+.qs .q{border-top:3px solid var(--accent);padding-top:24px}
+.qs .k{font-family:var(--mono);font-size:17px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.qs p{font-size:27px;line-height:1.4;margin-top:14px}
+
+/* doğrulama ölçümleri */
+.repro{display:grid;grid-template-columns:repeat(2,1fr);gap:64px;margin-top:40px;max-width:1120px}
+.repro .cell{border-top:1px solid var(--rule);padding-top:20px}
+.repro .v{font-size:64px;font-weight:600;line-height:1;font-variant-numeric:lining-nums}
+.repro .paper{font-family:var(--mono);font-size:17px;color:var(--ink-soft);margin-top:12px}
+.repro .what{font-size:22px;line-height:1.4;margin-top:12px}
+
+/* literatür */
+/* Beş satır 900px'e ancak sığıyor: gap ve padding-top, uyarı satırı footer'ın
+   altına taşmasın diye kısıldı (4 satırken 15 ve 14px idi). Altıncı bir
+   çalışma eklenecekse satırlardan biri çıkmalı. */
+ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width:1340px}
+.lit li{
+  display:grid;grid-template-columns:250px 1fr 250px;gap:26px;align-items:baseline;
+  border-top:1px solid var(--rule);padding-top:9px;font-size:20px;line-height:1.38;
+}
+.lit .w{font-size:25px;font-weight:600}
+.lit .w small{
+  display:block;font-family:var(--mono);font-size:13px;font-weight:400;margin-top:6px;
+  color:var(--ink-soft);text-transform:none;letter-spacing:.02em;line-height:1.35;
+}
+.lit .took{color:var(--ink-soft)}
+.lit .got{font-family:var(--mono);font-size:17px;color:var(--accent);line-height:1.5}
+
+/* Maddeler kutu olarak. Alt alta paragraf yığını okunmuyordu; her madde
+   kendi kutusunda, yan yana durunca göz tek tek maddeyi seçebiliyor. */
+.cards{display:grid;list-style:none;padding:0;margin:40px 0 0}
+.cards.two{grid-template-columns:1fr 1fr;gap:34px}
+.cards.quad{grid-template-columns:1fr 1fr;gap:26px 34px;margin-top:34px}
+.cards li{
+  border:1px solid var(--rule);border-top:4px solid var(--accent);border-radius:10px;
+  background:var(--card);padding:26px 32px 30px;min-width:0;
+}
+.cards .n{
+  display:block;font-family:var(--mono);font-size:15px;letter-spacing:.12em;
+  color:var(--accent);margin-bottom:12px;
+}
+.cards h3{font-size:27px;font-weight:600;line-height:1.28;margin:0 0 14px}
+.cards p{font-size:21px;line-height:1.5;color:var(--ink-soft)}
+.cards p b{color:var(--ink);font-weight:600}
+.next{margin-top:36px;font-size:24px;color:var(--ink-soft);border-top:1px solid var(--rule);padding-top:22px;max-width:1300px}
+.next b{color:var(--ink);font-weight:600}
+
+/* kapanış */
+.thanks{display:grid;grid-template-columns:1fr auto;gap:64px;align-items:end;margin-top:40px}
+.thanks .faces{display:flex;gap:28px}
+.thanks .faces div{display:flex;flex-direction:column;align-items:center;gap:10px;font-family:var(--mono);font-size:15px;color:var(--ink-soft)}
+.closing{justify-content:center}
+.closing .foot{margin-top:72px}
+.qa{font-size:72px;font-weight:600;margin-top:40px}
+.qa em{font-style:normal;color:var(--accent)}
+.repo{margin-top:28px;font-family:var(--mono);font-size:20px;color:var(--ink-soft);word-break:break-all}
+.repo b{color:var(--accent);font-weight:400}
+
+/* görsel + yan not */
+.figrow{display:grid;grid-template-columns:1fr 420px;gap:56px;align-items:start;margin-top:26px}
+.plate{background:#fff;border:1px solid var(--rule);padding:10px;min-width:0}
+.plate img{display:block;width:100%;height:auto}
+
+/* başlangıç → subgoal → hedef zinciri: pptx'teki hazır görselin yerine,
+   aynı karelerden kesilip destenin kendi terimleriyle etiketlendi */
+.chain{display:grid;grid-template-columns:1fr 180px 1fr 180px 1fr;align-items:start;margin-top:30px}
+.chain figure{margin:0;min-width:0}
+.chain figcaption{margin-top:14px;text-align:center}
+.chain .who{font-size:24px;font-weight:600}
+.chain .when{display:block;font-family:var(--mono);font-size:15px;color:var(--ink-soft);margin-top:6px}
+.chain .hot .plate{border-color:var(--accent);border-width:3px;padding:8px}
+.chain .hot .who{color:var(--accent)}
+.chain .link{display:grid;justify-items:center;gap:6px;padding-top:120px;text-align:center}
+.chain .link .glyph{font-size:34px;color:var(--ink-soft);line-height:1}
+.chain .link .lbl{font-family:var(--mono);font-size:15px;color:var(--accent)}
+.chain .link .sub{font-family:var(--mono);font-size:13px;color:var(--ink-soft)}
+
+/* kontroller, sahnenin dışında */
+/* Sol altta ve dar: ortadayken footer'ın kaynak satırının üstüne biniyordu.
+   Notlar ve tam ekran düğmeleri kaldırıldı; N ve F kısayolları duruyor. */
+.bar{
+  position:fixed;left:0;bottom:0;display:flex;gap:5px;align-items:center;
+  /* Sol ve alt boşluk eşit. Üst sınır footer metninin altındaki 26px'lik
+     bantla belirleniyor: boşluk + düğme yüksekliği 26px'i geçerse çubuk
+     kaynak satırının üstüne biner. */
+  padding:4px calc(4px + env(safe-area-inset-left,0px)) calc(4px + env(safe-area-inset-bottom,0px));
+  font-family:var(--mono);font-size:12px;color:var(--ink-soft);transition:opacity .3s;
+}
+.bar.idle{opacity:0}
+.bar button{
+  font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--rule);
+  border-radius:4px;padding:2px 8px;cursor:pointer;line-height:1.3;
+}
+.bar button:hover{border-color:var(--accent)}
+.bar button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.bar .count{min-width:46px;text-align:center;font-variant-numeric:tabular-nums}
+/* Tek parça dolan çubuk yerine slayt başına bir dilim: hepsi eşit genişlikte,
+   böylece "kaçıncı slayttayız" bir bakışta sayılabiliyor. */
+.progress{position:fixed;left:0;right:0;top:0;height:4px;display:flex;gap:2px;padding:0 2px;z-index:3}
+.progress i{flex:1;background:var(--bar-bg);transition:background .25s}
+.progress i.on{background:var(--accent)}
+
+</style>
+
+<div class="progress" id="progress"></div>
+<div class="deck">
+<div class="stage" id="stage">
+
+<!-- kapak (numarasız) -->
+<section class="slide" data-time="25" data-no="1">
+  <div class="hook">
+    <div>
+      <p class="eyebrow">inzva · Final sunumu</p>
+      <h1>Hierarchical <em>World Models</em></h1>
+      <p class="lede">Soyut uzayda gelecek tahmini.</p>
+      <div class="stages">
+        <div><span class="k">1. aşama</span><span>Kendi hiyerarşik GRU modelimizi DINO-WM ile karşılaştırdık.</span></div>
+        <div><span class="k">2. aşama</span><span>Bir hiyerarşik planner'ın subgoal hatalarını araştırdık.</span></div>
+      </div>
+      <p class="names"><b>Defne Erkan</b> · <b>Oğuz Nurlu</b> · <b>Arda Alpay</b><br>Ekim 2026</p>
+    </div>
+    <figure class="film" style="margin:0">
+      <img src="assets/sunum/pusht.gif" alt="Bir PushT episode'u: mavi daire, gri T bloğu iterek yeşil hedef konuma getiriyor." width="320" height="320">
+      <figcaption>PushT: mavi daire robot, gri T itilecek blok, yeşil T hedef konum.</figcaption>
+    </figure>
+  </div>
+  <div class="foot"><span class="src">Hi-LeWM · inzva final sunumu</span><span class="pg"></span></div>
+</section>
+
+<!-- ekip (numarasız) -->
+<section class="slide" data-time="10" data-no="2">
+  <p class="eyebrow">Ekibimiz</p>
+  <h2>Üç kişiyiz, <em>tek bir soru</em> peşindeyiz.</h2>
+  <div class="team">
+    <div class="member">
+      <div class="face"><span>DE</span><img src="assets/team/defne.jpg" alt="Defne Erkan" onerror="this.remove()"></div>
+      <div class="bio"><div class="who">Defne Erkan</div></div>
+    </div>
+    <div class="member">
+      <div class="face"><span>ON</span><img src="assets/team/oguz.jpg" alt="Oğuz Nurlu" onerror="this.remove()"></div>
+      <div class="bio">
+        <div class="who">Oğuz Nurlu</div>
+        <div class="what">AI ve IoT, Bilgisayar Mühendisliği, TOBB ETÜ ve DCU Mezunu</div>
+      </div>
+    </div>
+    <div class="member">
+      <div class="face"><span>AA</span><img src="assets/team/arda.jpg" alt="Arda Alpay" onerror="this.remove()"></div>
+      <div class="bio"><div class="who">Arda Alpay</div></div>
+    </div>
+  </div>
+  <div class="foot"><span class="src">inzva AI projects · açık kaynak stable-worldmodel platformu üzerine kuruldu</span><span class="pg"></span></div>
+</section>
+
+<!-- 1 -->
+<section class="slide" data-time="40" data-no="3">
+  <p class="eyebrow">Giriş · Problem tanımı</p>
+  <h2>PushT görevi: mavi daire gri T'yi iterek <em>hedef konuma</em> getirir.</h2>
+  <div class="split" style="grid-template-columns:1fr 440px;margin-top:30px">
+    <div>
+      <div class="points" style="max-width:56ch">
+        <p>İki boyutlu ve basit görünen bir görev. Hem konum hem yön doğru olmalı.</p>
+        <p><b>Peki neden zor?</b> Yanlış bir itişi geri almak zor oluyor. T bir kez kötü bir yere giderse, düzeltmek uzun sürüyor.</p>
+        <p>Yani robot önce düşünmek zorunda. Önceden düşünmeye <b>planning</b> diyoruz.</p>
+      </div>
+      <div id="fig-task" style="margin-top:44px"></div>
+    </div>
+    <figure class="film" style="margin:0">
+      <img src="assets/sunum/pusht.gif" alt="Bir PushT episode'u: mavi daire, gri T bloğu iterek yeşil hedef konuma getiriyor." width="320" height="320">
+      <figcaption>Bir episode, gerçek hızında.</figcaption>
+    </figure>
+  </div>
+  <div class="foot"><span class="src">PushT · standart bir robot öğrenme benchmark'ı</span><span class="pg"></span></div>
+</section>
+
+<!-- 2 -->
+<section class="slide" data-time="60" data-no="4">
+  <p class="eyebrow">Literatür taraması</p>
+  <h2><em>Önceki</em> çalışmalar</h2>
+  <p class="lede" style="margin:18px 0 0">Beş çalışma, her birinin bu projedeki rolüyle.</p>
+  <ul class="lit" style="margin-top:14px">
+    <li>
+      <span class="w">World Models<small>Ha ve Schmidhuber, 2018 · arXiv 1803.10122</small></span>
+      <span class="took">Terimin kaynağı. &ldquo;Cheating the World Model&rdquo; bölümünde planner'ın modelin hatalarını sömürdüğü gösteriliyor.</span>
+      <span class="got">Bulgu 1'in atası</span>
+    </li>
+    <li>
+      <span class="w">LeWM<small>Maes ve ark., 2026 · arXiv 2603.19312</small></span>
+      <span class="took">Piksellerden uçtan uca öğrenilen, kompakt bir latent world model.</span>
+      <span class="got">Hi-LeWM'in frozen<br>low-level'ı</span>
+    </li>
+    <li>
+      <span class="w">Hi-LeWM<small>&ldquo;Mind the Gap&rdquo; · Caselli ve ark. · arXiv 2607.12547</small></span>
+      <span class="took">LeWM'e bir high-level ekliyor: macro-action'larla subgoal planlıyor.</span>
+      <span class="got">İncelediğimiz model;<br>yazarların eğitilmiş hâli</span>
+    </li>
+    <li>
+      <span class="w">DINO-WM<small>Zhou ve ark. · arXiv 2411.04983</small></span>
+      <span class="took">Frozen DINOv2 özellikleri üzerinde çalışan bir world model.</span>
+      <span class="got">GRU modelimizin<br>baseline'ı</span>
+    </li>
+    <li>
+      <span class="w">HWM<small>Zhang ve ark., 2026 · arXiv 2604.03208</small></span>
+      <span class="took">Uzun ufuklu modelin tahmini, kısa ufuklu modelin subgoal'u oluyor.</span>
+      <span class="got">Hi-LeWM'in subgoal<br>arayüzünün kaynağı</span>
+    </li>
+  </ul>
+  <div class="warn">
+    <span class="k">Uyarı</span>
+    <span>Bulgularımız hiyerarşinin <b>genel bir sınırını göstermiyor</b>. Biz yalnızca bu kurulumu inceliyoruz.</span>
+  </div>
+  <div class="foot"><span class="src">Altyapı: stable-worldmodel (arXiv 2605.21800), Hi-LeWM kodunun dayandığı açık kaynak platform</span><span class="pg"></span></div>
+</section>
+
+<!-- 3 -->
+<section class="slide" data-time="30" data-no="5">
+  <p class="eyebrow">Veri seti</p>
+  <h2>PushT expert demonstration'ları. <em>Reward yok.</em></h2>
+  <div class="stats even" style="margin-top:46px">
+    <div class="stat">
+      <div class="big">18,685</div>
+      <p class="what">episode</p>
+      <p>Her biri, expert'in T'yi hedefe götürdüğü tam bir çözüm.</p>
+    </div>
+    <div class="stat">
+      <div class="big">2,336,736</div>
+      <p class="what">frame</p>
+      <p>Her biri 224&times;224 RGB görüntü ve 2 boyutlu bir <b>action</b>, yani itiş yönü.</p>
+    </div>
+    <div class="stat">
+      <div class="big">123</div>
+      <p class="what">medyan adım</p>
+      <p>Episode uzunluğu <b>49 ile 246</b> adım arasında değişiyor.</p>
+    </div>
+  </div>
+  <div class="split" style="grid-template-columns:1fr 240px;gap:56px;margin-top:36px;align-items:start">
+    <p class="loopnote wide" style="margin-top:0">En önemli nokta: <b>reward yok.</b> Veride yalnızca görüntü ve action var. Model &ldquo;iyi mi, kötü mü&rdquo; bilgisini hiç görmüyor; yalnızca expert'in ne yaptığını görüyor.</p>
+    <figure class="film" style="margin:0">
+      <img src="assets/sunum/pusht.gif" alt="Eğitim verisinden bir PushT episode'u." width="320" height="320">
+      <figcaption>PushT expert verisi, eğitim kümesi.</figcaption>
+    </figure>
+  </div>
+  <div class="foot"><span class="src"></span><span class="pg"></span></div>
+</section>
+
+<!-- 4 -->
+<section class="slide" data-time="45" data-no="6">
+  <p class="eyebrow">Pipeline</p>
+  <h2>World model: robotun kafasındaki <em>simülatör</em>.</h2>
+  <div style="margin-top:30px" id="fig-wm"></div>
+  <p class="loopnote wide">Robot bir itişi gerçekte yapmak zorunda kalmıyor. <b>Kafasında deniyor</b>, sonucu görüyor, kötüyse vazgeçiyor. Hem ucuz hem risksiz.</p>
+  <div class="warn">
+    <span class="k">Dikkat</span>
+    <span>Bu model bir <b>tahmin</b> oluyor. Yani yanılabilir. Bunu sunumun sonuna kadar aklımızda tutacağız.</span>
+  </div>
+  <div class="foot"><span class="src">Şematik çizim</span><span class="pg"></span></div>
+</section>
+
+<!-- 5 -->
+<section class="slide" data-time="40" data-no="7">
+  <p class="eyebrow">Pipeline</p>
+  <h2>Görüntü yerine kısa bir özet: <em>192 sayılık latent</em>.</h2>
+  <div style="margin-top:30px" id="fig-latent"></div>
+  <p class="loopnote wide">Ham görüntü büyük: 224&times;224 piksel, üç renk kanalı. Görüntüyü özete çeviren parçanın adı <b>encoder</b>. Bu özetlerin yaşadığı uzay da <b>latent space</b>: hayal etmek ve planning burada oluyor, piksellerde değil.</p>
+  <div class="warn">
+    <span class="k">Uyarı</span>
+    <span>Latent'leri gözle okuyamıyoruz. Bakmak için onları <b>decoder</b>'dan geçirip tekrar görüntüye çevirmek gerekiyor. O görüntüler bu yüzden biraz bulanık olacak.</span>
+  </div>
+  <div class="foot"><span class="src">Şematik çizim; çubuklar temsilidir</span><span class="pg"></span></div>
+</section>
+
+<!-- 6 -->
+<section class="slide" data-time="50" data-no="8">
+  <p class="eyebrow">Pipeline</p>
+  <h2>CEM ile planlama: rastgele planlar dene, <em>en iyileri tut</em>, tekrarla.</h2>
+  <div class="steps">
+    <div class="step"><div class="n">1</div><h3>Üret</h3><p>Rastgele bir sürü plan üretiriz. Plan, burada T'yi iteceğimiz adımlar oluyor.</p></div>
+    <div class="step"><div class="n">2</div><h3>Score ver</h3><p>Her planı world model'da deneriz ve hedefe ne kadar yaklaştığına göre bir <b>score</b> veririz.</p></div>
+    <div class="step"><div class="n">3</div><h3>Ele</h3><p>En iyi score alanları tutarız.</p></div>
+    <div class="step"><div class="n">4</div><h3>Daralt</h3><p>Yeni planları bu en iyilerin çevresinden üretiriz, sonra 2. adıma döneriz.</p></div>
+  </div>
+  <p class="loopnote wide">CEM, <b>Cross-Entropy Method</b> oluyor. Planlar her turda en iyilere doğru converge eder.</p>
+  <div class="warn">
+    <span class="k">Önemli</span>
+    <span>&ldquo;En iyi&rdquo;, <b>modelin tahminine göre</b> en iyi demek. Model yanılıyorsa, CEM o yanılgıya doğru converge eder. Buraya bulgularda geri döneceğiz.</span>
+  </div>
+  <div class="foot"><span class="src">Temsili şema; gerçek veriden üretilmedi</span><span class="pg"></span></div>
+</section>
+
+<!-- 7 -->
+<section class="slide" data-time="50" data-no="9">
+  <p class="eyebrow">Pipeline</p>
+  <h2>Hiyerarşi: high-level <em>subgoal</em> seçer, low-level ona iter.</h2>
+  <p class="lede" style="max-width:88ch">High-level uzak hedefi parçalara bölüyor; <b>subgoal</b>, yol üstündeki bir ara durak oluyor. İtişleri tek tek değil, 25 adımlık paketler hâlinde düşünüyor: bu pakete <b>macro-action</b> diyoruz.</p>
+  <div class="chain">
+    <figure>
+      <div class="plate"><img src="assets/sunum/hiyerarsi-1-baslangic.png" alt="Başlangıç karesi: gri T blok, yeşil hedef konum ve mavi robot." width="530" height="530"></div>
+      <figcaption><span class="who">Başlangıç</span><span class="when">0. adım</span></figcaption>
+    </figure>
+    <div class="link"><span class="glyph">→</span><span class="lbl">macro-action</span><span class="sub">low-level iter · 25 adım</span></div>
+    <figure class="hot">
+      <div class="plate"><img src="assets/sunum/hiyerarsi-2-subgoal.png" alt="Subgoal karesi: blok yolun yarısında, hedefe yaklaşmış." width="530" height="530"></div>
+      <figcaption><span class="who">Subgoal</span><span class="when">25. adım</span></figcaption>
+    </figure>
+    <div class="link"><span class="glyph">→</span><span class="lbl">macro-action</span><span class="sub">low-level iter · 25 adım</span></div>
+    <figure>
+      <div class="plate"><img src="assets/sunum/hiyerarsi-3-hedef.png" alt="Hedef karesi: blok yeşil hedef konumun üzerinde." width="530" height="530"></div>
+      <figcaption><span class="who">Hedef</span><span class="when">50. adım</span></figcaption>
+    </figure>
+  </div>
+  <p class="loopnote wide">Başarılı bir örnek: subgoal'lar makul görünüyor ve <b>agent</b> hedefe varıyor. Hiyerarşinin işe yaradığı hâl bu oluyor. <b>Peki hep böyle mi oluyor?</b></p>
+  <div class="foot"><span class="src">Expert'in subgoal'larıyla bir episode · macro-action = 25 adımlık hareketin özeti</span><span class="pg"></span></div>
+</section>
+
+<!-- 8 -->
+<section class="slide" data-time="60" data-no="10">
+  <p class="eyebrow">1. aşama · yöntem</p>
+  <h2>Hiyerarşik modelimiz: high-level zamana <em>iki ölçekte</em> bakıyor.</h2>
+  <p class="lede">GRU tabanlı, iki seviyeli bir model. <b>GRU</b>, sıralı veri işleyen bir neural network türü; geçmişi hafızasında tutuyor.</p>
+  <div style="margin-top:34px" id="fig-timescales"></div>
+  <p class="loopnote wide">Fine model bir environment adımı ileriyi tahmin ediyor, coarse model iki environment adımı ileriyi. <b>10 adımlık horizon'da bu 5 waypoint demek.</b></p>
+  <div class="foot"><span class="src">Temsili şema: her blok bir zaman aralığı; aralıkların gerçek adım sayıları gösterilmiyor</span><span class="pg"></span></div>
+</section>
+
+<!-- 9 -->
+<section class="slide" data-time="60" data-no="11">
+  <p class="eyebrow">1. aşama · sonuç</p>
+  <h2>Çok daha küçük bir modelle <em>yakın başarı</em>.</h2>
+  <div class="twin">
+    <div class="card">
+      <span class="k">GRU · bizim modelimiz</span>
+      <h3>Kendi eğittiğimiz hiyerarşik world model</h3>
+      <div class="pair">
+        <div><div class="v num">11M</div><div class="u">parametre</div></div>
+        <div><div class="v ac num">%82</div><div class="u">başarı</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <span class="k">DINO-WM · baseline</span>
+      <h3>Frozen DINOv2 özellikleri üzerinde çalışan world model</h3>
+      <div class="pair">
+        <div><div class="v num">~40M</div><div class="u">parametre</div></div>
+        <div><div class="v ac num">%86</div><div class="u">başarı</div></div>
+      </div>
+      <p>19M öğrenilen <b>predictor</b> + 21M <b>frozen</b> DINOv2 <b>encoder</b>; toplamı biz hesapladık.</p>
+    </div>
+  </div>
+  <p class="next"><b>&ldquo;Geçtik&rdquo; ya da &ldquo;yakaladık&rdquo; demiyoruz.</b> Amacımız en baştan beri daha küçük bir modelle yine yüksek performans elde etmekti. <b>Parametre</b>, modelin öğrenebildiği değişken sayısı; yani model boyutunun ölçüsü.</p>
+  <div class="foot"><span class="src">İki ölçüm de 50 episode, 300 sample, 30 CEM adımı, seed 0/1/2, aynı GPU · DINO-WM parametreleri: arXiv 2411.04983 ve DINOv2 deposu</span><span class="pg"></span></div>
+</section>
+
+<!-- 10 -->
+<section class="slide dark" data-time="20" data-no="12">
+  <p class="eyebrow">2. aşama · soru</p>
+  <h2>High-level iyi <em>subgoal</em> seçiyor mu?</h2>
+  <p class="lede" style="font-size:34px;margin-top:36px">İpucu: modelin gözünde evet.</p>
+  <p class="loopnote wide" style="margin-top:28px">Ama modelin gözü ile gerçek aynı şey olmayabiliyor. Şimdi nasıl incelediğimize bakıyoruz.</p>
+  <div class="foot"><span class="src"></span><span class="pg"></span></div>
+</section>
+
+<!-- 11 -->
+<section class="slide" data-time="50" data-no="13">
+  <p class="eyebrow">2. aşama · yöntem</p>
+  <h2>Hi-LeWM'i yeniden eğitmedik. <em>Yazarların modelini</em> kullandık.</h2>
+  <div class="qs">
+    <div class="q">
+      <span class="k">Soru 1</span>
+      <p>Planner'ın seçtiği subgoal, modelin score'uyla gerçekte ne kadar uyuşuyor?</p>
+    </div>
+    <div class="q">
+      <span class="k">Soru 2</span>
+      <p>Environment'ta başarısız episode'larda suç hangi seviyede: high-level'da mı, low-level'da mı?</p>
+    </div>
+  </div>
+  <p class="loopnote wide" style="margin-top:38px">Güven için makalenin <b>iki sayısını yeniden ürettik</b>:</p>
+  <div class="repro">
+    <div class="cell">
+      <div class="v num">%36.0</div>
+      <div class="paper">makale: %38.7</div>
+      <div class="what">Hi-LeWM'in kendi planner'ı ile</div>
+    </div>
+    <div class="cell">
+      <div class="v num">%70.0</div>
+      <div class="paper">makale: %73.3</div>
+      <div class="what">Expert'in subgoal'ları ile</div>
+    </div>
+  </div>
+  <div class="foot"><span class="src">Environment'ta ölçüldü · 50 episode, seed 42, d = 50, 100 adım bütçe</span><span class="pg"></span></div>
+</section>
+
+<!-- 12 -->
+<section class="slide" data-time="60" data-no="14">
+  <p class="eyebrow">Deneysel sonuçlar</p>
+  <h2>Bulgu 1: planner <em>modeli kandırıyor</em>.</h2>
+  <div class="finding">
+    <div class="card">
+      <span class="k">Modelin score'una göre</span>
+      <p class="lead">CEM'in planı, expert'inkinden</p>
+      <div class="big num">9.5&times;<small>daha iyi</small></div>
+      <p class="fine">Draw'lar arası aralık 2.6&times; – 24.7&times;</p>
+    </div>
+    <div class="card bad">
+      <span class="k">Gerçek duruma göre</span>
+      <p class="lead">CEM'in subgoal'u, expert'inkinden</p>
+      <div class="big num">18.4&times;<small>daha kötü</small></div>
+      <p class="fine">25 adım sonraki gerçek duruma uzaklık</p>
+    </div>
+  </div>
+  <p class="next">Model ile gerçek <b>ters yönde</b>. CEM, durumların <b>%81'inde</b> modele göre expert'i geçiyor — ama bu, daha iyi plan bulduğu anlamına gelmiyor. <b>Modelin yanıldığı yeri bulduğu</b> anlamına geliyor.</p>
+  <div class="foot"><span class="src">Modelin içinde ölçüldü (latent space), environment sonucu değil · medyan, 10 draw × 16 durum, d = 50</span><span class="pg"></span></div>
+</section>
+
+<!-- 13 -->
+<section class="slide" data-time="50" data-no="15">
+  <p class="eyebrow">Deneysel sonuçlar</p>
+  <h2>Aynı bulguyu bir de <em>gözle görelim</em>.</h2>
+  <div class="figrow" style="grid-template-columns:1fr 340px;gap:40px;margin-top:22px">
+    <div class="plate">
+      <img src="assets/sunum/subgoal-gorselleri-2satir.png" alt="Her satır bir durum. Soldan sağa: başlangıç, gerçekte 25 adım sonrası, expert'in planının hayal ettiği subgoal (Net bir T), CEM'in planının hayal ettiği subgoal (gri bir leke) ve hedef." width="1806" height="853">
+    </div>
+    <div class="side" style="width:auto;padding-top:0">
+      <div><div class="k">Expert'in subgoal'u</div><p>Net bir T, doğru yerde. Model maliyeti yüksek.</p></div>
+      <div><div class="k">CEM'in subgoal'u</div><p>Gri bir leke; T'nin şekli dağılmış. Ama <b>model bu lekeyi daha çok beğeniyor</b>.</p></div>
+      <div><p class="dim">Bu, az önceki 9.5&times; ve 18.4&times;'in görüntüsü.</p></div>
+    </div>
+  </div>
+  <div class="foot"><span class="src">Kareler decoder'dan geçtiği için bulanık; karşılaştırma bulanık ile bulanık arasında</span><span class="pg"></span></div>
+</section>
+
+<!-- 14 -->
+<section class="slide" data-time="50" data-no="16">
+  <p class="eyebrow">Deneysel sonuçlar</p>
+  <h2>Subgoal'ın kaynağını değiştirmek <em>22 puan</em> etkiliyor.</h2>
+  <div class="row" style="margin-top:26px">
+    <div class="grow" id="fig-subgoal"></div>
+    <div class="side">
+      <div><div class="k">Deney</div><p>Aynı low-level, aynı 50 episode. Tek fark subgoal'ların kaynağı: bir koşulda model üretiyor, diğerinde expert.</p></div>
+      <div><div class="k">Anlamlılık</div><p>p = 0.035 (McNemar). Farklı sonuç veren episode'ların <b>17'si expert lehine</b>, 6'sı model lehine.</p></div>
+      <div><div class="k">Threshold'suz ölçüm</div><p>Başarısız episode'larda hedefe giden yolun kat edilen kısmı (medyan): modelin subgoal'ları ile <b>0.12</b>, expert'inkilerle <b>0.76</b>.</p></div>
+    </div>
+  </div>
+  <div class="foot"><span class="src">Environment'ta ölçüldü · tek seed (42), 50 episode · ikisi de staged execution, 100 adım bütçe, d = 50</span><span class="pg"></span></div>
+</section>
+
+<!-- 15 -->
+<section class="slide" data-time="70" data-no="17">
+  <p class="eyebrow">Deneysel sonuçlar</p>
+  <h2>Bulgu 2: iki köşe, <em>iki tür başarısızlık</em>.</h2>
+  <div class="figrow" style="grid-template-columns:1fr 480px;margin-top:20px">
+    <div class="plate" style="padding:14px;display:grid;place-items:center">
+      <img src="assets/sunum/basarisizlik-haritasi.png" alt="Dağılım grafiği. Yatay eksen: modelin subgoal'u expert'in yolundan ne kadar sapmış. Dikey eksen: agent subgoal'a ne kadar uzak kalmış. Yeşil noktalar başarılı, kırmızı çarpılar başarısız episode'lar." width="930" height="750" style="max-height:508px;width:auto">
+    </div>
+    <div class="side" style="width:auto;padding-top:0">
+      <div><div class="k">Sağ üst köşe · anlamsız subgoal</div><p>Subgoal, expert'in yolundan çok uzak. <b>Suç high-level'da.</b> İlk 25 adımda bu gruptan 12 episode var.</p></div>
+      <div><div class="k">Sol üst köşe · ulaşılamayan subgoal</div><p>Subgoal makul, expert'inkine yakın. Ama agent yine de ona ulaşamıyor. <b>Suç low-level'da.</b> Bu gruptan 7 episode var.</p></div>
+      <div><p class="dim">Bu ayrım threshold'a bağlı: 0.25 seçtik. 0.10 olsaydı anlamsız sayısı 14, 0.50 olsaydı 0 olurdu. 12 ve 7'yi kesin sayı olarak değil, bir resim olarak sunuyoruz.</p></div>
+    </div>
+  </div>
+  <div class="foot"><span class="src">Her nokta bir episode · yeşil başarılı, kırmızı başarısız · environment'ta ölçüldü, tek seed, 50 episode, threshold 0.25</span><span class="pg"></span></div>
+</section>
+
+<!-- 16 -->
+<section class="slide" data-time="50" data-no="18">
+  <p class="eyebrow">Sonuçlar</p>
+  <h2>İkinci aşamadan <em>iki sonuç</em> çıkıyor.</h2>
+  <ol class="cards two">
+    <li>
+      <span class="n">BULGU 1</span>
+      <h3>Planner, modelin hatalarını sömürüyor.</h3>
+      <p>Modelin score'u ile gerçek <b>ters yönde</b>: modelin içinde CEM'in planı <b>9.5&times; daha iyi</b> görünüyor, gerçekte subgoal <b>18.4&times; daha kötü</b>.</p>
+    </li>
+    <li>
+      <span class="n">BULGU 2</span>
+      <h3>Başarısızlıklar iki kaynaklı.</h3>
+      <p>Anlamsız subgoal'u olan <b>12 episode'un 9'u</b> başarısız; expert'in subgoal'ları 7'sini kurtarıyor. Makul ama ulaşılamayan subgoal'u olan <b>7 episode'un 7'si</b> başarısız; expert'in subgoal'ları yalnızca 3'ünü kurtarıyor.</p>
+    </li>
+  </ol>
+  <p class="next"><b>Çıkarım: yalnızca high-level'ı düzeltmek yetmez.</b> Low-level'ın subgoal'a ulaşma becerisi de ayrıca ele alınmalı.</p>
+  <div class="foot"><span class="src">Environment sonuçları tek seed, 50 episode · 12 ve 7 ayrımı 0.25 threshold'una bağlı · 9.5× ve 18.4× modelin içinde ölçüldü</span><span class="pg"></span></div>
+</section>
+
+<!-- 17 -->
+<section class="slide" data-time="30" data-no="19">
+  <p class="eyebrow">Gelecek çalışma</p>
+  <h2>Future work olarak <em>dört adım</em> düşünüyoruz.</h2>
+  <ol class="cards quad">
+    <li>
+      <span class="n">01</span>
+      <h3>Daha fazla seed, daha uzak hedef.</h3>
+      <p>Sonuçlarımız <b>tek seed ve 50 episode'a</b> dayanıyor. d = 50 ile çalıştık; d = 75 gibi daha uzak hedeflerde ne olacağını görmek istiyoruz.</p>
+    </li>
+    <li>
+      <span class="n">02</span>
+      <h3>Search'ü veriye bağlayan yöntemleri denemek.</h3>
+      <p><b>Hi-LeWM-C</b>, CEM'in search'ünü training data'nın daha uygun olan bölgesine bağlıyor. Biz bunu environment'ta denemedik.</p>
+    </li>
+    <li>
+      <span class="n">03</span>
+      <h3>Low-level'ın subgoal'a ulaşma becerisini ölçmek.</h3>
+      <p>Sol üst köşedeki episode'lar bunun <b>ayrıca ölçülmesi</b> gerektiğini gösteriyor.</p>
+    </li>
+    <li>
+      <span class="n">04</span>
+      <h3>GRU modelimizi biraz büyütmek.</h3>
+      <p>Parametre sayısını artırıp daha geniş <b>horizon</b> için bir high-level model eğitmek. Horizon, modelin ileriye bakış aralığı. Hedefimiz hâlâ modeli küçük tutmak.</p>
+    </li>
+  </ol>
+  <div class="foot"><span class="src">Hi-LeWM-C bu çalışmada environment'ta denenmedi</span><span class="pg"></span></div>
+</section>
+
+<!-- 18 -->
+<section class="slide closing dark" data-time="10" data-no="20">
+  <p class="eyebrow">Kapanış</p>
+  <h2>Teşekkürler.</h2>
+  <div class="thanks">
+    <div>
+      <p class="qa">Sorular? <em>Buyurun.</em></p>
+      <p class="repo">Repo: <b>github.com/Thnorty/inzva-hierarchical-planning</b></p>
+    </div>
+    <div class="faces">
+      <div><div class="face small"><span>DE</span><img src="assets/team/defne.jpg" alt="" onerror="this.remove()"></div>Defne</div>
+      <div><div class="face small"><span>ON</span><img src="assets/team/oguz.jpg" alt="" onerror="this.remove()"></div>Oğuz</div>
+      <div><div class="face small"><span>AA</span><img src="assets/team/arda.jpg" alt="" onerror="this.remove()"></div>Arda</div>
+    </div>
+  </div>
+  <div class="foot"><span class="src">Tüm kodlar GitHub'da açık kaynak</span><span class="pg"></span></div>
+</section>
+
+<img class="brand" src="assets/inzva.webp" alt="" aria-hidden="true" width="1500" height="436">
+</div>
+</div>
+
+<nav class="bar" id="bar" aria-label="Slayt kontrolleri">
+  <button type="button" id="prev" aria-label="Önceki slayt">←</button>
+  <span class="count" id="count"></span>
+  <button type="button" id="next" aria-label="Sonraki slayt">→</button>
+</nav>
+
+<script>
+(function(){
+  const NS = 'http://www.w3.org/2000/svg';
+  function el(tag, attrs, parent, text){
+    const e = document.createElementNS(NS, tag);
+    let style = attrs.style || '';
+    for (const k in attrs){
+      const v = attrs[k];
+      if (k === 'style' || v === null || v === undefined) continue;
+      if ((k === 'fill' || k === 'stroke') && String(v).startsWith('var(')) style += `;${k}:${v}`;
+      else e.setAttribute(k, v);
+    }
+    if (style) e.setAttribute('style', style);
+    if (text !== undefined) e.textContent = text;
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function svg(id, w, h){
+    const host = document.getElementById(id);
+    if (!host) return null;
+    const s = el('svg', {viewBox:`0 0 ${w} ${h}`, width:w, height:h, role:'img'});
+    host.appendChild(s);
+    return s;
+  }
+  const C = {ink:'var(--ink)', soft:'var(--ink-soft)', rule:'var(--rule)', ac:'var(--accent)',
+             wash:'var(--accent-wash)', ref:'var(--ref)', muted:'var(--muted)', paper:'var(--paper)', card:'var(--card)'};
+  const serif = 'font-family:var(--serif);font-weight:600';
+  // Görüntüdeki gerçek renkler: izleyici şemayı gif ile eşleştirebilsin diye
+  // palet yeşiline değil, footage'ın kendi renklerine sadık kalıyoruz.
+  const SIM = {pusher:'#3b6fd4', block:'#8c99ab', goal:'#8fd98f'};
+
+  // T bloğu: üstte bar, altta gövde; merkezi etrafında döndürülüyor.
+  function T(s, cx, cy, size, angle, fill, opacity, dashed){
+    const g = el('g', {transform:`translate(${cx} ${cy}) rotate(${angle})`, opacity:opacity ?? 1}, s);
+    const at = dashed
+      ? {fill:'none', stroke:fill, 'stroke-width':3, 'stroke-dasharray':'7 5'}
+      : {fill};
+    el('rect', Object.assign({x:-size/2, y:-size/2, width:size, height:size/4, rx:2}, at), g);
+    el('rect', Object.assign({x:-size/8, y:-size/4, width:size/4, height:size*0.75, rx:2}, at), g);
+    return g;
+  }
+  function frame(s, x, y, w, label, h){
+    el('rect', {x, y, width:w, height:h ?? w, fill:C.card, stroke:C.rule, 'stroke-width':2, rx:8}, s);
+    if (label) el('text', {x:x+w/2, y:y+(h ?? w)+26, 'font-size':16, 'text-anchor':'middle', fill:C.soft}, s, label);
+  }
+  function arrow(s, x1, y, x2){
+    el('line', {x1, x2:x2-12, y1:y, y2:y, stroke:C.soft, 'stroke-width':3}, s);
+    el('path', {d:`M${x2} ${y} l-16 -9 v18 z`, fill:C.soft}, s);
+  }
+
+  // Slayt 1 · görevdeki üç öğe.
+  (function(){
+    const s = svg('fig-task', 700, 150);
+    if (!s) return;
+    const items = [
+      {label:'Robot', sub:'mavi daire', draw:(g,cx,cy) => el('circle', {cx, cy, r:15, fill:SIM.pusher}, g)},
+      {label:'İtilecek blok', sub:'gri T', draw:(g,cx,cy) => T(g, cx, cy, 54, 20, SIM.block)},
+      {label:'Hedef konum', sub:'yeşil T', draw:(g,cx,cy) => T(g, cx, cy, 54, -10, SIM.goal)},
+    ];
+    items.forEach((it, i) => {
+      const x = i * 236, w = 92;
+      frame(s, x, 0, w);
+      it.draw(s, x + w/2, w/2);
+      el('text', {x:x + w + 16, y:38, 'font-size':19, fill:C.ink, style:serif}, s, it.label);
+      el('text', {x:x + w + 16, y:64, 'font-size':15, fill:C.soft}, s, it.sub);
+    });
+  })();
+
+  // Slayt 4 · world model: sahne + itiş → sonraki sahne.
+  (function(){
+    const s = svg('fig-wm', 1376, 250);
+    if (!s) return;
+    const y = 20, w = 130, mid = y + w/2;
+
+    frame(s, 0, y, w, 'şu anki sahne');
+    T(s, w/2, mid, 52, 25, SIM.block);
+    el('circle', {cx:28, cy:mid + 36, r:11, fill:SIM.pusher}, s);
+
+    el('text', {x:w + 34, y:mid + 12, 'font-size':40, fill:C.soft, style:serif}, s, '+');
+
+    frame(s, 212, y, w, 'yapmayı düşündüğü itiş');
+    el('line', {x1:242, y1:mid + 26, x2:330, y2:mid - 24, stroke:SIM.pusher, 'stroke-width':5}, s);
+    el('path', {d:`M340 ${mid - 30} l-22 2 l10 16 z`, fill:SIM.pusher}, s);
+    el('circle', {cx:242, cy:mid + 26, r:11, fill:SIM.pusher}, s);
+
+    arrow(s, 366, mid, 466);
+
+    el('rect', {x:478, y:y + 15, width:250, height:100, rx:10, fill:C.wash, stroke:C.ac, 'stroke-width':2}, s);
+    el('text', {x:603, y:mid - 2, 'font-size':27, 'text-anchor':'middle', fill:C.ink, style:serif}, s, 'World model');
+    el('text', {x:603, y:mid + 26, 'font-size':16, 'text-anchor':'middle', fill:C.soft}, s, 'tahmin eden model');
+
+    arrow(s, 744, mid, 844);
+
+    frame(s, 856, y, w, 'sonraki sahne');
+    T(s, 856 + w/2, mid, 52, 62, SIM.block);
+    el('circle', {cx:900, cy:mid + 30, r:11, fill:SIM.pusher}, s);
+
+    el('text', {x:1030, y:mid - 8, 'font-size':25, fill:C.ac, style:serif}, s, 'Robot denemeyi');
+    el('text', {x:1030, y:mid + 24, 'font-size':25, fill:C.ac, style:serif}, s, 'hayalinde yapar.');
+  })();
+
+  // Slayt 5 · görüntü → encoder → 192 sayı.
+  (function(){
+    const s = svg('fig-latent', 1376, 230);
+    if (!s) return;
+    const y = 16, w = 130, mid = y + w/2;
+
+    frame(s, 0, y, w, '224 × 224 × 3');
+    T(s, w/2, mid, 52, 25, SIM.block);
+    el('circle', {cx:28, cy:mid + 36, r:11, fill:SIM.pusher}, s);
+    el('text', {x:w/2, y:y - 12, 'font-size':17, 'text-anchor':'middle', fill:C.ink, style:serif}, s, 'Görüntü');
+
+    arrow(s, w + 16, mid, 240);
+
+    el('rect', {x:252, y:y + 15, width:220, height:100, rx:10, fill:C.wash, stroke:C.ac, 'stroke-width':2}, s);
+    el('text', {x:362, y:mid - 2, 'font-size':27, 'text-anchor':'middle', fill:C.ink, style:serif}, s, 'Encoder');
+    el('text', {x:362, y:mid + 26, 'font-size':16, 'text-anchor':'middle', fill:C.soft}, s, 'görüntüyü özetler');
+
+    arrow(s, 488, mid, 588);
+
+    // latent: temsili çubuklar
+    const bx = 600, bw = 460, bh = 104;
+    el('rect', {x:bx, y:y + 13, width:bw, height:bh, rx:10, fill:C.card, stroke:C.ac, 'stroke-width':4}, s);
+    const n = 42, gap = bw / n;
+    for (let i = 0; i < n; i++){
+      const seed = Math.sin((i + 1) * 12.9898) * 43758.5453;
+      const r = seed - Math.floor(seed);
+      const h = 16 + r * 66;
+      el('rect', {x:bx + 10 + i * (gap - 0.24), y:y + 13 + (bh - h) / 2, width:gap * 0.52, height:h, rx:1.5, fill:C.ac, opacity:.72}, s);
+    }
+    el('text', {x:bx + bw/2, y:y + bh + 48, 'font-size':17, 'text-anchor':'middle', fill:C.ac, style:serif}, s, 'latent: 192 sayı');
+
+    el('text', {x:1110, y:mid - 8, 'font-size':25, fill:C.ink, style:serif}, s, 'Hayal ve planning');
+    el('text', {x:1110, y:mid + 24, 'font-size':25, fill:C.ink, style:serif}, s, 'bu uzayda olur.');
+  })();
+
+  // Slayt 8 · iki zaman ölçeği. (pptx'teki İngilizce ekran görüntüsünün yerine.)
+  (function(){
+    const s = svg('fig-timescales', 1376, 250);
+    if (!s) return;
+    const x0 = 360, dx = 95;
+    const rows = [{y:62,  t:'Fine ölçek',   d:'her environment adımı · 10 adım'},
+                  {y:176, t:'Coarse ölçek', d:'iki adımda bir · 5 waypoint'}];
+    rows.forEach((r, ri) => {
+      el('text', {x:0, y:r.y - 6, 'font-size':26, fill:C.ink, style:serif}, s, r.t);
+      el('text', {x:0, y:r.y + 24, 'font-size':17, fill:C.soft}, s, r.d);
+      el('line', {x1:x0, y1:r.y, x2:x0 + 10*dx, y2:r.y, stroke:C.rule, 'stroke-width':3}, s);
+      el('rect', {x:x0 - 12, y:r.y - 12, width:24, height:24, fill:C.ink}, s);
+      for (let i = 1; i <= 10; i++){
+        const x = x0 + i*dx;
+        if (ri === 0) el('circle', {cx:x, cy:r.y, r:12, fill:C.soft}, s);
+        else if (i % 2 === 0) el('circle', {cx:x, cy:r.y, r:20, fill:C.ac}, s);
+        else el('circle', {cx:x, cy:r.y, r:9, fill:C.paper, stroke:C.ac, 'stroke-width':3}, s);
+      }
+    });
+    el('text', {x:x0, y:236, 'font-size':16, fill:C.soft, 'text-anchor':'middle'}, s, 'şimdi');
+    el('text', {x:x0 + 10*dx, y:236, 'font-size':16, fill:C.soft, 'text-anchor':'end'}, s, '10 adım ileride');
+  })();
+
+  // Slayt 14 · subgoal kaynağı: model mi, expert mi.
+  (function(){
+    const W = 860, H = 470, L = 60, B = 360, T0 = 30;
+    const s = svg('fig-subgoal', W, H);
+    if (!s) return;
+    const y = v => B - (B - T0) * v / 100;
+    [0,25,50,75,100].forEach(v => {
+      el('line', {x1:L, x2:W, y1:y(v), y2:y(v), stroke:C.rule}, s);
+      el('text', {x:L-12, y:y(v)+6, 'font-size':16, 'text-anchor':'end', fill:C.soft}, s, '%' + v);
+    });
+    const bars = [[48.0, C.muted, 'Modelin subgoal’leri'], [70.0, C.ac, 'Expert’in subgoal’leri']];
+    bars.forEach(([v, fill, label], i) => {
+      const x0 = L + 110 + i * 330, bw = 200;
+      el('rect', {x:x0, y:y(v), width:bw, height:B - y(v), fill}, s);
+      el('text', {x:x0+bw/2, y:y(v)-16, 'font-size':40, 'text-anchor':'middle', fill:i ? C.ac : C.ink, style:serif}, s, '%' + v.toFixed(1));
+      el('text', {x:x0+bw/2, y:B+36, 'font-size':21, 'text-anchor':'middle', fill:C.ink, style:serif}, s, label);
+    });
+    // fark
+    const xa = L + 110 + 200, xb = L + 110 + 330;
+    el('line', {x1:(xa+xb)/2, x2:(xa+xb)/2, y1:y(48), y2:y(70), stroke:C.ac, 'stroke-width':2, 'stroke-dasharray':'2 4'}, s);
+    el('text', {x:(xa+xb)/2, y:y(59)-10, 'font-size':22, 'text-anchor':'middle', fill:C.ac, style:serif}, s, '+22.0');
+    el('text', {x:(xa+xb)/2, y:y(59)+14, 'font-size':15, 'text-anchor':'middle', fill:C.ac}, s, 'puan');
+    el('text', {x:(L + W) / 2, y:B + 70, 'font-size':15, 'text-anchor':'middle', fill:C.soft}, s,
+       'aynı low-level, aynı 50 episode; yalnızca subgoal’in kaynağı değişiyor');
+  })();
+
+  // Gezinme.
+  const stage = document.getElementById('stage');
+  const slides = [...document.querySelectorAll('.slide')];
+  const N = slides.length;
+  // Köşedeki numara her slaytta var ve deste sırasıyla aynı; data-no'yu yine de
+  // elde tutuyoruz ki numaralandırma istenirse tek yerden değiştirilebilsin.
+  slides.forEach((sl, i) => { const pg = sl.querySelector('.pg'); if (pg) pg.textContent = sl.dataset.no || (i + 1); });
+
+  // Slayt başına bir dilim.
+  const progress = document.getElementById('progress');
+  const ticks = slides.map(() => progress.appendChild(document.createElement('i')));
+
+  let cur = 0;
+
+  function fit(){
+    const s = Math.min(window.innerWidth / 1600, window.innerHeight / 900);
+    stage.style.setProperty('--s', s);
+  }
+  function show(i){
+    cur = Math.max(0, Math.min(N - 1, i));
+    slides.forEach((sl, j) => sl.classList.toggle('active', j === cur));
+    // Koyu slaytta sahnenin dışındaki alan da koyu olsun.
+    document.documentElement.classList.toggle('dark-page', slides[cur].classList.contains('dark'));
+    document.getElementById('count').textContent = `${cur+1} / ${N}`;
+    ticks.forEach((t, j) => t.classList.toggle('on', j <= cur));
+    if (location.hash !== '#' + (cur + 1)) history.replaceState(null, '', '#' + (cur + 1));
+  }
+  function go(d){ show(cur + d); }
+  function toggleFull(){
+    try {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else document.documentElement.requestFullscreen().catch(() => {});
+    } catch (e) {}
+  }
+
+  document.getElementById('prev').onclick = () => go(-1);
+  document.getElementById('next').onclick = () => go(1);
+  document.addEventListener('keydown', e => {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    const k = e.key;
+    if (k === 'ArrowRight' || k === 'PageDown' || k === ' ' || k === 'ArrowDown'){ e.preventDefault(); go(1); }
+    else if (k === 'ArrowLeft' || k === 'PageUp' || k === 'ArrowUp'){ e.preventDefault(); go(-1); }
+    else if (k === 'Home') show(0);
+    else if (k === 'End') show(N - 1);
+    else if (k === 'f' || k === 'F') toggleFull();
+  });
+
+  const bar = document.getElementById('bar');
+  let idle;
+  function wake(){ bar.classList.remove('idle'); clearTimeout(idle); idle = setTimeout(() => bar.classList.add('idle'), 2500); }
+  document.addEventListener('mousemove', wake);
+  document.addEventListener('touchstart', wake, {passive:true});
+
+  let tx = null;
+  document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, {passive:true});
+  document.addEventListener('touchend', e => {
+    if (tx === null) return;
+    const dx = e.changedTouches[0].clientX - tx;
+    if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
+    tx = null;
+  });
+
+  window.addEventListener('resize', fit);
+  fit();
+  const h = parseInt(location.hash.slice(1), 10);
+  show(Number.isFinite(h) ? h - 1 : 0);
+  wake();
+
+})();
+</script>
