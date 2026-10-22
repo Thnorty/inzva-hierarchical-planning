@@ -9,8 +9,9 @@ every number on it.
 | `assets/sunum/` | what the deck needs: the PushT gif, the two data figures in English (`failure-map.png`, `subgoal-images-2rows.png`), and the three hierarchy-chain frames cropped out of the pptx's example figure. The pptx's Turkish figures stay here as the panel's source and as a record; the deck no longer shows them |
 | `make_failure_map.py`, `make_subgoal_panel.py` | draw the two English figures; see *The two data figures* |
 | `assets/inzva.webp` | the inzva wordmark, in the top-right corner of every slide. White artwork on transparency, inverted in CSS on the light slides — see below |
-| `assets/qr-code.svg` | QR code for the deck's web address, left of the wordmark on slides 1–19 and large on the closing slide — see below |
-| `assets/repo-qr-code.svg` | QR code for the GitHub repo, beside the deck's on the closing slide only |
+| `assets/qr/` | the QR codes, named for where they lead: `slides.svg` (this deck's web address; left of the wordmark on slides 1–19, and on the closing slide), `repo.svg` (the GitHub repo), and `linkedin-defne.png`, `linkedin-oguz.png`, `linkedin-arda.png` (our LinkedIn profiles). All five are on the closing slide — see *The QR codes* |
+| `assets/favicon.png` | the browser-tab icon: `assets/inzva-logo.webp`, the inzva ring, white on the dark slides' colour so it shows on light and dark tabs alike |
+| `assets/inzva-logo.webp` | the inzva ring on its own, white on transparency; the source of the favicon |
 | `assets/team/` | **put `defne.jpg`, `oguz.jpg` and `arda.jpg` here**, square crops work best. Until then the deck shows initials |
 | `previous/presentation-3.pptx` | presentation 3, as given ("Proj Presentation #3"): Push-T, VLA vs world models, the GRU predictor, CEM, MPC, temporal hierarchy |
 | `../notes/inzva-report-4.html` | the spec sent before presentation 4. Frozen, never edited; its 40-step horizon and stride 8 are out of date (`INZVA_README.md` §13) |
@@ -73,7 +74,7 @@ the old English deck, which was cut for a different audience.
 The deck is **always light**, whatever the machine is set to: there is no
 `prefers-color-scheme` rule in it, so it needs no `data-theme` pin either. On a
 projector or printed to PDF that is what you want. Two slides are deliberately
-dark, the stage-2 question (12) and the closing *Sorular?* (20); they carry
+dark, the stage-2 question (12) and the closing *Questions?* (20); they carry
 `class="slide dark"`, which redefines the palette variables on the section
 itself. Add or remove that class to change which slides invert — nothing else
 needs touching.
@@ -103,18 +104,21 @@ the tidier trick: `mask-image` fetches under CORS rules, and on a page opened
 as `file://` — which is how this deck is usually opened — it fails silently and
 the mark never appears at all. An `<img>` has no such restriction.
 
-### The QR code
+### The QR codes
 
-`assets/qr-code.svg` encodes https://thnorty.github.io/inzva-hierarchical-planning/
+`assets/qr/slides.svg` encodes https://thnorty.github.io/inzva-hierarchical-planning/
 (see *Online*). Like the wordmark it is one `<img class="qr">` at the end of
-`.stage`, 18px left of the mark, on every slide but the closing one. There it
-is shown at 260px, labelled *Sunum*, next to `assets/repo-qr-code.svg`
-(https://github.com/Thnorty/inzva-hierarchical-planning), labelled *Repo*; both
-addresses are also written out under *Sorular?*. Only the deck's code is in
-the corner, because two small codes side by side leave people guessing which
-to scan. The repo code was made with `segno` to match the deck's: version 4,
-error correction M, a 3-module margin, so the two look alike side by side. It
-is not dimmed like the mark,
+`.stage`, 18px left of the mark, on every slide but the closing one. The
+closing slide shows all five codes in one row at 200px (about 35 cm on a 3 m
+screen): *Slides* and *Repo* (`qr/repo.svg`,
+https://github.com/Thnorty/inzva-hierarchical-planning), a thin divider, then
+the three LinkedIn codes, each captioned with that person's photo and name.
+Both addresses are also written out under *Questions?*. Only the deck's code
+is in the corner, because two small codes side by side leave people guessing
+which to scan. The repo code was made with `segno` to match the deck's:
+version 4, error correction M, a 3-module margin, so the two look alike side
+by side. The LinkedIn codes are as made by LinkedIn, logo in the middle. The
+corner code is not dimmed like the mark,
 since it has to scan: on light slides `mix-blend-mode:multiply` melts its white
 background into the paper colour, and on the two dark slides it stays a white
 square, which is also the light margin a camera needs.
@@ -124,8 +128,8 @@ with OpenCV's basic QR detector on a 1920×1080 render. At 80px the WeChat
 detector (`opencv-contrib`), which reads more like a phone camera, decodes it
 on all 20 slides at both 1600×900 and 1920×1080. `top:40px` keeps its bottom edge (120px) above
 where the titles start (~121px). If the address ever changes, regenerate the
-SVG; `assets/qr-code.jpg` is the same code as a JPEG, untracked
-because `.gitignore` ignores `*.jpg`, so it never reaches the web copy.
+SVG. Keep QR codes out of `.jpg`: `.gitignore` ignores `*.jpg`, so a JPEG code
+never reaches the web copy.
 
 ### Conventions
 
@@ -135,11 +139,10 @@ Three worth knowing before editing it:
   sentence by sentence; the Turkish deck is in git history before
   2026-10-22. The technical terms are the ones the Turkish deck already used
   (`subgoal`, `episode`, `action`, `reward`, `expert`, `score`, `draw`,
-  `threshold`, `planner`), so the script's terms still match. The speech
-  script stays Turkish, but where Oğuz's part (slides 8–13) reads a slide's
-  sentence it now says the slide's English; the other parts have not been
-  changed. Percentages are written English-style, `82%`, including in the
-  chart on slide 16.
+  `threshold`, `planner`), so the script's terms still match. The talk is
+  given in Turkish, so the speech script stays fully Turkish even where it
+  reads out a slide's sentence. Percentages are written English-style,
+  `82%`, including in the chart on slide 16.
 - **Corner numbers.** Every slide is numbered, 1 to 20, matching the deck
   position — the cover is 1 and the team slide 2, where the pptx left both
   blank and numbered the rest 1 to 18. So a slide's corner number is now its

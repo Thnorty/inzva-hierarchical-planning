@@ -1,5 +1,7 @@
 <meta charset="utf-8">
 <title>Hierarchical World Models</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -267,12 +269,17 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
 .next b{color:var(--ink);font-weight:600}
 
 /* kapanış */
-.thanks{display:grid;grid-template-columns:1fr auto;gap:64px;align-items:end;margin-top:40px}
-.thanks .codes{display:flex;gap:36px}
-.thanks figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:14px;font-family:var(--mono);font-size:17px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
-.thanks figure img{display:block;width:260px;height:260px;border-radius:6px}
-.thanks .faces{display:flex;gap:28px;margin-top:44px}
-.thanks .faces div{display:flex;flex-direction:column;align-items:center;gap:10px;font-family:var(--mono);font-size:15px;color:var(--ink-soft)}
+.thanks{margin-top:26px}
+/* Beş QR tek sırada: önce sunum ve repo, ince bir çizgi, sonra her birimizin
+   LinkedIn'i, altında küçük fotoğrafı ve adıyla. 200px bir projeksiyonda
+   yaklaşık 35 cm, salonun arkasından da okunuyor. */
+.codes{display:flex;gap:34px;align-items:flex-start;margin-top:40px}
+.codes figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:14px;font-family:var(--mono);font-size:17px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.codes img.code{display:block;width:200px;height:200px;border-radius:6px}
+.codes figcaption{display:flex;align-items:center;gap:10px;height:34px}
+.codes .split{width:1px;align-self:stretch;background:var(--rule);margin:0 6px}
+.face.tiny{width:34px;height:34px;flex:none}
+.face.tiny span{font-size:13px}
 .closing{justify-content:center}
 .closing .foot{margin-top:72px}
 .qa{font-size:72px;font-weight:600;margin-top:40px}
@@ -468,20 +475,7 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
 </section>
 
 <!-- 4 -->
-<section class="slide" data-time="45" data-no="6">
-  <p class="eyebrow">Pipeline</p>
-  <h2>World model: the <em>simulator</em> in the robot's head.</h2>
-  <div style="margin-top:30px" id="fig-wm"></div>
-  <p class="loopnote wide">The robot doesn't have to make a push for real. <b>It tries it in its head</b>, sees the result, and drops it if it's bad. That's cheap and risk-free.</p>
-  <div class="warn">
-    <span class="k">Keep in mind</span>
-    <span>What this model gives is a <b>prediction</b>, so it can be wrong. Keep that in mind until the end of the talk.</span>
-  </div>
-  <div class="foot"><span class="src">Schematic</span><span class="pg"></span></div>
-</section>
-
-<!-- 5 -->
-<section class="slide" data-time="40" data-no="7">
+<section class="slide" data-time="40" data-no="6">
   <p class="eyebrow">Pipeline</p>
   <h2>A short summary instead of the image: <em>a latent of 192 numbers</em>.</h2>
   <div style="margin-top:30px" id="fig-latent"></div>
@@ -491,6 +485,19 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
     <span>We can't read a latent by eye. To look at one, we have to pass it through a <b>decoder</b> to turn it back into an image. That's why those images will look a little blurry.</span>
   </div>
   <div class="foot"><span class="src">Schematic; the bars are illustrative</span><span class="pg"></span></div>
+</section>
+
+<!-- 5 -->
+<section class="slide" data-time="45" data-no="7">
+  <p class="eyebrow">Pipeline</p>
+  <h2>World model: the <em>simulator</em> in the robot's head.</h2>
+  <div style="margin-top:30px" id="fig-wm"></div>
+  <p class="loopnote wide">The robot doesn't have to make a push for real. <b>It tries it in its head</b>, sees the result, and drops it if it's bad. That's cheap and risk-free.</p>
+  <div class="warn">
+    <span class="k">Keep in mind</span>
+    <span>What this model gives is a <b>prediction</b>, so it can be wrong. Keep that in mind until the end of the talk.</span>
+  </div>
+  <div class="foot"><span class="src">Schematic</span><span class="pg"></span></div>
 </section>
 
 <!-- 6 -->
@@ -737,32 +744,38 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
   <p class="eyebrow">Closing</p>
   <h2>Thank you.</h2>
   <div class="thanks">
-    <div>
-      <p class="qa">Questions? <em>Go ahead.</em></p>
-      <p class="repo">Repo: <b>github.com/Thnorty/inzva-hierarchical-planning</b></p>
-      <p class="repo">Slides: <b>thnorty.github.io/inzva-hierarchical-planning</b></p>
-      <div class="faces">
-        <div><div class="face small"><span>DE</span><img src="assets/team/defne.jpg" alt="" onerror="this.remove()"></div>Defne</div>
-        <div><div class="face small"><span>ON</span><img src="assets/team/oguz.jpg" alt="" onerror="this.remove()"></div>Oğuz</div>
-        <div><div class="face small"><span>AA</span><img src="assets/team/arda.jpg" alt="" onerror="this.remove()"></div>Arda</div>
-      </div>
-    </div>
-    <div class="codes">
-      <figure>
-        <img src="assets/qr-code.svg" alt="QR code for the slides: thnorty.github.io/inzva-hierarchical-planning">
-        <figcaption>Slides</figcaption>
-      </figure>
-      <figure>
-        <img src="assets/repo-qr-code.svg" alt="QR code for the repo: github.com/Thnorty/inzva-hierarchical-planning">
-        <figcaption>Repo</figcaption>
-      </figure>
-    </div>
+    <p class="qa">Questions? <em>Go ahead.</em></p>
+    <p class="repo">Repo: <b>github.com/Thnorty/inzva-hierarchical-planning</b></p>
+    <p class="repo">Slides: <b>thnorty.github.io/inzva-hierarchical-planning</b></p>
+  </div>
+  <div class="codes">
+    <figure>
+      <img class="code" src="assets/qr/slides.svg" alt="QR code for the slides: thnorty.github.io/inzva-hierarchical-planning">
+      <figcaption>Slides</figcaption>
+    </figure>
+    <figure>
+      <img class="code" src="assets/qr/repo.svg" alt="QR code for the repo: github.com/Thnorty/inzva-hierarchical-planning">
+      <figcaption>Repo</figcaption>
+    </figure>
+    <div class="split" aria-hidden="true"></div>
+    <figure>
+      <img class="code" src="assets/qr/linkedin-defne.png" alt="QR code for Defne Erkan's LinkedIn profile">
+      <figcaption><span class="face tiny"><span>DE</span><img src="assets/team/defne.jpg" alt="" onerror="this.remove()"></span>Defne</figcaption>
+    </figure>
+    <figure>
+      <img class="code" src="assets/qr/linkedin-oguz.png" alt="QR code for Oğuz Nurlu's LinkedIn profile">
+      <figcaption><span class="face tiny"><span>ON</span><img src="assets/team/oguz.jpg" alt="" onerror="this.remove()"></span>Oğuz</figcaption>
+    </figure>
+    <figure>
+      <img class="code" src="assets/qr/linkedin-arda.png" alt="QR code for Arda Alpay's LinkedIn profile">
+      <figcaption><span class="face tiny"><span>AA</span><img src="assets/team/arda.jpg" alt="" onerror="this.remove()"></span>Arda</figcaption>
+    </figure>
   </div>
   <div class="foot"><span class="src">All the code is open source on GitHub</span><span class="pg"></span></div>
 </section>
 
 <img class="brand" src="assets/inzva.webp" alt="" aria-hidden="true" width="1500" height="436">
-<img class="qr" src="assets/qr-code.svg" alt="QR code for these slides">
+<img class="qr" src="assets/qr/slides.svg" alt="QR code for these slides">
 </div>
 </div>
 
