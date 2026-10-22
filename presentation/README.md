@@ -210,6 +210,7 @@ Seeds 0, 1, 2; 50 episodes each; d=25, horizon 10.
 | ours at k = 2 | 76.0 % | `notes/results/inzva_gru_hier_results.md` | §14 |
 | horizon 40 vs 10, before the replanning change | 15.3 % vs 64.0 % | `notes/results/gru_horizon40_results.md`; the 64.0 % is `inzva_gru_results.md` at commit `04d5008`, since overwritten by the 69.3 % run | §13 |
 | DINO-WM reference | 84.0 % | `notes/results/dinowm_romer_results.md` | §11 |
+| our GRU's size, slide 11 | 7M: 7,125,200, the fine and coarse models with their shared encoder and projector counted once (each alone is 6,709,662; both in full 13,419,344). Replaces an 11M that nothing in the code supported | counted by building both from `scripts/train/config/gru.yaml` and `gru_coarse.yaml`, unchanged since `0a88e1a`; `scripts/train_gru.py` copies and freezes the encoder and projector for the coarse model | §6.5 |
 | LeWM baseline of record | 87.3 % ± 7.6 (never the published 96 %) | `notes/results/inzva_pusht_results.md` | §6.1b |
 | three machines agree | 87.3 / 86.7 / 87.3 % | `inzva_pusht_results.md` (RTX 3060), `truba_results.md` (V100, its first three rows), `a4000_results.md` | §6.4 |
 
