@@ -4,7 +4,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* Hi-LeWM final sunumu. Türkçe deste, teknik terimler İngilizce.
+/* Hi-LeWM final sunumu. Deste İngilizce (2026-10-22'ye kadar Türkçeydi).
    Yerleşim ve palet bu klasörün tasarım sistemi: 1600x900 sabit sahne,
    pencereye göre ölçekleniyor; slayt başına tek iddia, altında kanıt,
    kaynak en altta.
@@ -335,27 +335,27 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
 <section class="slide" data-time="25" data-no="1">
   <div class="hook">
     <div>
-      <p class="eyebrow">inzva · Final sunumu</p>
+      <p class="eyebrow">inzva · Final presentation</p>
       <h1>Hierarchical <em>World Models</em></h1>
-      <p class="lede">Soyut uzayda gelecek tahmini.</p>
+      <p class="lede">Predicting the future in an abstract space.</p>
       <div class="stages">
-        <div><span class="k">1. aşama</span><span>Kendi hiyerarşik GRU modelimizi DINO-WM ile karşılaştırdık.</span></div>
-        <div><span class="k">2. aşama</span><span>Bir hiyerarşik planner'ın subgoal hatalarını araştırdık.</span></div>
+        <div><span class="k">Stage 1</span><span>We compared our own hierarchical GRU model with DINO-WM.</span></div>
+        <div><span class="k">Stage 2</span><span>We investigated where a hierarchical planner's subgoals go wrong.</span></div>
       </div>
-      <p class="names"><b>Defne Erkan</b> · <b>Oğuz Nurlu</b> · <b>Arda Alpay</b><br>Ekim 2026</p>
+      <p class="names"><b>Defne Erkan</b> · <b>Oğuz Nurlu</b> · <b>Arda Alpay</b><br>October 2026</p>
     </div>
     <figure class="film" style="margin:0">
-      <img src="assets/sunum/pusht.gif" alt="Bir PushT episode'u: mavi daire, gri T bloğu iterek yeşil hedef konuma getiriyor." width="320" height="320">
-      <figcaption>PushT: mavi daire robot, gri T itilecek blok, yeşil T hedef konum.</figcaption>
+      <img src="assets/sunum/pusht.gif" alt="A PushT episode: the blue circle pushes the grey T block onto the green goal position." width="320" height="320">
+      <figcaption>PushT: the blue circle is the robot, the grey T is the block to push, and the green T is the goal.</figcaption>
     </figure>
   </div>
-  <div class="foot"><span class="src">Hi-LeWM · inzva final sunumu</span><span class="pg"></span></div>
+  <div class="foot"><span class="src">Hi-LeWM · inzva final presentation</span><span class="pg"></span></div>
 </section>
 
 <!-- ekip (numarasız) -->
 <section class="slide" data-time="10" data-no="2">
-  <p class="eyebrow">Ekibimiz</p>
-  <h2>Üç kişiyiz, <em>tek bir soru</em> peşindeyiz.</h2>
+  <p class="eyebrow">Our team</p>
+  <h2>Three people, <em>one question</em>.</h2>
   <div class="team">
     <div class="member">
       <div class="face"><span>DE</span><img src="assets/team/defne.jpg" alt="Defne Erkan" onerror="this.remove()"></div>
@@ -365,7 +365,7 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
       <div class="face"><span>ON</span><img src="assets/team/oguz.jpg" alt="Oğuz Nurlu" onerror="this.remove()"></div>
       <div class="bio">
         <div class="who">Oğuz Nurlu</div>
-        <div class="what">AI ve IoT, Bilgisayar Mühendisliği, TOBB ETÜ ve DCU Mezunu</div>
+        <div class="what">AI and IoT · Computer Engineering graduate of TOBB ETÜ and DCU</div>
       </div>
     </div>
     <div class="member">
@@ -373,95 +373,95 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
       <div class="bio"><div class="who">Arda Alpay</div></div>
     </div>
   </div>
-  <div class="foot"><span class="src">inzva AI projects · açık kaynak stable-worldmodel platformu üzerine kuruldu</span><span class="pg"></span></div>
+  <div class="foot"><span class="src">inzva AI projects · built on the open-source stable-worldmodel platform</span><span class="pg"></span></div>
 </section>
 
 <!-- 1 -->
 <section class="slide" data-time="40" data-no="3">
-  <p class="eyebrow">Giriş · Problem tanımı</p>
-  <h2>PushT görevi: mavi daire gri T'yi iterek <em>hedef konuma</em> getirir.</h2>
+  <p class="eyebrow">Introduction · The problem</p>
+  <h2>PushT: the blue circle pushes the grey T <em>onto the goal</em>.</h2>
   <div class="split" style="grid-template-columns:1fr 440px;margin-top:30px">
     <div>
       <div class="points" style="max-width:56ch">
-        <p>İki boyutlu ve basit görünen bir görev. Hem konum hem yön doğru olmalı.</p>
-        <p><b>Peki neden zor?</b> Yanlış bir itişi geri almak zor oluyor. T bir kez kötü bir yere giderse, düzeltmek uzun sürüyor.</p>
-        <p>Yani robot önce düşünmek zorunda. Önceden düşünmeye <b>planning</b> diyoruz.</p>
+        <p>A two-dimensional task that looks simple. Both the position and the orientation have to be right.</p>
+        <p><b>So why is it hard?</b> A bad push is hard to undo. Once the T ends up in a bad spot, it takes a long time to fix.</p>
+        <p>So the robot has to think before it acts. Thinking ahead like this is called <b>planning</b>.</p>
       </div>
       <div id="fig-task" style="margin-top:44px"></div>
     </div>
     <figure class="film" style="margin:0">
-      <img src="assets/sunum/pusht.gif" alt="Bir PushT episode'u: mavi daire, gri T bloğu iterek yeşil hedef konuma getiriyor." width="320" height="320">
-      <figcaption>Bir episode, gerçek hızında.</figcaption>
+      <img src="assets/sunum/pusht.gif" alt="A PushT episode: the blue circle pushes the grey T block onto the green goal position." width="320" height="320">
+      <figcaption>One episode, at real speed.</figcaption>
     </figure>
   </div>
-  <div class="foot"><span class="src">PushT · standart bir robot öğrenme benchmark'ı</span><span class="pg"></span></div>
+  <div class="foot"><span class="src">PushT · a standard robot learning benchmark</span><span class="pg"></span></div>
 </section>
 
 <!-- 2 -->
 <section class="slide" data-time="60" data-no="4">
-  <p class="eyebrow">Literatür taraması</p>
-  <h2><em>Önceki</em> çalışmalar</h2>
-  <p class="lede" style="margin:18px 0 0">Beş çalışma, her birinin bu projedeki rolüyle.</p>
+  <p class="eyebrow">Related work</p>
+  <h2><em>Prior</em> work</h2>
+  <p class="lede" style="margin:18px 0 0">Five papers, and the role each one plays in this project.</p>
   <ul class="lit" style="margin-top:14px">
     <li>
-      <span class="w">World Models<small>Ha ve Schmidhuber, 2018 · arXiv 1803.10122</small></span>
-      <span class="took">Terimin kaynağı. &ldquo;Cheating the World Model&rdquo; bölümünde planner'ın modelin hatalarını sömürdüğü gösteriliyor.</span>
-      <span class="got">Bulgu 1'in atası</span>
+      <span class="w">World Models<small>Ha and Schmidhuber, 2018 · arXiv 1803.10122</small></span>
+      <span class="took">Where the term comes from. Its &ldquo;Cheating the World Model&rdquo; section shows a planner exploiting the model's errors.</span>
+      <span class="got">The forerunner of Finding 1</span>
     </li>
     <li>
-      <span class="w">LeWM<small>Maes ve ark., 2026 · arXiv 2603.19312</small></span>
-      <span class="took">Piksellerden uçtan uca öğrenilen, kompakt bir latent world model.</span>
-      <span class="got">Hi-LeWM'in frozen<br>low-level'ı</span>
+      <span class="w">LeWM<small>Maes et al., 2026 · arXiv 2603.19312</small></span>
+      <span class="took">A compact latent world model, learned end to end from pixels.</span>
+      <span class="got">Hi-LeWM's frozen<br>low level</span>
     </li>
     <li>
-      <span class="w">Hi-LeWM<small>&ldquo;Mind the Gap&rdquo; · Caselli ve ark. · arXiv 2607.12547</small></span>
-      <span class="took">LeWM'e bir high-level ekliyor: macro-action'larla subgoal planlıyor.</span>
-      <span class="got">İncelediğimiz model;<br>yazarların eğitilmiş hâli</span>
+      <span class="w">Hi-LeWM<small>&ldquo;Mind the Gap&rdquo; · Caselli et al. · arXiv 2607.12547</small></span>
+      <span class="took">Adds a high level to LeWM that plans subgoals with macro-actions.</span>
+      <span class="got">The model we study,<br>trained by its authors</span>
     </li>
     <li>
-      <span class="w">DINO-WM<small>Zhou ve ark. · arXiv 2411.04983</small></span>
-      <span class="took">Frozen DINOv2 özellikleri üzerinde çalışan bir world model.</span>
-      <span class="got">GRU modelimizin<br>baseline'ı</span>
+      <span class="w">DINO-WM<small>Zhou et al. · arXiv 2411.04983</small></span>
+      <span class="took">A world model that works on frozen DINOv2 features.</span>
+      <span class="got">The baseline for<br>our GRU model</span>
     </li>
     <li>
-      <span class="w">HWM<small>Zhang ve ark., 2026 · arXiv 2604.03208</small></span>
-      <span class="took">Uzun ufuklu modelin tahmini, kısa ufuklu modelin subgoal'u oluyor.</span>
-      <span class="got">Hi-LeWM'in subgoal<br>arayüzünün kaynağı</span>
+      <span class="w">HWM<small>Zhang et al., 2026 · arXiv 2604.03208</small></span>
+      <span class="took">The long-horizon model's prediction becomes the short-horizon model's subgoal.</span>
+      <span class="got">Where Hi-LeWM's subgoal<br>interface comes from</span>
     </li>
   </ul>
   <div class="warn">
-    <span class="k">Uyarı</span>
-    <span>Bulgularımız hiyerarşinin <b>genel bir sınırını göstermiyor</b>. Biz yalnızca bu kurulumu inceliyoruz.</span>
+    <span class="k">Caveat</span>
+    <span>Our findings <b>don't show a general limit</b> of hierarchy. We only study this one setup.</span>
   </div>
-  <div class="foot"><span class="src">Altyapı: stable-worldmodel (arXiv 2605.21800), Hi-LeWM kodunun dayandığı açık kaynak platform</span><span class="pg"></span></div>
+  <div class="foot"><span class="src">Infrastructure: stable-worldmodel (arXiv 2605.21800), the open-source platform the Hi-LeWM code builds on</span><span class="pg"></span></div>
 </section>
 
 <!-- 3 -->
 <section class="slide" data-time="30" data-no="5">
-  <p class="eyebrow">Veri seti</p>
-  <h2>PushT expert demonstration'ları. <em>Reward yok.</em></h2>
+  <p class="eyebrow">Dataset</p>
+  <h2>PushT expert demonstrations. <em>No reward.</em></h2>
   <div class="stats even" style="margin-top:46px">
     <div class="stat">
       <div class="big">18,685</div>
       <p class="what">episode</p>
-      <p>Her biri, expert'in T'yi hedefe götürdüğü tam bir çözüm.</p>
+      <p>Each one is a complete solution: the expert taking the T all the way to the goal.</p>
     </div>
     <div class="stat">
       <div class="big">2,336,736</div>
       <p class="what">frame</p>
-      <p>Her biri 224&times;224 RGB görüntü ve 2 boyutlu bir <b>action</b>, yani itiş yönü.</p>
+      <p>Each is a 224&times;224 RGB image plus a 2D <b>action</b>: the direction of the push.</p>
     </div>
     <div class="stat">
       <div class="big">123</div>
-      <p class="what">medyan adım</p>
-      <p>Episode uzunluğu <b>49 ile 246</b> adım arasında değişiyor.</p>
+      <p class="what">median steps</p>
+      <p>Episodes range from <b>49 to 246</b> steps long.</p>
     </div>
   </div>
   <div class="split" style="grid-template-columns:1fr 240px;gap:56px;margin-top:36px;align-items:start">
-    <p class="loopnote wide" style="margin-top:0">En önemli nokta: <b>reward yok.</b> Veride yalnızca görüntü ve action var. Model &ldquo;iyi mi, kötü mü&rdquo; bilgisini hiç görmüyor; yalnızca expert'in ne yaptığını görüyor.</p>
+    <p class="loopnote wide" style="margin-top:0">The key point: <b>there is no reward.</b> The data holds only images and actions. The model is never told whether something was good or bad; it only sees what the expert did.</p>
     <figure class="film" style="margin:0">
-      <img src="assets/sunum/pusht.gif" alt="Eğitim verisinden bir PushT episode'u." width="320" height="320">
-      <figcaption>PushT expert verisi, eğitim kümesi.</figcaption>
+      <img src="assets/sunum/pusht.gif" alt="A PushT episode from the training data." width="320" height="320">
+      <figcaption>PushT expert data, training set.</figcaption>
     </figure>
   </div>
   <div class="foot"><span class="src"></span><span class="pg"></span></div>
@@ -470,277 +470,277 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
 <!-- 4 -->
 <section class="slide" data-time="45" data-no="6">
   <p class="eyebrow">Pipeline</p>
-  <h2>World model: robotun kafasındaki <em>simülatör</em>.</h2>
+  <h2>World model: the <em>simulator</em> in the robot's head.</h2>
   <div style="margin-top:30px" id="fig-wm"></div>
-  <p class="loopnote wide">Robot bir itişi gerçekte yapmak zorunda kalmıyor. <b>Kafasında deniyor</b>, sonucu görüyor, kötüyse vazgeçiyor. Hem ucuz hem risksiz.</p>
+  <p class="loopnote wide">The robot doesn't have to make a push for real. <b>It tries it in its head</b>, sees the result, and drops it if it's bad. That's cheap and risk-free.</p>
   <div class="warn">
-    <span class="k">Dikkat</span>
-    <span>Bu model bir <b>tahmin</b> oluyor. Yani yanılabilir. Bunu sunumun sonuna kadar aklımızda tutacağız.</span>
+    <span class="k">Keep in mind</span>
+    <span>What this model gives is a <b>prediction</b>, so it can be wrong. Keep that in mind until the end of the talk.</span>
   </div>
-  <div class="foot"><span class="src">Şematik çizim</span><span class="pg"></span></div>
+  <div class="foot"><span class="src">Schematic</span><span class="pg"></span></div>
 </section>
 
 <!-- 5 -->
 <section class="slide" data-time="40" data-no="7">
   <p class="eyebrow">Pipeline</p>
-  <h2>Görüntü yerine kısa bir özet: <em>192 sayılık latent</em>.</h2>
+  <h2>A short summary instead of the image: <em>a latent of 192 numbers</em>.</h2>
   <div style="margin-top:30px" id="fig-latent"></div>
-  <p class="loopnote wide">Ham görüntü büyük: 224&times;224 piksel, üç renk kanalı. Görüntüyü özete çeviren parçanın adı <b>encoder</b>. Bu özetlerin yaşadığı uzay da <b>latent space</b>: hayal etmek ve planning burada oluyor, piksellerde değil.</p>
+  <p class="loopnote wide">A raw image is big: 224&times;224 pixels, three colour channels. The part that turns an image into a summary is the <b>encoder</b>. The space these summaries live in is the <b>latent space</b>. Imagining and planning happen there, not in pixels.</p>
   <div class="warn">
-    <span class="k">Uyarı</span>
-    <span>Latent'leri gözle okuyamıyoruz. Bakmak için onları <b>decoder</b>'dan geçirip tekrar görüntüye çevirmek gerekiyor. O görüntüler bu yüzden biraz bulanık olacak.</span>
+    <span class="k">Caveat</span>
+    <span>We can't read a latent by eye. To look at one, we have to pass it through a <b>decoder</b> to turn it back into an image. That's why those images will look a little blurry.</span>
   </div>
-  <div class="foot"><span class="src">Şematik çizim; çubuklar temsilidir</span><span class="pg"></span></div>
+  <div class="foot"><span class="src">Schematic; the bars are illustrative</span><span class="pg"></span></div>
 </section>
 
 <!-- 6 -->
 <section class="slide" data-time="50" data-no="8">
   <p class="eyebrow">Pipeline</p>
-  <h2>CEM ile planlama: rastgele planlar dene, <em>en iyileri tut</em>, tekrarla.</h2>
+  <h2>Planning with CEM: try random plans, <em>keep the best</em>, repeat.</h2>
   <div class="steps">
-    <div class="step"><div class="n">1</div><h3>Üret</h3><p>Rastgele bir sürü plan üretiriz. Plan, burada T'yi iteceğimiz adımlar oluyor.</p></div>
-    <div class="step"><div class="n">2</div><h3>Score ver</h3><p>Her planı world model'da deneriz ve hedefe ne kadar yaklaştığına göre bir <b>score</b> veririz.</p></div>
-    <div class="step"><div class="n">3</div><h3>Ele</h3><p>En iyi score alanları tutarız.</p></div>
-    <div class="step"><div class="n">4</div><h3>Daralt</h3><p>Yeni planları bu en iyilerin çevresinden üretiriz, sonra 2. adıma döneriz.</p></div>
+    <div class="step"><div class="n">1</div><h3>Generate</h3><p>Generate lots of random plans. Here, a plan is the sequence of pushes we'll give the T.</p></div>
+    <div class="step"><div class="n">2</div><h3>Score</h3><p>Try each plan in the world model and <b>score</b> it by how close it gets to the goal.</p></div>
+    <div class="step"><div class="n">3</div><h3>Select</h3><p>Keep the plans with the best scores.</p></div>
+    <div class="step"><div class="n">4</div><h3>Narrow</h3><p>Generate new plans around the best ones, then go back to step&nbsp;2.</p></div>
   </div>
-  <p class="loopnote wide">CEM, <b>Cross-Entropy Method</b> oluyor. Planlar her turda en iyilere doğru converge eder.</p>
+  <p class="loopnote wide">CEM stands for the <b>Cross-Entropy Method</b>. With every round, the plans converge toward the best ones.</p>
   <div class="warn">
-    <span class="k">Önemli</span>
-    <span>&ldquo;En iyi&rdquo;, <b>modelin tahminine göre</b> en iyi demek. Model yanılıyorsa, CEM o yanılgıya doğru converge eder. Buraya bulgularda geri döneceğiz.</span>
+    <span class="k">Important</span>
+    <span>&ldquo;Best&rdquo; means best <b>according to the model's prediction</b>. If the model is wrong, CEM converges toward its mistake. We'll come back to this in the findings.</span>
   </div>
-  <div class="foot"><span class="src">Temsili şema; gerçek veriden üretilmedi</span><span class="pg"></span></div>
+  <div class="foot"><span class="src">Illustrative diagram, not drawn from real data</span><span class="pg"></span></div>
 </section>
 
 <!-- 7 -->
 <section class="slide" data-time="50" data-no="9">
-  <p class="eyebrow">Pipeline</p>
-  <h2>Hiyerarşi: high-level <em>subgoal</em> seçer, low-level ona iter.</h2>
-  <p class="lede" style="max-width:88ch">High-level uzak hedefi parçalara bölüyor; <b>subgoal</b>, yol üstündeki bir ara durak oluyor. İtişleri tek tek değil, 25 adımlık paketler hâlinde düşünüyor: bu pakete <b>macro-action</b> diyoruz.</p>
+  <p class="eyebrow">Pipeline · Hierarchy</p>
+  <h2>The high level picks <em>subgoals</em>; the low level pushes.</h2>
+  <p class="lede" style="max-width:88ch">The high level splits a distant goal into pieces; a <b>subgoal</b> is a stop along the way. It doesn't think push by push, but in 25-step chunks. We call such a chunk a <b>macro-action</b>.</p>
   <div class="chain">
     <figure>
-      <div class="plate"><img src="assets/sunum/hiyerarsi-1-baslangic.png" alt="Başlangıç karesi: gri T blok, yeşil hedef konum ve mavi robot." width="530" height="530"></div>
-      <figcaption><span class="who">Başlangıç</span><span class="when">0. adım</span></figcaption>
+      <div class="plate"><img src="assets/sunum/hiyerarsi-1-baslangic.png" alt="Start frame: the grey T block, the green goal position and the blue robot." width="530" height="530"></div>
+      <figcaption><span class="who">Start</span><span class="when">step 0</span></figcaption>
     </figure>
-    <div class="link"><span class="glyph">→</span><span class="lbl">macro-action</span><span class="sub">low-level iter · 25 adım</span></div>
+    <div class="link"><span class="glyph">→</span><span class="lbl">macro-action</span><span class="sub">low level · 25 steps</span></div>
     <figure class="hot">
-      <div class="plate"><img src="assets/sunum/hiyerarsi-2-subgoal.png" alt="Subgoal karesi: blok yolun yarısında, hedefe yaklaşmış." width="530" height="530"></div>
-      <figcaption><span class="who">Subgoal</span><span class="when">25. adım</span></figcaption>
+      <div class="plate"><img src="assets/sunum/hiyerarsi-2-subgoal.png" alt="Subgoal frame: the block is halfway there, closer to the goal." width="530" height="530"></div>
+      <figcaption><span class="who">Subgoal</span><span class="when">step 25</span></figcaption>
     </figure>
-    <div class="link"><span class="glyph">→</span><span class="lbl">macro-action</span><span class="sub">low-level iter · 25 adım</span></div>
+    <div class="link"><span class="glyph">→</span><span class="lbl">macro-action</span><span class="sub">low level · 25 steps</span></div>
     <figure>
-      <div class="plate"><img src="assets/sunum/hiyerarsi-3-hedef.png" alt="Hedef karesi: blok yeşil hedef konumun üzerinde." width="530" height="530"></div>
-      <figcaption><span class="who">Hedef</span><span class="when">50. adım</span></figcaption>
+      <div class="plate"><img src="assets/sunum/hiyerarsi-3-hedef.png" alt="Goal frame: the block sits on the green goal position." width="530" height="530"></div>
+      <figcaption><span class="who">Goal</span><span class="when">step 50</span></figcaption>
     </figure>
   </div>
-  <p class="loopnote wide">Başarılı bir örnek: subgoal'lar makul görünüyor ve <b>agent</b> hedefe varıyor. Hiyerarşinin işe yaradığı hâl bu oluyor. <b>Peki hep böyle mi oluyor?</b></p>
-  <div class="foot"><span class="src">Expert'in subgoal'larıyla bir episode · macro-action = 25 adımlık hareketin özeti</span><span class="pg"></span></div>
+  <p class="loopnote wide">A successful example: the subgoals look sensible and the <b>agent</b> reaches the goal. This is hierarchy working as intended. <b>But is it always like this?</b></p>
+  <div class="foot"><span class="src">One episode with the expert's subgoals · macro-action = a summary of 25 steps of movement</span><span class="pg"></span></div>
 </section>
 
 <!-- 8 -->
 <section class="slide" data-time="60" data-no="10">
-  <p class="eyebrow">1. aşama · yöntem</p>
-  <h2>Hiyerarşik modelimiz: high-level zamana <em>iki ölçekte</em> bakıyor.</h2>
-  <p class="lede">GRU tabanlı, iki seviyeli bir model. <b>GRU</b>, sıralı veri işleyen bir neural network türü; geçmişi hafızasında tutuyor.</p>
+  <p class="eyebrow">Stage 1 · Method</p>
+  <h2>Our hierarchical model: the high level sees time <em>on two scales</em>.</h2>
+  <p class="lede">A two-level model built on a GRU. A <b>GRU</b> is a kind of neural network for sequences; it keeps the past in memory.</p>
   <div style="margin-top:34px" id="fig-timescales"></div>
-  <p class="loopnote wide">Fine model bir environment adımı ileriyi tahmin ediyor, coarse model iki environment adımı ileriyi. <b>10 adımlık horizon'da bu 5 waypoint demek.</b></p>
-  <div class="foot"><span class="src">Temsili şema: her blok bir zaman aralığı; aralıkların gerçek adım sayıları gösterilmiyor</span><span class="pg"></span></div>
+  <p class="loopnote wide">The fine model predicts one environment step ahead, the coarse model two. <b>Over a 10-step horizon, that makes 5 waypoints.</b></p>
+  <div class="foot"><span class="src">Illustrative diagram: each block is a time interval; the real step counts aren't shown</span><span class="pg"></span></div>
 </section>
 
 <!-- 9 -->
 <section class="slide" data-time="60" data-no="11">
-  <p class="eyebrow">1. aşama · sonuç</p>
-  <h2>Çok daha küçük bir modelle <em>yakın başarı</em>.</h2>
+  <p class="eyebrow">Stage 1 · Result</p>
+  <h2><em>Close results</em> from a much smaller model.</h2>
   <div class="twin">
     <div class="card">
-      <span class="k">GRU · bizim modelimiz</span>
-      <h3>Kendi eğittiğimiz hiyerarşik world model</h3>
+      <span class="k">GRU · our model</span>
+      <h3>The hierarchical world model we trained</h3>
       <div class="pair">
-        <div><div class="v num">7M</div><div class="u">parametre</div></div>
-        <div><div class="v ac num">%82</div><div class="u">başarı</div></div>
+        <div><div class="v num">7M</div><div class="u">parameters</div></div>
+        <div><div class="v ac num">82%</div><div class="u">success</div></div>
       </div>
     </div>
     <div class="card">
       <span class="k">DINO-WM · baseline</span>
-      <h3>Frozen DINOv2 özellikleri üzerinde çalışan world model</h3>
+      <h3>A world model that works on frozen DINOv2 features</h3>
       <div class="pair">
-        <div><div class="v num">~40M</div><div class="u">parametre</div></div>
-        <div><div class="v ac num">%84</div><div class="u">başarı</div></div>
+        <div><div class="v num">~40M</div><div class="u">parameters</div></div>
+        <div><div class="v ac num">84%</div><div class="u">success</div></div>
       </div>
-      <p>19M öğrenilen <b>predictor</b> + 21M <b>frozen</b> DINOv2 <b>encoder</b>; toplamı biz hesapladık.</p>
+      <p>A 19M trained <b>predictor</b> + a 21M <b>frozen</b> DINOv2 <b>encoder</b>; we added up the total ourselves.</p>
     </div>
   </div>
-  <p class="next"><b>&ldquo;Geçtik&rdquo; ya da &ldquo;yakaladık&rdquo; demiyoruz.</b> Amacımız en baştan beri daha küçük bir modelle yine yüksek performans elde etmekti. <b>Parametre</b>, modelin öğrenebildiği değişken sayısı; yani model boyutunun ölçüsü.</p>
-  <div class="foot"><span class="src">İki ölçüm de 50 episode, 300 sample, 30 CEM adımı, seed 0/1/2, aynı GPU · DINO-WM parametreleri: arXiv 2411.04983 ve DINOv2 deposu</span><span class="pg"></span></div>
+  <p class="next"><b>We're not saying we &ldquo;beat&rdquo; or &ldquo;matched&rdquo; it.</b> Our goal from the start was strong performance from a smaller model. <b>Parameters</b> are the values a model learns, so their number measures the model's size.</p>
+  <div class="foot"><span class="src">Both measured on 50 episodes, 300 samples, 30 CEM steps, seeds 0/1/2, same GPU · DINO-WM parameters: arXiv 2411.04983 and the DINOv2 repository</span><span class="pg"></span></div>
 </section>
 
 <!-- 10 -->
 <section class="slide dark" data-time="20" data-no="12">
-  <p class="eyebrow">2. aşama · soru</p>
-  <h2>High-level iyi <em>subgoal</em> seçiyor mu?</h2>
-  <p class="lede" style="font-size:34px;margin-top:36px">İpucu: modelin gözünde evet.</p>
-  <p class="loopnote wide" style="margin-top:28px">Ama modelin gözü ile gerçek aynı şey olmayabiliyor. Şimdi nasıl incelediğimize bakıyoruz.</p>
+  <p class="eyebrow">Stage 2 · The question</p>
+  <h2>Does the high level pick good <em>subgoals</em>?</h2>
+  <p class="lede" style="font-size:34px;margin-top:36px">A hint: in the model's eyes, yes.</p>
+  <p class="loopnote wide" style="margin-top:28px">But what the model sees and what really happens may not be the same thing. Here is how we looked into it.</p>
   <div class="foot"><span class="src"></span><span class="pg"></span></div>
 </section>
 
 <!-- 11 -->
 <section class="slide" data-time="50" data-no="13">
-  <p class="eyebrow">2. aşama · yöntem</p>
-  <h2>Hi-LeWM'i yeniden eğitmedik. <em>Yazarların modelini</em> kullandık.</h2>
+  <p class="eyebrow">Stage 2 · Method</p>
+  <h2>We didn't retrain Hi-LeWM. We used <em>the authors' model</em>.</h2>
   <div class="qs">
     <div class="q">
-      <span class="k">Soru 1</span>
-      <p>Planner'ın seçtiği subgoal, modelin score'uyla gerçekte ne kadar uyuşuyor?</p>
+      <span class="k">Question 1</span>
+      <p>When the planner picks a subgoal, how well does the model's score for it match reality?</p>
     </div>
     <div class="q">
-      <span class="k">Soru 2</span>
-      <p>Environment'ta başarısız episode'larda suç hangi seviyede: high-level'da mı, low-level'da mı?</p>
+      <span class="k">Question 2</span>
+      <p>When an episode fails in the environment, which level is to blame: the high level or the low level?</p>
     </div>
   </div>
-  <p class="loopnote wide" style="margin-top:38px">Güven için makalenin <b>iki sayısını yeniden ürettik</b>:</p>
+  <p class="loopnote wide" style="margin-top:38px">As a sanity check, we <b>reproduced two of the paper's numbers</b>:</p>
   <div class="repro">
     <div class="cell">
-      <div class="v num">%36.0</div>
-      <div class="paper">makale: %38.7</div>
-      <div class="what">Hi-LeWM'in kendi planner'ı ile</div>
+      <div class="v num">36.0%</div>
+      <div class="paper">paper: 38.7%</div>
+      <div class="what">with Hi-LeWM's own planner</div>
     </div>
     <div class="cell">
-      <div class="v num">%70.0</div>
-      <div class="paper">makale: %73.3</div>
-      <div class="what">Expert'in subgoal'ları ile</div>
+      <div class="v num">70.0%</div>
+      <div class="paper">paper: 73.3%</div>
+      <div class="what">with the expert's subgoals</div>
     </div>
   </div>
-  <div class="foot"><span class="src">Environment'ta ölçüldü · 50 episode, seed 42, d = 50, 100 adım bütçe</span><span class="pg"></span></div>
+  <div class="foot"><span class="src">Measured in the environment · 50 episodes, seed 42, d = 50, 100-step budget</span><span class="pg"></span></div>
 </section>
 
 <!-- 12 -->
 <section class="slide" data-time="60" data-no="14">
-  <p class="eyebrow">Deneysel sonuçlar</p>
-  <h2>Bulgu 1: planner <em>modeli kandırıyor</em>.</h2>
+  <p class="eyebrow">Results</p>
+  <h2>Finding 1: the planner <em>fools the model</em>.</h2>
   <div class="finding">
     <div class="card">
-      <span class="k">Modelin score'una göre</span>
-      <p class="lead">CEM'in planı, expert'inkinden</p>
-      <div class="big num">9.5&times;<small>daha iyi</small></div>
-      <p class="fine">Draw'lar arası aralık 2.6&times; – 24.7&times;</p>
+      <span class="k">By the model's score</span>
+      <p class="lead">CEM's plan, compared with the expert's</p>
+      <div class="big num">9.5&times;<small>better</small></div>
+      <p class="fine">Range across draws: 2.6&times; – 24.7&times;</p>
     </div>
     <div class="card bad">
-      <span class="k">Gerçek duruma göre</span>
-      <p class="lead">CEM'in subgoal'u, expert'inkinden</p>
-      <div class="big num">18.4&times;<small>daha kötü</small></div>
-      <p class="fine">25 adım sonraki gerçek duruma uzaklık</p>
+      <span class="k">By what really happens</span>
+      <p class="lead">CEM's subgoal, compared with the expert's</p>
+      <div class="big num">18.4&times;<small>worse</small></div>
+      <p class="fine">Distance to the real state 25 steps later</p>
     </div>
   </div>
-  <p class="next">Model ile gerçek <b>ters yönde</b>. CEM, durumların <b>%81'inde</b> modele göre expert'i geçiyor — ama bu, daha iyi plan bulduğu anlamına gelmiyor. <b>Modelin yanıldığı yeri bulduğu</b> anlamına geliyor.</p>
-  <div class="foot"><span class="src">Modelin içinde ölçüldü (latent space), environment sonucu değil · medyan, 10 draw × 16 durum, d = 50</span><span class="pg"></span></div>
+  <p class="next">The model and reality point <b>in opposite directions</b>. By the model's score, CEM beats the expert in <b>81% of cases</b> — but that doesn't mean it found a better plan. It means <b>it found where the model is wrong</b>.</p>
+  <div class="foot"><span class="src">Measured inside the model (latent space), not an environment result · median, 10 draws × 16 states, d = 50</span><span class="pg"></span></div>
 </section>
 
 <!-- 13 -->
 <section class="slide" data-time="50" data-no="15">
-  <p class="eyebrow">Deneysel sonuçlar</p>
-  <h2>Aynı bulguyu bir de <em>gözle görelim</em>.</h2>
+  <p class="eyebrow">Results</p>
+  <h2>Now let's <em>see</em> the same finding.</h2>
   <div class="figrow" style="grid-template-columns:1fr 340px;gap:40px;margin-top:22px">
     <div class="plate">
-      <img src="assets/sunum/subgoal-gorselleri-2satir.png" alt="Her satır bir durum. Soldan sağa: başlangıç, gerçekte 25 adım sonrası, expert'in planının hayal ettiği subgoal (Net bir T), CEM'in planının hayal ettiği subgoal (gri bir leke) ve hedef." width="1806" height="853">
+      <img src="assets/sunum/subgoal-images-2rows.png" alt="Each row is one state. From left to right: the start, the real state 25 steps later, the subgoal the expert's plan imagines (a crisp T), the subgoal CEM's plan imagines (a grey smudge), and the goal." width="1806" height="853">
     </div>
     <div class="side" style="width:auto;padding-top:0">
-      <div><div class="k">Expert'in subgoal'u</div><p>Net bir T, doğru yerde. Model maliyeti yüksek.</p></div>
-      <div><div class="k">CEM'in subgoal'u</div><p>Gri bir leke; T'nin şekli dağılmış. Ama <b>model bu lekeyi daha çok beğeniyor</b>.</p></div>
-      <div><p class="dim">Bu, az önceki 9.5&times; ve 18.4&times;'in görüntüsü.</p></div>
+      <div><div class="k">The expert's subgoal</div><p>A crisp T in the right place. Its model cost is high.</p></div>
+      <div><div class="k">CEM's subgoal</div><p>A grey smudge; the T has lost its shape. Yet <b>the model likes the smudge better</b>.</p></div>
+      <div><p class="dim">This is what the 9.5&times; and 18.4&times; from the previous slide look like.</p></div>
     </div>
   </div>
-  <div class="foot"><span class="src">Kareler decoder'dan geçtiği için bulanık; karşılaştırma bulanık ile bulanık arasında</span><span class="pg"></span></div>
+  <div class="foot"><span class="src">The frames are blurry because they went through the decoder, so both sides of the comparison are equally blurry</span><span class="pg"></span></div>
 </section>
 
 <!-- 14 -->
 <section class="slide" data-time="50" data-no="16">
-  <p class="eyebrow">Deneysel sonuçlar</p>
-  <h2>Subgoal'ın kaynağını değiştirmek <em>22 puan</em> etkiliyor.</h2>
+  <p class="eyebrow">Results</p>
+  <h2>Changing where the subgoals come from is worth <em>22 points</em>.</h2>
   <div class="row" style="margin-top:26px">
     <div class="grow" id="fig-subgoal"></div>
     <div class="side">
-      <div><div class="k">Deney</div><p>Aynı low-level, aynı 50 episode. Tek fark subgoal'ların kaynağı: bir koşulda model üretiyor, diğerinde expert.</p></div>
-      <div><div class="k">Anlamlılık</div><p>p = 0.035 (McNemar). Farklı sonuç veren episode'ların <b>17'si expert lehine</b>, 6'sı model lehine.</p></div>
-      <div><div class="k">Threshold'suz ölçüm</div><p>Başarısız episode'larda hedefe giden yolun kat edilen kısmı (medyan): modelin subgoal'ları ile <b>0.12</b>, expert'inkilerle <b>0.76</b>.</p></div>
+      <div><div class="k">Experiment</div><p>Same low level, same 50 episodes. The only difference is where the subgoals come from: the model in one run, the expert in the other.</p></div>
+      <div><div class="k">Significance</div><p>p = 0.035 (McNemar). Of the episodes where the outcomes differ, <b>17 favour the expert</b> and 6 favour the model.</p></div>
+      <div><div class="k">A threshold-free measure</div><p>How much of the way to the goal failed episodes covered (median): <b>0.12</b> with the model's subgoals, <b>0.76</b> with the expert's.</p></div>
     </div>
   </div>
-  <div class="foot"><span class="src">Environment'ta ölçüldü · tek seed (42), 50 episode · ikisi de staged execution, 100 adım bütçe, d = 50</span><span class="pg"></span></div>
+  <div class="foot"><span class="src">Measured in the environment · single seed (42), 50 episodes · both with staged execution, 100-step budget, d = 50</span><span class="pg"></span></div>
 </section>
 
 <!-- 15 -->
 <section class="slide" data-time="70" data-no="17">
-  <p class="eyebrow">Deneysel sonuçlar</p>
-  <h2>Bulgu 2: iki köşe, <em>iki tür başarısızlık</em>.</h2>
+  <p class="eyebrow">Results</p>
+  <h2>Finding 2: two corners, <em>two kinds of failure</em>.</h2>
   <div class="figrow" style="grid-template-columns:1fr 480px;margin-top:20px">
     <div class="plate" style="padding:14px;display:grid;place-items:center">
-      <img src="assets/sunum/basarisizlik-haritasi.png" alt="Dağılım grafiği. Yatay eksen: modelin subgoal'u expert'in yolundan ne kadar sapmış. Dikey eksen: agent subgoal'a ne kadar uzak kalmış. Yeşil noktalar başarılı, kırmızı çarpılar başarısız episode'lar." width="930" height="750" style="max-height:508px;width:auto">
+      <img src="assets/sunum/failure-map.png" alt="Scatter plot. Horizontal axis: how far the model's subgoal strayed from the expert's path. Vertical axis: how far the agent stayed from its subgoal. Green dots are successful episodes, red crosses failed ones." width="930" height="750" style="max-height:508px;width:auto">
     </div>
     <div class="side" style="width:auto;padding-top:0">
-      <div><div class="k">Sağ üst köşe · anlamsız subgoal</div><p>Subgoal, expert'in yolundan çok uzak. <b>Suç high-level'da.</b> İlk 25 adımda bu gruptan 12 episode var.</p></div>
-      <div><div class="k">Sol üst köşe · ulaşılamayan subgoal</div><p>Subgoal makul, expert'inkine yakın. Ama agent yine de ona ulaşamıyor. <b>Suç low-level'da.</b> Bu gruptan 7 episode var.</p></div>
-      <div><p class="dim">Bu ayrım threshold'a bağlı: 0.25 seçtik. 0.10 olsaydı anlamsız sayısı 14, 0.50 olsaydı 0 olurdu. 12 ve 7'yi kesin sayı olarak değil, bir resim olarak sunuyoruz.</p></div>
+      <div><div class="k">Top right · meaningless subgoal</div><p>The subgoal is far from the expert's path. <b>The high level is to blame.</b> In the first 25 steps, 12 episodes fall in this group.</p></div>
+      <div><div class="k">Top left · unreachable subgoal</div><p>The subgoal is sensible and close to the expert's, but the agent still can't reach it. <b>The low level is to blame.</b> 7 episodes fall in this group.</p></div>
+      <div><p class="dim">This split depends on the threshold. We chose 0.25; at 0.10 there would be 14 meaningless subgoals, at 0.50 none. Read 12 and 7 as a picture, not as exact counts.</p></div>
     </div>
   </div>
-  <div class="foot"><span class="src">Her nokta bir episode · yeşil başarılı, kırmızı başarısız · environment'ta ölçüldü, tek seed, 50 episode, threshold 0.25</span><span class="pg"></span></div>
+  <div class="foot"><span class="src">Each point is one episode · green succeeded, red failed · measured in the environment, single seed, 50 episodes, threshold 0.25</span><span class="pg"></span></div>
 </section>
 
 <!-- 16 -->
 <section class="slide" data-time="50" data-no="18">
-  <p class="eyebrow">Sonuçlar</p>
-  <h2>İkinci aşamadan <em>iki sonuç</em> çıkıyor.</h2>
+  <p class="eyebrow">Conclusions</p>
+  <h2>Stage 2 leads to <em>two conclusions</em>.</h2>
   <ol class="cards two">
     <li>
-      <span class="n">BULGU 1</span>
-      <h3>Planner, modelin hatalarını sömürüyor.</h3>
-      <p>Modelin score'u ile gerçek <b>ters yönde</b>: modelin içinde CEM'in planı <b>9.5&times; daha iyi</b> görünüyor, gerçekte subgoal <b>18.4&times; daha kötü</b>.</p>
+      <span class="n">FINDING 1</span>
+      <h3>The planner exploits the model's errors.</h3>
+      <p>The model's score and reality point <b>in opposite directions</b>: inside the model, CEM's plan looks <b>9.5&times; better</b>; in reality, its subgoal is <b>18.4&times; worse</b>.</p>
     </li>
     <li>
-      <span class="n">BULGU 2</span>
-      <h3>Başarısızlıklar iki kaynaklı.</h3>
-      <p>Anlamsız subgoal'u olan <b>12 episode'un 9'u</b> başarısız; expert'in subgoal'ları 7'sini kurtarıyor. Makul ama ulaşılamayan subgoal'u olan <b>7 episode'un 7'si</b> başarısız; expert'in subgoal'ları yalnızca 3'ünü kurtarıyor.</p>
+      <span class="n">FINDING 2</span>
+      <h3>Failures have two sources.</h3>
+      <p>Of the 12 episodes with a meaningless subgoal, <b>9 fail</b>; the expert's subgoals rescue 7 of them. Of the 7 episodes with a sensible but unreachable subgoal, <b>all 7 fail</b>; the expert's subgoals rescue only 3.</p>
     </li>
   </ol>
-  <p class="next"><b>Çıkarım: yalnızca high-level'ı düzeltmek yetmez.</b> Low-level'ın subgoal'a ulaşma becerisi de ayrıca ele alınmalı.</p>
-  <div class="foot"><span class="src">Environment sonuçları tek seed, 50 episode · 12 ve 7 ayrımı 0.25 threshold'una bağlı · 9.5× ve 18.4× modelin içinde ölçüldü</span><span class="pg"></span></div>
+  <p class="next"><b>Takeaway: fixing the high level alone isn't enough.</b> The low level's ability to reach a subgoal needs work of its own.</p>
+  <div class="foot"><span class="src">Environment results: single seed, 50 episodes · the 12/7 split depends on the 0.25 threshold · 9.5× and 18.4× measured inside the model</span><span class="pg"></span></div>
 </section>
 
 <!-- 17 -->
 <section class="slide" data-time="30" data-no="19">
-  <p class="eyebrow">Gelecek çalışma</p>
-  <h2>Future work olarak <em>dört adım</em> düşünüyoruz.</h2>
+  <p class="eyebrow">Future work</p>
+  <h2>We see <em>four next steps</em>.</h2>
   <ol class="cards quad">
     <li>
       <span class="n">01</span>
-      <h3>Daha fazla seed, daha uzak hedef.</h3>
-      <p>Sonuçlarımız <b>tek seed ve 50 episode'a</b> dayanıyor. d = 50 ile çalıştık; d = 75 gibi daha uzak hedeflerde ne olacağını görmek istiyoruz.</p>
+      <h3>More seeds, more distant goals.</h3>
+      <p>Our results rest on <b>a single seed and 50 episodes</b>. We worked with d = 50; we want to see what happens with more distant goals, such as d = 75.</p>
     </li>
     <li>
       <span class="n">02</span>
-      <h3>Search'ü veriye bağlayan yöntemleri denemek.</h3>
-      <p><b>Hi-LeWM-C</b>, CEM'in search'ünü training data'nın daha uygun olan bölgesine bağlıyor. Biz bunu environment'ta denemedik.</p>
+      <h3>Trying methods that tie the search to the data.</h3>
+      <p><b>Hi-LeWM-C</b> keeps CEM's search within the part of the training data where it fits best. We haven't tried it in the environment.</p>
     </li>
     <li>
       <span class="n">03</span>
-      <h3>Low-level'ın subgoal'a ulaşma becerisini ölçmek.</h3>
-      <p>Sol üst köşedeki episode'lar bunun <b>ayrıca ölçülmesi</b> gerektiğini gösteriyor.</p>
+      <h3>Measuring how well the low level reaches subgoals.</h3>
+      <p>The episodes in the top-left corner show that this needs <b>its own measurement</b>.</p>
     </li>
     <li>
       <span class="n">04</span>
-      <h3>GRU modelimizi biraz büyütmek.</h3>
-      <p>Parametre sayısını artırıp daha geniş <b>horizon</b> için bir high-level model eğitmek. Horizon, modelin ileriye bakış aralığı. Hedefimiz hâlâ modeli küçük tutmak.</p>
+      <h3>Making our GRU model a little bigger.</h3>
+      <p>Add parameters and train a high-level model for a longer <b>horizon</b>. The horizon is how far ahead the model looks. We still want to keep the model small.</p>
     </li>
   </ol>
-  <div class="foot"><span class="src">Hi-LeWM-C bu çalışmada environment'ta denenmedi</span><span class="pg"></span></div>
+  <div class="foot"><span class="src">Hi-LeWM-C was not tested in the environment in this work</span><span class="pg"></span></div>
 </section>
 
 <!-- 18 -->
 <section class="slide closing dark" data-time="10" data-no="20">
-  <p class="eyebrow">Kapanış</p>
-  <h2>Teşekkürler.</h2>
+  <p class="eyebrow">Closing</p>
+  <h2>Thank you.</h2>
   <div class="thanks">
     <div>
-      <p class="qa">Sorular? <em>Buyurun.</em></p>
+      <p class="qa">Questions? <em>Go ahead.</em></p>
       <p class="repo">Repo: <b>github.com/Thnorty/inzva-hierarchical-planning</b></p>
-      <p class="repo">Sunum: <b>thnorty.github.io/inzva-hierarchical-planning</b></p>
+      <p class="repo">Slides: <b>thnorty.github.io/inzva-hierarchical-planning</b></p>
       <div class="faces">
         <div><div class="face small"><span>DE</span><img src="assets/team/defne.jpg" alt="" onerror="this.remove()"></div>Defne</div>
         <div><div class="face small"><span>ON</span><img src="assets/team/oguz.jpg" alt="" onerror="this.remove()"></div>Oğuz</div>
@@ -749,27 +749,27 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
     </div>
     <div class="codes">
       <figure>
-        <img src="assets/qr-code.svg" alt="Sunumun adresine giden QR kod: thnorty.github.io/inzva-hierarchical-planning">
-        <figcaption>Sunum</figcaption>
+        <img src="assets/qr-code.svg" alt="QR code for the slides: thnorty.github.io/inzva-hierarchical-planning">
+        <figcaption>Slides</figcaption>
       </figure>
       <figure>
-        <img src="assets/repo-qr-code.svg" alt="Repoya giden QR kod: github.com/Thnorty/inzva-hierarchical-planning">
+        <img src="assets/repo-qr-code.svg" alt="QR code for the repo: github.com/Thnorty/inzva-hierarchical-planning">
         <figcaption>Repo</figcaption>
       </figure>
     </div>
   </div>
-  <div class="foot"><span class="src">Tüm kodlar GitHub'da açık kaynak</span><span class="pg"></span></div>
+  <div class="foot"><span class="src">All the code is open source on GitHub</span><span class="pg"></span></div>
 </section>
 
 <img class="brand" src="assets/inzva.webp" alt="" aria-hidden="true" width="1500" height="436">
-<img class="qr" src="assets/qr-code.svg" alt="Sunumun adresine giden QR kod">
+<img class="qr" src="assets/qr-code.svg" alt="QR code for these slides">
 </div>
 </div>
 
-<nav class="bar" id="bar" aria-label="Slayt kontrolleri">
-  <button type="button" id="prev" aria-label="Önceki slayt">←</button>
+<nav class="bar" id="bar" aria-label="Slide controls">
+  <button type="button" id="prev" aria-label="Previous slide">←</button>
   <span class="count" id="count"></span>
-  <button type="button" id="next" aria-label="Sonraki slayt">→</button>
+  <button type="button" id="next" aria-label="Next slide">→</button>
 </nav>
 
 <script>
@@ -827,9 +827,9 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
     const s = svg('fig-task', 700, 150);
     if (!s) return;
     const items = [
-      {label:'Robot', sub:'mavi daire', draw:(g,cx,cy) => el('circle', {cx, cy, r:15, fill:SIM.pusher}, g)},
-      {label:'İtilecek blok', sub:'gri T', draw:(g,cx,cy) => T(g, cx, cy, 54, 20, SIM.block)},
-      {label:'Hedef konum', sub:'yeşil T', draw:(g,cx,cy) => T(g, cx, cy, 54, -10, SIM.goal)},
+      {label:'Robot', sub:'blue circle', draw:(g,cx,cy) => el('circle', {cx, cy, r:15, fill:SIM.pusher}, g)},
+      {label:'Block to push', sub:'grey T', draw:(g,cx,cy) => T(g, cx, cy, 54, 20, SIM.block)},
+      {label:'Goal position', sub:'green T', draw:(g,cx,cy) => T(g, cx, cy, 54, -10, SIM.goal)},
     ];
     items.forEach((it, i) => {
       const x = i * 236, w = 92;
@@ -846,13 +846,13 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
     if (!s) return;
     const y = 20, w = 130, mid = y + w/2;
 
-    frame(s, 0, y, w, 'şu anki sahne');
+    frame(s, 0, y, w, 'current scene');
     T(s, w/2, mid, 52, 25, SIM.block);
     el('circle', {cx:28, cy:mid + 36, r:11, fill:SIM.pusher}, s);
 
     el('text', {x:w + 34, y:mid + 12, 'font-size':40, fill:C.soft, style:serif}, s, '+');
 
-    frame(s, 212, y, w, 'yapmayı düşündüğü itiş');
+    frame(s, 212, y, w, 'the push it considers');
     el('line', {x1:242, y1:mid + 26, x2:330, y2:mid - 24, stroke:SIM.pusher, 'stroke-width':5}, s);
     el('path', {d:`M340 ${mid - 30} l-22 2 l10 16 z`, fill:SIM.pusher}, s);
     el('circle', {cx:242, cy:mid + 26, r:11, fill:SIM.pusher}, s);
@@ -861,16 +861,16 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
 
     el('rect', {x:478, y:y + 15, width:250, height:100, rx:10, fill:C.wash, stroke:C.ac, 'stroke-width':2}, s);
     el('text', {x:603, y:mid - 2, 'font-size':27, 'text-anchor':'middle', fill:C.ink, style:serif}, s, 'World model');
-    el('text', {x:603, y:mid + 26, 'font-size':16, 'text-anchor':'middle', fill:C.soft}, s, 'tahmin eden model');
+    el('text', {x:603, y:mid + 26, 'font-size':16, 'text-anchor':'middle', fill:C.soft}, s, 'a model that predicts');
 
     arrow(s, 744, mid, 844);
 
-    frame(s, 856, y, w, 'sonraki sahne');
+    frame(s, 856, y, w, 'next scene');
     T(s, 856 + w/2, mid, 52, 62, SIM.block);
     el('circle', {cx:900, cy:mid + 30, r:11, fill:SIM.pusher}, s);
 
-    el('text', {x:1030, y:mid - 8, 'font-size':25, fill:C.ac, style:serif}, s, 'Robot denemeyi');
-    el('text', {x:1030, y:mid + 24, 'font-size':25, fill:C.ac, style:serif}, s, 'hayalinde yapar.');
+    el('text', {x:1030, y:mid - 8, 'font-size':25, fill:C.ac, style:serif}, s, 'The robot tries it');
+    el('text', {x:1030, y:mid + 24, 'font-size':25, fill:C.ac, style:serif}, s, 'in its imagination.');
   })();
 
   // Slayt 5 · görüntü → encoder → 192 sayı.
@@ -882,13 +882,13 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
     frame(s, 0, y, w, '224 × 224 × 3');
     T(s, w/2, mid, 52, 25, SIM.block);
     el('circle', {cx:28, cy:mid + 36, r:11, fill:SIM.pusher}, s);
-    el('text', {x:w/2, y:y - 12, 'font-size':17, 'text-anchor':'middle', fill:C.ink, style:serif}, s, 'Görüntü');
+    el('text', {x:w/2, y:y - 12, 'font-size':17, 'text-anchor':'middle', fill:C.ink, style:serif}, s, 'Image');
 
     arrow(s, w + 16, mid, 240);
 
     el('rect', {x:252, y:y + 15, width:220, height:100, rx:10, fill:C.wash, stroke:C.ac, 'stroke-width':2}, s);
     el('text', {x:362, y:mid - 2, 'font-size':27, 'text-anchor':'middle', fill:C.ink, style:serif}, s, 'Encoder');
-    el('text', {x:362, y:mid + 26, 'font-size':16, 'text-anchor':'middle', fill:C.soft}, s, 'görüntüyü özetler');
+    el('text', {x:362, y:mid + 26, 'font-size':16, 'text-anchor':'middle', fill:C.soft}, s, 'summarises the image');
 
     arrow(s, 488, mid, 588);
 
@@ -902,10 +902,10 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
       const h = 16 + r * 66;
       el('rect', {x:bx + 10 + i * (gap - 0.24), y:y + 13 + (bh - h) / 2, width:gap * 0.52, height:h, rx:1.5, fill:C.ac, opacity:.72}, s);
     }
-    el('text', {x:bx + bw/2, y:y + bh + 48, 'font-size':17, 'text-anchor':'middle', fill:C.ac, style:serif}, s, 'latent: 192 sayı');
+    el('text', {x:bx + bw/2, y:y + bh + 48, 'font-size':17, 'text-anchor':'middle', fill:C.ac, style:serif}, s, 'latent: 192 numbers');
 
-    el('text', {x:1110, y:mid - 8, 'font-size':25, fill:C.ink, style:serif}, s, 'Hayal ve planning');
-    el('text', {x:1110, y:mid + 24, 'font-size':25, fill:C.ink, style:serif}, s, 'bu uzayda olur.');
+    el('text', {x:1110, y:mid - 8, 'font-size':25, fill:C.ink, style:serif}, s, 'Imagining and planning');
+    el('text', {x:1110, y:mid + 24, 'font-size':25, fill:C.ink, style:serif}, s, 'happen in this space.');
   })();
 
   // Slayt 8 · iki zaman ölçeği. (pptx'teki İngilizce ekran görüntüsünün yerine.)
@@ -913,8 +913,8 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
     const s = svg('fig-timescales', 1376, 250);
     if (!s) return;
     const x0 = 360, dx = 95;
-    const rows = [{y:62,  t:'Fine ölçek',   d:'her environment adımı · 10 adım'},
-                  {y:176, t:'Coarse ölçek', d:'iki adımda bir · 5 waypoint'}];
+    const rows = [{y:62,  t:'Fine scale',   d:'every environment step · 10 steps'},
+                  {y:176, t:'Coarse scale', d:'every second step · 5 waypoints'}];
     rows.forEach((r, ri) => {
       el('text', {x:0, y:r.y - 6, 'font-size':26, fill:C.ink, style:serif}, s, r.t);
       el('text', {x:0, y:r.y + 24, 'font-size':17, fill:C.soft}, s, r.d);
@@ -927,8 +927,8 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
         else el('circle', {cx:x, cy:r.y, r:9, fill:C.paper, stroke:C.ac, 'stroke-width':3}, s);
       }
     });
-    el('text', {x:x0, y:236, 'font-size':16, fill:C.soft, 'text-anchor':'middle'}, s, 'şimdi');
-    el('text', {x:x0 + 10*dx, y:236, 'font-size':16, fill:C.soft, 'text-anchor':'end'}, s, '10 adım ileride');
+    el('text', {x:x0, y:236, 'font-size':16, fill:C.soft, 'text-anchor':'middle'}, s, 'now');
+    el('text', {x:x0 + 10*dx, y:236, 'font-size':16, fill:C.soft, 'text-anchor':'end'}, s, '10 steps ahead');
   })();
 
   // Slayt 14 · subgoal kaynağı: model mi, expert mi.
@@ -939,22 +939,22 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
     const y = v => B - (B - T0) * v / 100;
     [0,25,50,75,100].forEach(v => {
       el('line', {x1:L, x2:W, y1:y(v), y2:y(v), stroke:C.rule}, s);
-      el('text', {x:L-12, y:y(v)+6, 'font-size':16, 'text-anchor':'end', fill:C.soft}, s, '%' + v);
+      el('text', {x:L-12, y:y(v)+6, 'font-size':16, 'text-anchor':'end', fill:C.soft}, s, v + '%');
     });
-    const bars = [[48.0, C.muted, 'Modelin subgoal’leri'], [70.0, C.ac, 'Expert’in subgoal’leri']];
+    const bars = [[48.0, C.muted, 'The model’s subgoals'], [70.0, C.ac, 'The expert’s subgoals']];
     bars.forEach(([v, fill, label], i) => {
       const x0 = L + 110 + i * 330, bw = 200;
       el('rect', {x:x0, y:y(v), width:bw, height:B - y(v), fill}, s);
-      el('text', {x:x0+bw/2, y:y(v)-16, 'font-size':40, 'text-anchor':'middle', fill:i ? C.ac : C.ink, style:serif}, s, '%' + v.toFixed(1));
+      el('text', {x:x0+bw/2, y:y(v)-16, 'font-size':40, 'text-anchor':'middle', fill:i ? C.ac : C.ink, style:serif}, s, v.toFixed(1) + '%');
       el('text', {x:x0+bw/2, y:B+36, 'font-size':21, 'text-anchor':'middle', fill:C.ink, style:serif}, s, label);
     });
     // fark
     const xa = L + 110 + 200, xb = L + 110 + 330;
     el('line', {x1:(xa+xb)/2, x2:(xa+xb)/2, y1:y(48), y2:y(70), stroke:C.ac, 'stroke-width':2, 'stroke-dasharray':'2 4'}, s);
     el('text', {x:(xa+xb)/2, y:y(59)-10, 'font-size':22, 'text-anchor':'middle', fill:C.ac, style:serif}, s, '+22.0');
-    el('text', {x:(xa+xb)/2, y:y(59)+14, 'font-size':15, 'text-anchor':'middle', fill:C.ac}, s, 'puan');
+    el('text', {x:(xa+xb)/2, y:y(59)+14, 'font-size':15, 'text-anchor':'middle', fill:C.ac}, s, 'points');
     el('text', {x:(L + W) / 2, y:B + 70, 'font-size':15, 'text-anchor':'middle', fill:C.soft}, s,
-       'aynı low-level, aynı 50 episode; yalnızca subgoal’in kaynağı değişiyor');
+       'same low level, same 50 episodes; only the source of the subgoals changes');
   })();
 
   // Gezinme.

@@ -5,8 +5,9 @@ every number on it.
 
 | path | what it is |
 | --- | --- |
-| `final_sunumu.html` | **the deck**: 20 slides, 14:20. The final presentation, rebuilt from `Hi-LeWM Final Sunumu.pptx` in this folder's design system. Turkish throughout, technical terms in English. The speech script (`Hi-LeWM Final Sunumu Konuşma Metni.txt`, kept outside this repo) is numbered to match it slide for slide |
-| `assets/sunum/` | what the deck needs: the PushT gif, the two data figures lifted from the pptx, and the three hierarchy-chain frames cropped out of its example figure |
+| `final_sunumu.html` | **the deck**: 20 slides, 14:20. The final presentation, rebuilt from `Hi-LeWM Final Sunumu.pptx` in this folder's design system. In English since 2026-10-22; it was Turkish before (see *Language*). The speech script (`Hi-LeWM Final Sunumu Konuşma Metni.txt`, kept outside this repo) is numbered to match it slide for slide |
+| `assets/sunum/` | what the deck needs: the PushT gif, the two data figures in English (`failure-map.png`, `subgoal-images-2rows.png`), and the three hierarchy-chain frames cropped out of the pptx's example figure. The pptx's Turkish figures stay here as the panel's source and as a record; the deck no longer shows them |
+| `make_failure_map.py`, `make_subgoal_panel.py` | draw the two English figures; see *The two data figures* |
 | `assets/inzva.webp` | the inzva wordmark, in the top-right corner of every slide. White artwork on transparency, inverted in CSS on the light slides — see below |
 | `assets/qr-code.svg` | QR code for the deck's web address, left of the wordmark on slides 1–19 and large on the closing slide — see below |
 | `assets/repo-qr-code.svg` | QR code for the GitHub repo, beside the deck's on the closing slide only |
@@ -130,12 +131,15 @@ because `.gitignore` ignores `*.jpg`, so it never reaches the web copy.
 
 Three worth knowing before editing it:
 
-- **Language.** Turkish throughout, technical terms in English, which is the
-  rule the speech script sets. Where the pptx had a Turkish gloss and the
-  script had the English term, the script wins — so the deck says `subgoal`
-  (not *ara hedef*), `high-level` / `low-level` (not *üst/alt seviye*),
-  `episode`, `frame`, `action`, `reward`, `expert`, `score`, `draw`,
-  `threshold`, `planner`. Keep it that way; a gloss here desyncs the script.
+- **Language.** English, written as English rather than translated
+  sentence by sentence; the Turkish deck is in git history before
+  2026-10-22. The technical terms are the ones the Turkish deck already used
+  (`subgoal`, `episode`, `action`, `reward`, `expert`, `score`, `draw`,
+  `threshold`, `planner`), so the script's terms still match. The speech
+  script stays Turkish, but where Oğuz's part (slides 8–13) reads a slide's
+  sentence it now says the slide's English; the other parts have not been
+  changed. Percentages are written English-style, `82%`, including in the
+  chart on slide 16.
 - **Corner numbers.** Every slide is numbered, 1 to 20, matching the deck
   position — the cover is 1 and the team slide 2, where the pptx left both
   blank and numbered the rest 1 to 18. So a slide's corner number is now its
@@ -145,7 +149,7 @@ Three worth knowing before editing it:
 - **Figures.** The schematics are inline SVG, drawn in the deck's palette, so
   they follow light and dark like everything else. Only the three real-data
   figures are images. The pptx had the two-time-scales figure as a screenshot
-  of the old English deck's; this one redraws it in Turkish.
+  of the old English deck's; this one redraws it in the deck's palette.
 
 ### Timing
 
@@ -161,23 +165,32 @@ Each `<section>` still carries its budget as `data-time` in seconds, but with
 the clock gone nothing reads it any more. It is kept as a record of the plan,
 and as what a timer would read from if one is ever wanted back.
 
-The two findings are labelled: slide 14 is *Bulgu 1* (the planner fools the
-model) and slide 17 is *Bulgu 2* (failures come from two levels). They are the
-same two conclusions the *Sonuçlar* slide numbers 1 and 2. The pptx had only a
+The two findings are labelled: slide 14 is *Finding 1* (the planner fools the
+model) and slide 17 is *Finding 2* (failures come from two levels). They are the
+same two conclusions the *Conclusions* slide numbers 1 and 2. The pptx had only a
 *Bulgu 1*, with nothing answering it.
 
-### Inherited from the pptx
+### The two data figures
 
-Two things the deck cannot fix here, because nothing in this repo generates
-them:
+The pptx's two real-data figures had Turkish labels baked into the image, so
+the English deck uses rebuilt versions:
 
-- `assets/sunum/subgoal-gorselleri.png` was exported cropped — its title says
-  four rows and the file holds two. The deck uses
-  `subgoal-gorselleri-2satir.png`, the same file trimmed so the cut third row
-  does not show. Re-export it to get all four back.
-- That figure and `basarisizlik-haritasi.png` have their labels baked in, in
-  the pptx's older wording (*ara hedef*, *bölüm*, *ajan*, *uzman*). The slide
-  text around them uses the script's terms. Regenerating them is the only fix.
+- **`failure-map.png`** (slide 17) is redrawn from the data by
+  `make_failure_map.py`: the staged Hi-LeWM run at d = 50 with a 100-step
+  budget, `hilewm/results/colab/acting/generated_subgoal_acting_d50_hh2_lh2_budget100_seed42.npz`.
+  Both axes are fractions of the start-to-goal distance, as in
+  `hilewm/analysis/analyse_acting_npz.py`. It reproduces the Turkish
+  `basarisizlik-haritasi.png` point for point, and the script asserts the
+  12/9, 7/7 and 31/10 the slide quotes.
+- **`subgoal-images-2rows.png`** (slide 15) is rebuilt by
+  `make_subgoal_panel.py` from `subgoal-gorselleri-2satir.png`: the ten
+  decoded frames are copied pixel for pixel and only the text is redrawn.
+  Re-decoding the frames would need the decoder probe and could drift from
+  what was shown. The real errors match `hilewm/results/render_subgoals/`
+  (draw 0, rows 9 and 15); the four model costs exist only in the original
+  figure. That figure's title said four rows of a crop that holds two
+  (`subgoal-gorselleri.png` was exported cropped); the English title no longer
+  says how many.
 
 ## The rule for slides
 
