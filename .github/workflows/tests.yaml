@@ -1,10 +1,11 @@
 # Diverges from upstream: the `docs` job was removed.
 #
-# It built upstream's mkdocs site and deployed it to GitHub Pages. We do not
-# have Pages enabled and do not want upstream's documentation published under
-# our repo, so it failed on every single push and mailed a failure notice each
-# time. The `pages: write` and `id-token: write` permissions and the `pages`
-# concurrency group went with it, since nothing else used them.
+# It built upstream's mkdocs site and deployed it to GitHub Pages. Pages was
+# not enabled then, and we do not want upstream's documentation published
+# under our repo, so it failed on every single push and mailed a failure notice
+# each time. The `pages: write` and `id-token: write` permissions and the
+# `pages` concurrency group went with it. Pages is now enabled, but it serves
+# only the final deck, from `pages.yaml`.
 #
 # The pre-commit and build jobs are kept as-is and are worth keeping: they are
 # what confirmed our loader patch does not break upstream's test suite.

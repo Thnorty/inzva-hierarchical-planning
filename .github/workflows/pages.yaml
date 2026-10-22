@@ -1,0 +1,43 @@
+# Publishes the final deck, and nothing else, to GitHub Pages:
+# https://thnorty.github.io/inzva-hierarchical-planning/
+#
+# The site is `presentation/final_sunumu.html` served as `index.html`, so the
+# bare URL (the one the QR code on the slides points at) opens the deck, plus
+# the `assets/` folder it loads from. The pptx in `previous/` and the README
+# stay out. Upstream's mkdocs site is deliberately not published here; see the
+# note at the top of `tests.yaml`.
+name: presentation
+on:
+  push:
+    branches: [main]
+    paths: ['presentation/final_sunumu.html', 'presentation/assets/**', '.github/workflows/pages.yaml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+    - uses: actions/checkout@v7
+    - name: Assemble the site
+      run: |
+        mkdir _site
+        cp presentation/final_sunumu.html _site/index.html
+        cp -r presentation/assets _site/assets
+    - uses: actions/configure-pages@v6
+    - uses: actions/upload-pages-artifact@v5
+      with:
+        path: _site
+    - id: deployment
+      uses: actions/deploy-pages@v5

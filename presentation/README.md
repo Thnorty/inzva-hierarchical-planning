@@ -50,6 +50,15 @@ line. Across the top is one progress segment per slide, filling as you advance.
 
 `final_sunumu.html#5` opens on slide 5.
 
+### Online
+
+The deck is also served at **https://thnorty.github.io/inzva-hierarchical-planning/**,
+the address the QR code on the slides points at. `.github/workflows/pages.yaml`
+publishes `final_sunumu.html` there as `index.html`, with `assets/`, on every
+push to `main` that touches either. Nothing else in the repo is published. The
+web copy is only as current as `main`, so push before handing out the link.
+`…/inzva-hierarchical-planning/#5` opens on slide 5 there too.
+
 ## The deck
 
 Rebuilt from `Hi-LeWM Final Sunumu.pptx` so that the deck and the speech script
