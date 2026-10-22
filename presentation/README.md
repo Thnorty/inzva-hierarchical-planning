@@ -8,6 +8,8 @@ every number on it.
 | `final_sunumu.html` | **the deck**: 20 slides, 14:20. The final presentation, rebuilt from `Hi-LeWM Final Sunumu.pptx` in this folder's design system. Turkish throughout, technical terms in English. The speech script (`Hi-LeWM Final Sunumu Konuşma Metni.txt`, kept outside this repo) is numbered to match it slide for slide |
 | `assets/sunum/` | what the deck needs: the PushT gif, the two data figures lifted from the pptx, and the three hierarchy-chain frames cropped out of its example figure |
 | `assets/inzva.webp` | the inzva wordmark, in the top-right corner of every slide. White artwork on transparency, inverted in CSS on the light slides — see below |
+| `assets/qr-code.svg` | QR code for the deck's web address, left of the wordmark on slides 1–19 and large on the closing slide — see below |
+| `assets/repo-qr-code.svg` | QR code for the GitHub repo, beside the deck's on the closing slide only |
 | `assets/team/` | **put `defne.jpg`, `oguz.jpg` and `arda.jpg` here**, square crops work best. Until then the deck shows initials |
 | `previous/presentation-3.pptx` | presentation 3, as given ("Proj Presentation #3"): Push-T, VLA vs world models, the GRU predictor, CEM, MPC, temporal hierarchy |
 | `../notes/inzva-report-4.html` | the spec sent before presentation 4. Frozen, never edited; its 40-step horizon and stride 8 are out of date (`INZVA_README.md` §13) |
@@ -99,6 +101,30 @@ Do not be tempted to recolour it with a CSS `mask` instead, which looks like
 the tidier trick: `mask-image` fetches under CORS rules, and on a page opened
 as `file://` — which is how this deck is usually opened — it fails silently and
 the mark never appears at all. An `<img>` has no such restriction.
+
+### The QR code
+
+`assets/qr-code.svg` encodes https://thnorty.github.io/inzva-hierarchical-planning/
+(see *Online*). Like the wordmark it is one `<img class="qr">` at the end of
+`.stage`, 18px left of the mark, on every slide but the closing one. There it
+is shown at 260px, labelled *Sunum*, next to `assets/repo-qr-code.svg`
+(https://github.com/Thnorty/inzva-hierarchical-planning), labelled *Repo*; both
+addresses are also written out under *Sorular?*. Only the deck's code is in
+the corner, because two small codes side by side leave people guessing which
+to scan. The repo code was made with `segno` to match the deck's: version 4,
+error correction M, a 3-module margin, so the two look alike side by side. It
+is not dimmed like the mark,
+since it has to scan: on light slides `mix-blend-mode:multiply` melts its white
+background into the paper colour, and on the two dark slides it stays a white
+square, which is also the light margin a camera needs.
+
+**Don't shrink it below 80px.** Of 52, 64, 72 and 80px, only 80px decoded
+with OpenCV's basic QR detector on a 1920×1080 render. At 80px the WeChat
+detector (`opencv-contrib`), which reads more like a phone camera, decodes it
+on all 20 slides at both 1600×900 and 1920×1080. `top:40px` keeps its bottom edge (120px) above
+where the titles start (~121px). If the address ever changes, regenerate the
+SVG; `assets/qr-code.jpg` is the same code as a JPEG, untracked
+because `.gitignore` ignores `*.jpg`, so it never reaches the web copy.
 
 ### Conventions
 

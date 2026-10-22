@@ -77,6 +77,20 @@ body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
 .brand{position:absolute;top:74px;right:112px;height:30px;width:auto;opacity:.33;filter:invert(1)}
 :root.dark-page .brand{filter:none}
 
+/* Sunumun GitHub Pages adresine giden QR kod, logonun hemen solunda.
+   Logo gibi tek bir öğe. Okunabilmesi için logodaki opacity ve invert yok.
+   Açık slaytlarda multiply, SVG'nin beyaz zeminini kâğıt rengine
+   karıştırıyor; koyu slaytlarda beyaz kare olarak kalıyor, ki kameranın
+   ihtiyaç duyduğu açık kenar boşluğu da bu. right: logonun 112px'lik sağ
+   boşluğu + 103px genişliği + 18px ara. 80px'in altında bir modül ~2
+   pikselin altına düşüyor ve 1920x1080'de bile okunmuyor; top:40 ise
+   kodun alt kenarını (120px) başlığın üst kenarının (~121px) üstünde
+   tutuyor. Kapanış slaytında büyük hali gösterildiği için orada
+   gizleniyor. */
+.qr{position:absolute;top:40px;right:233px;width:80px;height:80px;mix-blend-mode:multiply}
+:root.dark-page .qr{mix-blend-mode:normal}
+.closing.active ~ .qr{display:none}
+
 .eyebrow{
   font-family:var(--mono);font-size:19px;letter-spacing:.08em;text-transform:uppercase;
   color:var(--accent);margin:0 0 22px;
@@ -254,13 +268,17 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
 
 /* kapanış */
 .thanks{display:grid;grid-template-columns:1fr auto;gap:64px;align-items:end;margin-top:40px}
-.thanks .faces{display:flex;gap:28px}
+.thanks .codes{display:flex;gap:36px}
+.thanks figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:14px;font-family:var(--mono);font-size:17px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.thanks figure img{display:block;width:260px;height:260px;border-radius:6px}
+.thanks .faces{display:flex;gap:28px;margin-top:44px}
 .thanks .faces div{display:flex;flex-direction:column;align-items:center;gap:10px;font-family:var(--mono);font-size:15px;color:var(--ink-soft)}
 .closing{justify-content:center}
 .closing .foot{margin-top:72px}
 .qa{font-size:72px;font-weight:600;margin-top:40px}
 .qa em{font-style:normal;color:var(--accent)}
 .repo{margin-top:28px;font-family:var(--mono);font-size:20px;color:var(--ink-soft);word-break:break-all}
+.repo + .repo{margin-top:10px}
 .repo b{color:var(--accent);font-weight:400}
 
 /* görsel + yan not */
@@ -546,7 +564,7 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
       <h3>Frozen DINOv2 özellikleri üzerinde çalışan world model</h3>
       <div class="pair">
         <div><div class="v num">~40M</div><div class="u">parametre</div></div>
-        <div><div class="v ac num">%86</div><div class="u">başarı</div></div>
+        <div><div class="v ac num">%84</div><div class="u">başarı</div></div>
       </div>
       <p>19M öğrenilen <b>predictor</b> + 21M <b>frozen</b> DINOv2 <b>encoder</b>; toplamı biz hesapladık.</p>
     </div>
@@ -722,17 +740,29 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
     <div>
       <p class="qa">Sorular? <em>Buyurun.</em></p>
       <p class="repo">Repo: <b>github.com/Thnorty/inzva-hierarchical-planning</b></p>
+      <p class="repo">Sunum: <b>thnorty.github.io/inzva-hierarchical-planning</b></p>
+      <div class="faces">
+        <div><div class="face small"><span>DE</span><img src="assets/team/defne.jpg" alt="" onerror="this.remove()"></div>Defne</div>
+        <div><div class="face small"><span>ON</span><img src="assets/team/oguz.jpg" alt="" onerror="this.remove()"></div>Oğuz</div>
+        <div><div class="face small"><span>AA</span><img src="assets/team/arda.jpg" alt="" onerror="this.remove()"></div>Arda</div>
+      </div>
     </div>
-    <div class="faces">
-      <div><div class="face small"><span>DE</span><img src="assets/team/defne.jpg" alt="" onerror="this.remove()"></div>Defne</div>
-      <div><div class="face small"><span>ON</span><img src="assets/team/oguz.jpg" alt="" onerror="this.remove()"></div>Oğuz</div>
-      <div><div class="face small"><span>AA</span><img src="assets/team/arda.jpg" alt="" onerror="this.remove()"></div>Arda</div>
+    <div class="codes">
+      <figure>
+        <img src="assets/qr-code.svg" alt="Sunumun adresine giden QR kod: thnorty.github.io/inzva-hierarchical-planning">
+        <figcaption>Sunum</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/repo-qr-code.svg" alt="Repoya giden QR kod: github.com/Thnorty/inzva-hierarchical-planning">
+        <figcaption>Repo</figcaption>
+      </figure>
     </div>
   </div>
   <div class="foot"><span class="src">Tüm kodlar GitHub'da açık kaynak</span><span class="pg"></span></div>
 </section>
 
 <img class="brand" src="assets/inzva.webp" alt="" aria-hidden="true" width="1500" height="436">
+<img class="qr" src="assets/qr-code.svg" alt="Sunumun adresine giden QR kod">
 </div>
 </div>
 
