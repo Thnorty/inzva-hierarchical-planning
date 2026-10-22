@@ -112,12 +112,18 @@ the mark never appears at all. An `<img>` has no such restriction.
 closing slide shows all five codes in one row at 200px (about 35 cm on a 3 m
 screen): *Slides* and *Repo* (`qr/repo.svg`,
 https://github.com/Thnorty/inzva-hierarchical-planning), a thin divider, then
-the three LinkedIn codes, each captioned with that person's photo and name.
+the three LinkedIn codes, each with that person's photo in the middle and
+their name underneath.
 Both addresses are also written out under *Questions?*. Only the deck's code
 is in the corner, because two small codes side by side leave people guessing
 which to scan. The repo code was made with `segno` to match the deck's:
 version 4, error correction M, a 3-module margin, so the two look alike side
-by side. The LinkedIn codes are as made by LinkedIn, logo in the middle. The
+by side. The LinkedIn codes are LinkedIn's own, error-correction level H, with that
+person's photo (`team/*.jpg`, as a squircle) in place of the LinkedIn logo, inside
+the logo's own box, so no more of the code is covered than before. They decode
+with zxing and WeChat's reader at full size, at 100px and blurred with noise,
+and OpenCV's basic reader fails on exactly the cases where it also failed on
+the logo originals (in git history at `91c4cc3`). The
 corner code is not dimmed like the mark,
 since it has to scan: on light slides `mix-blend-mode:multiply` melts its white
 background into the paper colour, and on the two dark slides it stays a white
