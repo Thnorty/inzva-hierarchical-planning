@@ -5,7 +5,7 @@ every number on it.
 
 | path | what it is |
 | --- | --- |
-| `final_sunumu.html` | **the deck**: 19 slides, 12:40. The final presentation, rebuilt from `Hi-LeWM Final Sunumu.pptx` in this folder's design system. In English since 2026-10-22; it was Turkish before (see *Language*). The speech script (`Hi-LeWM Final Sunumu Konuşma Metni.txt`, kept outside this repo) is numbered to match it slide for slide |
+| `final_sunumu.html` | **the deck**: 19 slides, 12:45. The final presentation, rebuilt from `Hi-LeWM Final Sunumu.pptx` in this folder's design system. In English since 2026-10-22; it was Turkish before (see *Language*). The speech script (`Hi-LeWM Final Sunumu Konuşma Metni.txt`, kept outside this repo) is numbered to match it slide for slide |
 | `assets/sunum/` | what the deck needs: the PushT gif, the two data figures in English (`failure-map.png`, `subgoal-images-2rows.png`), and the three hierarchy-chain frames cropped out of the pptx's example figure. The pptx's Turkish figures stay here as the panel's source and as a record; the deck no longer shows them |
 | `make_failure_map.py`, `make_subgoal_panel.py` | draw the two English figures; see *The two data figures* |
 | `assets/inzva.webp` | the inzva wordmark, in the top-right corner of every slide. White artwork on transparency, inverted in CSS on the light slides — see below |
@@ -168,11 +168,11 @@ Three worth knowing before editing it:
 
 ### Timing
 
-The budgets are the script's and add up to **12:40**. It was 14:20 after the
+The budgets are the script's and add up to **12:45**. It was 14:20 after the
 two slides cut from the pptx (*İki örnek: Episode 9* and the unnumbered
 *Episode 27*) and the 15 seconds slide 4 gained for Ha & Schmidhuber's 2018
 *World Models*; then Oğuz's slides 8–12 were tightened to 13:05 in the script
-alone, and on 2026-10-23 slide 13 was cut and 11 shortened, which gives 12:40.
+alone, and on 2026-10-23 slide 13 was cut and 11 shortened, which gave 12:40, and slide 10 gained 5 seconds explaining that the fine model fills the gaps.
 Since then `data-time` matches the script slide for slide. The script is
 numbered 1 to 19 to match the corners, with its section table, time total and
 cross-references updated with it. Keep the two in step: a
