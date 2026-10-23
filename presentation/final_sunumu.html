@@ -10,8 +10,10 @@
    Yerleşim ve palet bu klasörün tasarım sistemi: 1600x900 sabit sahne,
    pencereye göre ölçekleniyor; slayt başına tek iddia, altında kanıt,
    kaynak en altta.
-   Köşe numarası deste sırasıyla aynı, 1'den 20'ye: kapak 1, ekip 2, geri
-   kalanı sırayla. Konuşma metni de bu numaralara atıf yapıyor. */
+   Köşe numarası deste sırasıyla aynı, 1'den 19'a: kapak 1, ekip 2, geri
+   kalanı sırayla. Konuşma metni de bu numaralara atıf yapıyor. Aşağıdaki
+   <!-- n --> yorumları ve JS'teki "Slayt n" ise pptx'in numaraları; pptx'in
+   11'i (Hi-LeWM'i nasıl inceledik) 2026-10-23'te 12'ye katılıp çıkarıldı. */
 :root{
   --paper:#f6f6f2;
   --card:#ffffff;
@@ -182,6 +184,8 @@ svg text{font-family:var(--mono);fill:var(--ink)}
 }
 .step h3{font-size:32px;font-weight:600;margin:8px 0 12px}
 .step p{font-size:22px;line-height:1.45;color:var(--ink-soft)}
+/* adımın küçük çizimi: başlık ile açıklama arasında */
+.step .mini{margin:0 0 14px}
 .loopnote{margin-top:32px;font-size:24px;color:var(--ink-soft);max-width:60ch}
 .loopnote.wide{max-width:82ch}
 .loopnote b{color:var(--ink);font-weight:600}
@@ -224,13 +228,6 @@ svg text{font-family:var(--mono);fill:var(--ink)}
 .qs .q{border-top:3px solid var(--accent);padding-top:24px}
 .qs .k{font-family:var(--mono);font-size:17px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
 .qs p{font-size:27px;line-height:1.4;margin-top:14px}
-
-/* doğrulama ölçümleri */
-.repro{display:grid;grid-template-columns:repeat(2,1fr);gap:64px;margin-top:40px;max-width:1120px}
-.repro .cell{border-top:1px solid var(--rule);padding-top:20px}
-.repro .v{font-size:64px;font-weight:600;line-height:1;font-variant-numeric:lining-nums}
-.repro .paper{font-family:var(--mono);font-size:17px;color:var(--ink-soft);margin-top:12px}
-.repro .what{font-size:22px;line-height:1.4;margin-top:12px}
 
 /* literatür */
 /* Beş satır 900px'e ancak sığıyor: gap ve padding-top, uyarı satırı footer'ın
@@ -505,25 +502,24 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
 </section>
 
 <!-- 6 -->
-<section class="slide" data-time="50" data-no="8">
-  <p class="eyebrow">Pipeline</p>
+<section class="slide" data-time="45" data-no="8">
+  <p class="eyebrow">Pipeline <b>· CEM = Cross-Entropy Method</b></p>
   <h2>Planning with CEM: try random plans, <em>keep the best</em>, repeat.</h2>
   <div class="steps">
-    <div class="step"><div class="n">1</div><h3>Generate</h3><p>Generate lots of random plans. Here, a plan is the sequence of pushes we'll give the T.</p></div>
-    <div class="step"><div class="n">2</div><h3>Score</h3><p>Try each plan in the world model and <b>score</b> it by how close it gets to the goal.</p></div>
-    <div class="step"><div class="n">3</div><h3>Select</h3><p>Keep the plans with the best scores.</p></div>
-    <div class="step"><div class="n">4</div><h3>Narrow</h3><p>Generate new plans around the best ones, then go back to step&nbsp;2.</p></div>
+    <div class="step"><div class="n">1</div><h3>Generate</h3><div class="mini" id="fig-cem-1"></div><p>Generate lots of random plans. Here, a plan is the sequence of pushes we'll give the T.</p></div>
+    <div class="step"><div class="n">2</div><h3>Score</h3><div class="mini" id="fig-cem-2"></div><p>Try each plan in the world model and <b>score</b> it by how close it gets to the goal.</p></div>
+    <div class="step"><div class="n">3</div><h3>Select</h3><div class="mini" id="fig-cem-3"></div><p>Keep the plans with the best scores.</p></div>
+    <div class="step"><div class="n">4</div><h3>Narrow</h3><div class="mini" id="fig-cem-4"></div><p>Generate new plans around the best ones, then go back to step&nbsp;2.</p></div>
   </div>
-  <p class="loopnote wide">CEM stands for the <b>Cross-Entropy Method</b>. With every round, the plans converge toward the best ones.</p>
   <div class="warn">
     <span class="k">Important</span>
     <span>&ldquo;Best&rdquo; means best <b>according to the model's prediction</b>. If the model is wrong, CEM converges toward its mistake. We'll come back to this in the findings.</span>
   </div>
-  <div class="foot"><span class="src">Illustrative diagram, not drawn from real data</span><span class="pg"></span></div>
+  <div class="foot"><span class="src">Illustrative diagram, not drawn from real data · each line is one plan</span><span class="pg"></span></div>
 </section>
 
 <!-- 7 -->
-<section class="slide" data-time="50" data-no="9">
+<section class="slide" data-time="35" data-no="9">
   <p class="eyebrow">Pipeline · Hierarchy</p>
   <h2>The high level picks <em>subgoals</em>; the low level pushes.</h2>
   <p class="lede" style="max-width:88ch">The high level splits a distant goal into pieces; a <b>subgoal</b> is a stop along the way. It doesn't think push by push, but in 25-step chunks. We call such a chunk a <b>macro-action</b>.</p>
@@ -548,17 +544,17 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
 </section>
 
 <!-- 8 -->
-<section class="slide" data-time="60" data-no="10">
+<section class="slide" data-time="50" data-no="10">
   <p class="eyebrow">Stage 1 · Method</p>
   <h2>Our hierarchical model: the high level sees time <em>on two scales</em>.</h2>
   <p class="lede">A two-level model built on a GRU. A <b>GRU</b> is a kind of neural network for sequences; it keeps the past in memory.</p>
   <div style="margin-top:34px" id="fig-timescales"></div>
-  <p class="loopnote wide">The fine model predicts one environment step ahead, the coarse model two. <b>Over a 10-step horizon, that makes 5 waypoints.</b></p>
+  <p class="loopnote wide">The fine model predicts one environment step ahead, the coarse model two. <b>Over a 10-step horizon, that makes 5 waypoints.</b> CEM plans 5 steps at a time instead of 10, so <b>less error builds up</b>, and with fewer world-model calls <b>planning runs faster</b>.</p>
   <div class="foot"><span class="src">Illustrative diagram: each block is a time interval; the real step counts aren't shown</span><span class="pg"></span></div>
 </section>
 
 <!-- 9 -->
-<section class="slide" data-time="60" data-no="11">
+<section class="slide" data-time="30" data-no="11">
   <p class="eyebrow">Stage 1 · Result</p>
   <h2><em>Close results</em> from a much smaller model.</h2>
   <div class="twin">
@@ -577,54 +573,34 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
         <div><div class="v num">~40M</div><div class="u">parameters</div></div>
         <div><div class="v ac num">84%</div><div class="u">success</div></div>
       </div>
-      <p>A 19M trained <b>predictor</b> + a 21M <b>frozen</b> DINOv2 <b>encoder</b>; we added up the total ourselves.</p>
+      <p>19M trained predictor + 21M frozen DINOv2 encoder (our sum).</p>
     </div>
   </div>
-  <p class="next"><b>We're not saying we &ldquo;beat&rdquo; or &ldquo;matched&rdquo; it.</b> Our goal from the start was strong performance from a smaller model. <b>Parameters</b> are the values a model learns, so their number measures the model's size.</p>
+  <p class="next"><b>Not a win, not a tie:</b> our goal was strong performance from a much smaller model.</p>
   <div class="foot"><span class="src">Both measured on 50 episodes, 300 samples, 30 CEM steps, seeds 0/1/2, same GPU · DINO-WM parameters: arXiv 2411.04983 and the DINOv2 repository</span><span class="pg"></span></div>
 </section>
 
 <!-- 10 -->
-<section class="slide dark" data-time="20" data-no="12">
+<section class="slide dark" data-time="30" data-no="12">
   <p class="eyebrow">Stage 2 · The question</p>
   <h2>Does the high level pick good <em>subgoals</em>?</h2>
   <p class="lede" style="font-size:34px;margin-top:36px">A hint: in the model's eyes, yes.</p>
-  <p class="loopnote wide" style="margin-top:28px">But what the model sees and what really happens may not be the same thing. Here is how we looked into it.</p>
-  <div class="foot"><span class="src"></span><span class="pg"></span></div>
-</section>
-
-<!-- 11 -->
-<section class="slide" data-time="50" data-no="13">
-  <p class="eyebrow">Stage 2 · Method</p>
-  <h2>We didn't retrain Hi-LeWM. We used <em>the authors' model</em>.</h2>
+  <p class="loopnote wide" style="margin-top:28px">But what the model sees and what really happens may not be the same thing. So we asked two questions:</p>
   <div class="qs">
     <div class="q">
       <span class="k">Question 1</span>
-      <p>When the planner picks a subgoal, how well does the model's score for it match reality?</p>
+      <p>Does the model's score for the planner's subgoal match reality?</p>
     </div>
     <div class="q">
       <span class="k">Question 2</span>
-      <p>When an episode fails in the environment, which level is to blame: the high level or the low level?</p>
+      <p>When an episode fails, which level is to blame: the high level or the low level?</p>
     </div>
   </div>
-  <p class="loopnote wide" style="margin-top:38px">As a sanity check, we <b>reproduced two of the paper's numbers</b>:</p>
-  <div class="repro">
-    <div class="cell">
-      <div class="v num">36.0%</div>
-      <div class="paper">paper: 38.7%</div>
-      <div class="what">with Hi-LeWM's own planner</div>
-    </div>
-    <div class="cell">
-      <div class="v num">70.0%</div>
-      <div class="paper">paper: 73.3%</div>
-      <div class="what">with the expert's subgoals</div>
-    </div>
-  </div>
-  <div class="foot"><span class="src">Measured in the environment · 50 episodes, seed 42, d = 50, 100-step budget</span><span class="pg"></span></div>
+  <div class="foot"><span class="src">Hi-LeWM: the authors' trained model, not retrained</span><span class="pg"></span></div>
 </section>
 
 <!-- 12 -->
-<section class="slide" data-time="60" data-no="14">
+<section class="slide" data-time="60" data-no="13">
   <p class="eyebrow">Results</p>
   <h2>Finding 1: the planner <em>fools the model</em>.</h2>
   <div class="finding">
@@ -646,7 +622,7 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
 </section>
 
 <!-- 13 -->
-<section class="slide" data-time="50" data-no="15">
+<section class="slide" data-time="50" data-no="14">
   <p class="eyebrow">Results</p>
   <h2>Now let's <em>see</em> the same finding.</h2>
   <div class="figrow" style="grid-template-columns:1fr 340px;gap:40px;margin-top:22px">
@@ -663,7 +639,7 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
 </section>
 
 <!-- 14 -->
-<section class="slide" data-time="50" data-no="16">
+<section class="slide" data-time="50" data-no="15">
   <p class="eyebrow">Results</p>
   <h2>Changing where the subgoals come from is worth <em>22 points</em>.</h2>
   <div class="row" style="margin-top:26px">
@@ -678,7 +654,7 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
 </section>
 
 <!-- 15 -->
-<section class="slide" data-time="70" data-no="17">
+<section class="slide" data-time="70" data-no="16">
   <p class="eyebrow">Results</p>
   <h2>Finding 2: two corners, <em>two kinds of failure</em>.</h2>
   <div class="figrow" style="grid-template-columns:1fr 480px;margin-top:20px">
@@ -695,7 +671,7 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
 </section>
 
 <!-- 16 -->
-<section class="slide" data-time="50" data-no="18">
+<section class="slide" data-time="50" data-no="17">
   <p class="eyebrow">Conclusions</p>
   <h2>Stage 2 leads to <em>two conclusions</em>.</h2>
   <ol class="cards two">
@@ -715,7 +691,7 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
 </section>
 
 <!-- 17 -->
-<section class="slide" data-time="30" data-no="19">
+<section class="slide" data-time="30" data-no="18">
   <p class="eyebrow">Future work</p>
   <h2>We see <em>four next steps</em>.</h2>
   <ol class="cards quad">
@@ -744,7 +720,7 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
 </section>
 
 <!-- 18 -->
-<section class="slide closing dark" data-time="10" data-no="20">
+<section class="slide closing dark" data-time="10" data-no="19">
   <p class="eyebrow">Closing</p>
   <h2>Thank you.</h2>
   <div class="thanks">
@@ -923,6 +899,43 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
 
     el('text', {x:1110, y:mid - 8, 'font-size':25, fill:C.ink, style:serif}, s, 'Imagining and planning');
     el('text', {x:1110, y:mid + 24, 'font-size':25, fill:C.ink, style:serif}, s, 'happen in this space.');
+  })();
+
+  // Slayt 6 · CEM'in dört adımı, her birinin altında küçük bir çizim. Gerçek
+  // veri değil: her çizgi bir plan, soldaki T'den bir yere gidiyor. Skor,
+  // çizginin ucunun yeşil hedefe uzaklığı.
+  (function(){
+    const W = 300, H = 120, B = {x:22, y:78}, S = {x:40, y:78}, G = {x:264, y:34};
+    const rnd = i => { const v = Math.sin((i + 1) * 78.233) * 43758.5453; return v - Math.floor(v); };
+    const dist = p => Math.hypot(p.x - G.x, p.y - G.y);
+    const first = Array.from({length:12}, (_, i) =>
+      ({x:150 + rnd(i) * 115, y:12 + rnd(i + 40) * 100, b:(rnd(i + 80) - .5) * 44}));
+    const best = [...first].sort((a, b) => dist(a) - dist(b)).slice(0, 3);
+    const mx = best.reduce((t, p) => t + p.x, 0) / 3, my = best.reduce((t, p) => t + p.y, 0) / 3;
+    const next = Array.from({length:9}, (_, i) =>
+      ({x:mx + (rnd(i + 120) - .5) * 30, y:my + (rnd(i + 160) - .5) * 26, b:(rnd(i + 200) - .5) * 16}));
+    function plan(s, p, stroke, w, op){
+      el('path', {d:`M${S.x} ${S.y} Q${(S.x + p.x) / 2} ${(S.y + p.y) / 2 + p.b} ${p.x} ${p.y}`,
+                  fill:'none', stroke, 'stroke-width':w, 'stroke-linecap':'round', opacity:op}, s);
+      el('circle', {cx:p.x, cy:p.y, r:w + 1.5, fill:stroke, opacity:op}, s);
+    }
+    const panels = [
+      s => first.forEach(p => plan(s, p, C.soft, 2, .85)),
+      s => first.forEach(p => {
+        el('line', {x1:p.x, y1:p.y, x2:G.x, y2:G.y, stroke:C.ref, 'stroke-width':1.5, 'stroke-dasharray':'3 4'}, s);
+        plan(s, p, C.soft, 2, .85);
+      }),
+      s => { first.filter(p => !best.includes(p)).forEach(p => plan(s, p, C.muted, 2, .7));
+             best.forEach(p => plan(s, p, C.ac, 3.5, 1)); },
+      s => next.forEach(p => plan(s, p, C.ac, 2.5, .9)),
+    ];
+    panels.forEach((draw, i) => {
+      const s = svg('fig-cem-' + (i + 1), W, H);
+      if (!s) return;
+      T(s, G.x, G.y, 30, 0, SIM.goal, 1, true);
+      T(s, B.x, B.y, 30, 0, SIM.block);
+      draw(s);
+    });
   })();
 
   // Slayt 8 · iki zaman ölçeği. (pptx'teki İngilizce ekran görüntüsünün yerine.)
