@@ -5,11 +5,11 @@ every number on it.
 
 | path | what it is |
 | --- | --- |
-| `final_sunumu.html` | **the deck**: 19 slides, 12:45. The final presentation, rebuilt from `Hi-LeWM Final Sunumu.pptx` in this folder's design system. In English since 2026-10-22; it was Turkish before (see *Language*). The speech script (`Hi-LeWM Final Sunumu Konuşma Metni.txt`, kept outside this repo) is numbered to match it slide for slide |
-| `assets/sunum/` | what the deck needs: the PushT gif, the two data figures in English (`failure-map.png`, `subgoal-images-2rows.png`), and the three hierarchy-chain frames cropped out of the pptx's example figure. The pptx's Turkish figures stay here as the panel's source and as a record; the deck no longer shows them |
+| `final_sunumu.html` | **the deck**: 20 slides, 13:25. The final presentation, rebuilt from `Hi-LeWM Final Sunumu.pptx` in this folder's design system. In English since 2026-10-22; it was Turkish before (see *Language*). The speech script (`Hi-LeWM Final Sunumu Konuşma Metni.txt`, kept outside this repo) was numbered to match it slide for slide until slide 8 was added on 2026-10-23 (see *Timing*) |
+| `assets/sunum/` | what the deck needs: the PushT gif, the two data figures in English (`failure-map.png`, `subgoal-images-2rows.png`), the three hierarchy-chain frames cropped out of the pptx's example figure, and `training-loop.png`, the training diagram on slide 8, cropped from a friend's image below its own title. The pptx's Turkish figures stay here as the panel's source and as a record; the deck no longer shows them |
 | `make_failure_map.py`, `make_subgoal_panel.py` | draw the two English figures; see *The two data figures* |
 | `assets/inzva.webp` | the inzva wordmark, in the top-right corner of every slide. White artwork on transparency, inverted in CSS on the light slides — see below |
-| `assets/qr/` | the QR codes, named for where they lead: `slides.svg` (this deck's web address; left of the wordmark on slides 1–18, and on the closing slide), `repo.svg` (the GitHub repo), and `linkedin-defne.png`, `linkedin-oguz.png`, `linkedin-arda.png` (our LinkedIn profiles). All five are on the closing slide — see *The QR codes* |
+| `assets/qr/` | the QR codes, named for where they lead: `slides.svg` (this deck's web address; left of the wordmark on slides 1–19, and on the closing slide), `repo.svg` (the GitHub repo), and `linkedin-defne.png`, `linkedin-oguz.png`, `linkedin-arda.png` (our LinkedIn profiles). All five are on the closing slide — see *The QR codes* |
 | `assets/favicon.png` | the browser-tab icon: `assets/inzva-logo.webp`, the inzva ring, white on the dark slides' colour so it shows on light and dark tabs alike |
 | `assets/inzva-logo.webp` | the inzva ring on its own, white on transparency; the source of the favicon |
 | `assets/team/` | **put `defne.jpg`, `oguz.jpg` and `arda.jpg` here**, square crops work best. Until then the deck shows initials |
@@ -47,7 +47,7 @@ fonts, and falls back to Georgia and Consolas without them.
 
 **There is no speaker-notes panel and no rehearsal clock.** The script is the
 notes, read from its own file, so there is no `N` key; the deck that had one is
-the deleted `index.html`. The controls are a bare `←  n / 19  →` in the
+the deleted `index.html`. The controls are a bare `←  n / 20  →` in the
 bottom-left corner that fades out after a few seconds of no mouse movement; its
 4px inset is as large as it goes before the arrow overlaps the footer's source
 line. Across the top is one progress segment per slide, filling as you advance.
@@ -70,16 +70,17 @@ agree. It follows the pptx's own order, and is not a translation of
 the old English deck, which was cut for a different audience. It had 20
 slides until 2026-10-23, when the method slide (*How we examined Hi-LeWM*,
 pptx 11) was cut: its two questions moved onto the stage-2 question slide
-(12), and the check that we reproduced two of the paper's numbers (36.0% vs
+(now 13), and the check that we reproduced two of the paper's numbers (36.0% vs
 38.7%, 70.0% vs 73.3%) left the slides and lives on only as a prepared
-answer in the script.
+answer in the script. The same day slide 8, *How does the world model learn?*,
+was added after the world-model slide; it is not in the pptx.
 
 ### Light and dark
 
 The deck is **always light**, whatever the machine is set to: there is no
 `prefers-color-scheme` rule in it, so it needs no `data-theme` pin either. On a
 projector or printed to PDF that is what you want. Two slides are deliberately
-dark, the stage-2 question (12) and the closing *Questions?* (19); they carry
+dark, the stage-2 question (13) and the closing *Questions?* (20); they carry
 `class="slide dark"`, which redefines the palette variables on the section
 itself. Add or remove that class to change which slides invert — nothing else
 needs touching.
@@ -91,11 +92,11 @@ extension before changing the CSS.
 
 ### The wordmark
 
-The inzva wordmark sits in the top-right corner of all 19 slides, on the
+The inzva wordmark sits in the top-right corner of all 20 slides, on the
 eyebrow line. It is a single `<img class="brand">` at the end of `.stage`, not
 a copy per slide: only one slide is visible at a time, so one element is enough
 and slides stay free of boilerplate. `assets/inzva.webp` is white artwork on a
-transparent background, so it would vanish on the seventeen light slides as it
+transparent background, so it would vanish on the eighteen light slides as it
 stands. The CSS turns it black there with `filter:invert(1)` and leaves it
 white on the two dark ones; `opacity:.33` is what makes it read as a watermark
 rather than a second headline, and it lands on the same grey either way. Which
@@ -153,12 +154,13 @@ Three worth knowing before editing it:
   `threshold`, `planner`), so the script's terms still match. The talk is
   given in Turkish, so the speech script stays fully Turkish even where it
   reads out a slide's sentence. Percentages are written English-style,
-  `82%`, including in the chart on slide 15.
-- **Corner numbers.** Every slide is numbered, 1 to 19, matching the deck
+  `82%`, including in the chart on slide 16.
+- **Corner numbers.** Every slide is numbered, 1 to 20, matching the deck
   position — the cover is 1 and the team slide 2, where the pptx left both
   blank and numbered the rest 1 to 18. So a slide's corner number is its
-  pptx number plus two up to slide 12, and plus one after it, since pptx 11
-  was cut; the `<!-- n -->` comments in the HTML keep the pptx numbers. And `final_sunumu.html#5` is the slide that says 5. The
+  pptx number plus two up to slide 7; slide 8 is not in the pptx and has
+  no pptx number; slides 9 to 13 are plus three, and from 14 on plus two
+  again, since pptx 11 was cut; the `<!-- n -->` comments in the HTML keep the pptx numbers. And `final_sunumu.html#5` is the slide that says 5. The
   number comes from `data-no` on each `<section>`, kept explicit so the pptx's
   numbering can be restored in one place if it is ever wanted.
 - **Figures.** The schematics are inline SVG, drawn in the deck's palette, so
@@ -173,17 +175,19 @@ two slides cut from the pptx (*İki örnek: Episode 9* and the unnumbered
 *Episode 27*) and the 15 seconds slide 4 gained for Ha & Schmidhuber's 2018
 *World Models*; then Oğuz's slides 8–12 were tightened to 13:05 in the script
 alone, and on 2026-10-23 slide 13 was cut and 11 shortened, which gave 12:40, and slide 10 gained 5 seconds explaining that the fine model fills the gaps.
-Since then `data-time` matches the script slide for slide. The script is
-numbered 1 to 19 to match the corners, with its section table, time total and
-cross-references updated with it. Keep the two in step: a
+Up to then `data-time` matched the script slide for slide, and the script was
+numbered 1 to 19 to match the corners. Later that day slide 8 (*How does the
+world model learn?*) was added with a 40-second placeholder budget, giving
+13:25; **the script does not have it yet**, and from slide 8 on its numbers
+are one behind the corners until it is updated. Keep the two in step: a
 slide added or moved here needs the same change there.
 
 Each `<section>` still carries its budget as `data-time` in seconds, but with
 the clock gone nothing reads it any more. It is kept as a record of the plan,
 and as what a timer would read from if one is ever wanted back.
 
-The two findings are labelled: slide 13 is *Finding 1* (the planner fools the
-model) and slide 16 is *Finding 2* (failures come from two levels). They are the
+The two findings are labelled: slide 14 is *Finding 1* (the planner fools the
+model) and slide 17 is *Finding 2* (failures come from two levels). They are the
 same two conclusions the *Conclusions* slide numbers 1 and 2. The pptx had only a
 *Bulgu 1*, with nothing answering it.
 
@@ -192,14 +196,14 @@ same two conclusions the *Conclusions* slide numbers 1 and 2. The pptx had only 
 The pptx's two real-data figures had Turkish labels baked into the image, so
 the English deck uses rebuilt versions:
 
-- **`failure-map.png`** (slide 16) is redrawn from the data by
+- **`failure-map.png`** (slide 17) is redrawn from the data by
   `make_failure_map.py`: the staged Hi-LeWM run at d = 50 with a 100-step
   budget, `hilewm/results/colab/acting/generated_subgoal_acting_d50_hh2_lh2_budget100_seed42.npz`.
   Both axes are fractions of the start-to-goal distance, as in
   `hilewm/analysis/analyse_acting_npz.py`. It reproduces the Turkish
   `basarisizlik-haritasi.png` point for point, and the script asserts the
   12/9, 7/7 and 31/10 the slide quotes.
-- **`subgoal-images-2rows.png`** (slide 14) is rebuilt by
+- **`subgoal-images-2rows.png`** (slide 15) is rebuilt by
   `make_subgoal_panel.py` from `subgoal-gorselleri-2satir.png`: the ten
   decoded frames are copied pixel for pixel and only the text is redrawn.
   Re-decoding the frames would need the decoder probe and could drift from
@@ -240,14 +244,14 @@ Seeds 0, 1, 2; 50 episodes each; d=25, horizon 10.
 | ours at k = 2 | 76.0 % | `notes/results/inzva_gru_hier_results.md` | §14 |
 | horizon 40 vs 10, before the replanning change | 15.3 % vs 64.0 % | `notes/results/gru_horizon40_results.md`; the 64.0 % is `inzva_gru_results.md` at commit `04d5008`, since overwritten by the 69.3 % run | §13 |
 | DINO-WM reference | 84.0 % | `notes/results/dinowm_romer_results.md` | §11 |
-| our GRU's size, slide 11 | 7M: 7,125,200, the fine and coarse models with their shared encoder and projector counted once (each alone is 6,709,662; both in full 13,419,344). Replaces an 11M that nothing in the code supported | counted by building both from `scripts/train/config/gru.yaml` and `gru_coarse.yaml`, unchanged since `0a88e1a`; `scripts/train_gru.py` copies and freezes the encoder and projector for the coarse model | §6.5 |
+| our GRU's size, slide 12 | 7M: 7,125,200, the fine and coarse models with their shared encoder and projector counted once (each alone is 6,709,662; both in full 13,419,344). Replaces an 11M that nothing in the code supported | counted by building both from `scripts/train/config/gru.yaml` and `gru_coarse.yaml`, unchanged since `0a88e1a`; `scripts/train_gru.py` copies and freezes the encoder and projector for the coarse model | §6.5 |
 | LeWM baseline of record | 87.3 % ± 7.6 (never the published 96 %) | `notes/results/inzva_pusht_results.md` | §6.1b |
 | three machines agree | 87.3 / 86.7 / 87.3 % | `inzva_pusht_results.md` (RTX 3060), `truba_results.md` (V100, its first three rows), `a4000_results.md` | §6.4 |
 
 The story, in the progress page's words: planning in bigger steps pays, most
 when compute is scarce; the refinement does not. The sweep itself was on slide
 11 of the deleted English deck and is not in `final_sunumu.html`, which carries
-part 1 only as the GRU-against-DINO-WM comparison on its slide 11. The
+part 1 only as the GRU-against-DINO-WM comparison on its slide 12. The
 three-seed numbers at 300 samples above are the earlier single point.
 
 ### Part 2: the Hi-LeWM diagnosis (`hilewm/`)

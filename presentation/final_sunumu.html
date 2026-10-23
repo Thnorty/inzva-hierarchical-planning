@@ -501,8 +501,17 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
   <div class="foot"><span class="src">Schematic</span><span class="pg"></span></div>
 </section>
 
+<!-- not in the pptx: added 2026-10-23 -->
+<section class="slide" data-time="40" data-no="8">
+  <p class="eyebrow">Training</p>
+  <h2>How does the world model <em>learn</em>?</h2>
+  <p class="lede" style="max-width:none">We use <b>expert demonstrations</b>, which provide sequences of (image, action, next image). The model learns to predict the next latent state and is trained by comparing it with the true next state.</p>
+  <img src="assets/sunum/training-loop.png" alt="The training loop in five steps: take a transition from an expert demo (current image, action, next image); encode both images into 192-number latent states; the predictor uses the current latent and the action to predict the next latent; compare it with the true next latent (prediction loss plus additional regularising losses); backpropagate to update both the encoder and the predictor." width="1615" height="566" style="display:block;width:100%;height:auto;margin-top:34px">
+  <div class="foot"><span class="src">Schematic</span><span class="pg"></span></div>
+</section>
+
 <!-- 6 -->
-<section class="slide" data-time="45" data-no="8">
+<section class="slide" data-time="45" data-no="9">
   <p class="eyebrow">Pipeline <b>· CEM = Cross-Entropy Method</b></p>
   <h2>Planning with CEM: try random plans, <em>keep the best</em>, repeat.</h2>
   <div class="steps">
@@ -519,7 +528,7 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
 </section>
 
 <!-- 7 -->
-<section class="slide" data-time="35" data-no="9">
+<section class="slide" data-time="35" data-no="10">
   <p class="eyebrow">Pipeline · Hierarchy</p>
   <h2>The high level picks <em>subgoals</em>; the low level pushes.</h2>
   <p class="lede" style="max-width:88ch">The high level splits a distant goal into pieces; a <b>subgoal</b> is a stop along the way. It doesn't think push by push, but in 25-step chunks. We call such a chunk a <b>macro-action</b>.</p>
@@ -544,7 +553,7 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
 </section>
 
 <!-- 8 -->
-<section class="slide" data-time="55" data-no="10">
+<section class="slide" data-time="55" data-no="11">
   <p class="eyebrow">Stage 1 · Method</p>
   <h2>Our hierarchical model: the high level sees time <em>on two scales</em>.</h2>
   <p class="lede">A two-level model built on a GRU. A <b>GRU</b> is a kind of neural network for sequences; it keeps the past in memory.</p>
@@ -554,7 +563,7 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
 </section>
 
 <!-- 9 -->
-<section class="slide" data-time="30" data-no="11">
+<section class="slide" data-time="30" data-no="12">
   <p class="eyebrow">Stage 1 · Result</p>
   <h2><em>Close results</em> from a much smaller model.</h2>
   <div class="twin">
@@ -581,7 +590,7 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
 </section>
 
 <!-- 10 -->
-<section class="slide dark" data-time="30" data-no="12">
+<section class="slide dark" data-time="30" data-no="13">
   <p class="eyebrow">Stage 2 · The question</p>
   <h2>Does the high level pick good <em>subgoals</em>?</h2>
   <p class="lede" style="font-size:34px;margin-top:36px">A hint: in the model's eyes, yes.</p>
@@ -600,7 +609,7 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
 </section>
 
 <!-- 12 -->
-<section class="slide" data-time="60" data-no="13">
+<section class="slide" data-time="60" data-no="14">
   <p class="eyebrow">Results</p>
   <h2>Finding 1: the planner <em>fools the model</em>.</h2>
   <div class="finding">
@@ -622,7 +631,7 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
 </section>
 
 <!-- 13 -->
-<section class="slide" data-time="50" data-no="14">
+<section class="slide" data-time="50" data-no="15">
   <p class="eyebrow">Results</p>
   <h2>Now let's <em>see</em> the same finding.</h2>
   <div class="figrow" style="grid-template-columns:1fr 340px;gap:40px;margin-top:22px">
@@ -639,7 +648,7 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
 </section>
 
 <!-- 14 -->
-<section class="slide" data-time="50" data-no="15">
+<section class="slide" data-time="50" data-no="16">
   <p class="eyebrow">Results</p>
   <h2>Changing where the subgoals come from is worth <em>22 points</em>.</h2>
   <div class="row" style="margin-top:26px">
@@ -654,7 +663,7 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
 </section>
 
 <!-- 15 -->
-<section class="slide" data-time="70" data-no="16">
+<section class="slide" data-time="70" data-no="17">
   <p class="eyebrow">Results</p>
   <h2>Finding 2: two corners, <em>two kinds of failure</em>.</h2>
   <div class="figrow" style="grid-template-columns:1fr 480px;margin-top:20px">
@@ -671,7 +680,7 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
 </section>
 
 <!-- 16 -->
-<section class="slide" data-time="50" data-no="17">
+<section class="slide" data-time="50" data-no="18">
   <p class="eyebrow">Conclusions</p>
   <h2>Stage 2 leads to <em>two conclusions</em>.</h2>
   <ol class="cards two">
@@ -691,7 +700,7 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
 </section>
 
 <!-- 17 -->
-<section class="slide" data-time="30" data-no="18">
+<section class="slide" data-time="30" data-no="19">
   <p class="eyebrow">Future work</p>
   <h2>We see <em>four next steps</em>.</h2>
   <ol class="cards quad">
@@ -720,7 +729,7 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
 </section>
 
 <!-- 18 -->
-<section class="slide closing dark" data-time="10" data-no="19">
+<section class="slide closing dark" data-time="10" data-no="20">
   <p class="eyebrow">Closing</p>
   <h2>Thank you.</h2>
   <div class="thanks">
