@@ -679,28 +679,8 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
   <div class="foot"><span class="src">Each point is one episode · green succeeded, red failed · measured in the environment, single seed, 50 episodes, threshold 0.25</span><span class="pg"></span></div>
 </section>
 
-<!-- 16 -->
-<section class="slide" data-time="50" data-no="18">
-  <p class="eyebrow">Conclusions</p>
-  <h2>Stage 2 leads to <em>two conclusions</em>.</h2>
-  <ol class="cards two">
-    <li>
-      <span class="n">FINDING 1</span>
-      <h3>The planner exploits the model's errors.</h3>
-      <p>The model's score and reality point <b>in opposite directions</b>: inside the model, CEM's plan looks <b>9.5&times; better</b>; in reality, its subgoal is <b>18.4&times; worse</b>.</p>
-    </li>
-    <li>
-      <span class="n">FINDING 2</span>
-      <h3>Failures have two sources.</h3>
-      <p>Of the 12 episodes with a meaningless subgoal, <b>9 fail</b>; the expert's subgoals rescue 7 of them. Of the 7 episodes with a sensible but unreachable subgoal, <b>all 7 fail</b>; the expert's subgoals rescue only 3.</p>
-    </li>
-  </ol>
-  <p class="next"><b>Takeaway: fixing the high level alone isn't enough.</b> The low level's ability to reach a subgoal needs work of its own.</p>
-  <div class="foot"><span class="src">Environment results: single seed, 50 episodes · the 12/7 split depends on the 0.25 threshold · 9.5× and 18.4× measured inside the model</span><span class="pg"></span></div>
-</section>
-
 <!-- 17 -->
-<section class="slide" data-time="30" data-no="19">
+<section class="slide" data-time="30" data-no="18">
   <p class="eyebrow">Future work</p>
   <h2>We see <em>four next steps</em>.</h2>
   <ol class="cards quad">
@@ -729,7 +709,7 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
 </section>
 
 <!-- 18 -->
-<section class="slide closing dark" data-time="10" data-no="20">
+<section class="slide closing dark" data-time="10" data-no="19">
   <p class="eyebrow">Closing</p>
   <h2>Thank you.</h2>
   <div class="thanks">
@@ -1033,6 +1013,12 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
 
   document.getElementById('prev').onclick = () => go(-1);
   document.getElementById('next').onclick = () => go(1);
+  // Ekranın herhangi bir yerine tıklamak bir sonraki slayta geçirir; linkler
+  // ve alttaki gezinme çubuğu kendi işini yapsın diye hariç.
+  document.addEventListener('click', e => {
+    if (e.button !== 0 || e.target.closest('a, button, #bar')) return;
+    go(1);
+  });
   document.addEventListener('keydown', e => {
     if (e.altKey || e.ctrlKey || e.metaKey) return;
     const k = e.key;
