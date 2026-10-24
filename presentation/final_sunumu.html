@@ -556,7 +556,7 @@ ul.lit{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:11px;max-width
 <section class="slide" data-time="55" data-no="11">
   <p class="eyebrow">Stage 1 · Method</p>
   <h2>Our hierarchical model: the high level sees time <em>on two scales</em>.</h2>
-  <p class="lede">A two-level model built on a GRU. A <b>GRU</b> is a kind of neural network for sequences; it keeps the past in memory.</p>
+  <p class="lede">Two levels, like <b>Hi-LeWM</b>, but ours is built on a GRU. A <b>GRU</b> is a kind of neural network for sequences; it keeps the past in memory.</p>
   <div style="margin-top:34px" id="fig-timescales"></div>
   <p class="loopnote wide">The fine model predicts one environment step ahead, the coarse model two. <b>Over a 10-step horizon, that makes 5 waypoints.</b> The coarse model plans them first, then the fine model fills in the 2 steps between each pair. <b>The gain comes from the coarse stage:</b> the model rolls forward 5 times instead of 10, so less error builds up and planning runs faster.</p>
   <div class="foot"><span class="src">Illustrative diagram: each block is a time interval; the real step counts aren't shown</span><span class="pg"></span></div>
